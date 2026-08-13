@@ -1,0 +1,14 @@
+{
+  "name": "Riz Oftalmología",
+  "short_name": "Riz Oftalmo",
+  "description": "Historia clínica oftalmológica, agenda, caja y recetas.",
+  "start_url": "/panel",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7fafc",
+  "theme_color": "#0b5f8a",
+  "lang": "es-AR",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "48x48", "type": "image/x-icon" }
+  ]
+}
