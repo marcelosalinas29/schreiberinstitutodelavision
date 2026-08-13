@@ -7,12 +7,9 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ThemeSwitcher } from "@/components/layout/ThemeSwitcher";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import type { AppRole } from "@/types/domain";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -32,17 +29,11 @@ const credencialesSchema = z.object({
   password: z.string().min(8, "Mínimo 8 caracteres").max(72),
 });
 
-const registroSchema = credencialesSchema.extend({
-  nombre_completo: z.string().trim().min(3, "Ingresá nombre y apellido").max(120),
-});
-
 function AuthPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [nombre, setNombre] = useState("");
-  const [role, setRole] = useState<AppRole>("medico");
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
@@ -64,31 +55,6 @@ function AuthPage() {
       toast.error(error.message === "Invalid login credentials" ? "Email o contraseña incorrectos" : error.message);
       return;
     }
-    void navigate({ to: "/panel" });
-  };
-
-  const registrar = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const parsed = registroSchema.safeParse({ email, password, nombre_completo: nombre });
-    if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Datos inválidos");
-      return;
-    }
-    setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email: parsed.data.email,
-      password: parsed.data.password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/panel`,
-        data: { nombre_completo: parsed.data.nombre_completo, role },
-      },
-    });
-    setLoading(false);
-    if (error) {
-      toast.error(error.message.includes("already registered") ? "Ese email ya está registrado" : error.message);
-      return;
-    }
-    toast.success("Cuenta creada. Revisá tu email si se solicita confirmación.");
     void navigate({ to: "/panel" });
   };
 
