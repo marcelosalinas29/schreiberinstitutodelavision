@@ -80,7 +80,7 @@ function Consulta() {
   const ordenar = useMutation({
     mutationFn: () => parse({ data: { transcripcion } }),
     onSuccess: (data) => {
-      setDraft((prev) => ({ ...prev, ...data, fecha: prev.fecha }));
+      setDraft((prev) => ({ ...prev, ...data, fecha: prev.fecha ?? new Date().toISOString().slice(0, 10) }));
       toast.success("Dictado ordenado en los campos clínicos");
     },
     onError: () => toast.error("No se pudo procesar el dictado"),

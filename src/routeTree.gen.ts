@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
+import { Route as AuthenticatedConsultaRouteImport } from './routes/_authenticated/consulta'
 import { Route as AuthenticatedPacientesRouteImport } from './routes/_authenticated/pacientes'
 import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/panel'
 
@@ -35,6 +36,11 @@ const AuthenticatedAgendaRoute = AuthenticatedAgendaRouteImport.update({
   path: '/agenda',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedConsultaRoute = AuthenticatedConsultaRouteImport.update({
+  id: '/consulta',
+  path: '/consulta',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPacientesRoute = AuthenticatedPacientesRouteImport.update({
   id: '/pacientes',
   path: '/pacientes',
@@ -50,6 +56,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/agenda': typeof AuthenticatedAgendaRoute
+  '/consulta': typeof AuthenticatedConsultaRoute
   '/pacientes': typeof AuthenticatedPacientesRoute
   '/panel': typeof AuthenticatedPanelRoute
 }
@@ -57,6 +64,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/agenda': typeof AuthenticatedAgendaRoute
+  '/consulta': typeof AuthenticatedConsultaRoute
   '/pacientes': typeof AuthenticatedPacientesRoute
   '/panel': typeof AuthenticatedPanelRoute
 }
@@ -66,20 +74,22 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
+  '/_authenticated/consulta': typeof AuthenticatedConsultaRoute
   '/_authenticated/pacientes': typeof AuthenticatedPacientesRoute
   '/_authenticated/panel': typeof AuthenticatedPanelRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/agenda' | '/pacientes' | '/panel'
+  fullPaths: '/' | '/auth' | '/agenda' | '/consulta' | '/pacientes' | '/panel'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/agenda' | '/pacientes' | '/panel'
+  to: '/' | '/auth' | '/agenda' | '/consulta' | '/pacientes' | '/panel'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/agenda'
+    | '/_authenticated/consulta'
     | '/_authenticated/pacientes'
     | '/_authenticated/panel'
   fileRoutesById: FileRoutesById
@@ -120,6 +130,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAgendaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/consulta': {
+      id: '/_authenticated/consulta'
+      path: '/consulta'
+      fullPath: '/consulta'
+      preLoaderRoute: typeof AuthenticatedConsultaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pacientes': {
       id: '/_authenticated/pacientes'
       path: '/pacientes'
@@ -139,12 +156,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
+  AuthenticatedConsultaRoute: typeof AuthenticatedConsultaRoute
   AuthenticatedPacientesRoute: typeof AuthenticatedPacientesRoute
   AuthenticatedPanelRoute: typeof AuthenticatedPanelRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgendaRoute: AuthenticatedAgendaRoute,
+  AuthenticatedConsultaRoute: AuthenticatedConsultaRoute,
   AuthenticatedPacientesRoute: AuthenticatedPacientesRoute,
   AuthenticatedPanelRoute: AuthenticatedPanelRoute,
 }
