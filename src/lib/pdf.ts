@@ -16,7 +16,7 @@ function wrap(doc: jsPDF, text: string, x: number, y: number, width: number, lin
   return y + lines.length * lineHeight;
 }
 
-/** Genera una receta / indicación en PDF y la abre para imprimir o guardar. */
+/** Genera una receta / indicación en PDF usando la plantilla del profesional. */
 export function generarRecetaPDF({ paciente, contenido, fecha, plantilla, titulo = "Receta" }: RecetaInput) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const margin = 18;
@@ -25,13 +25,13 @@ export function generarRecetaPDF({ paciente, contenido, fecha, plantilla, titulo
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(15);
-  doc.text(plantilla?.encabezado?.split("\n")[0] ?? "Riz Oftalmología", margin, y);
+  doc.text(plantilla?.institucion ?? "Riz Oftalmología", margin, y);
   y += 6;
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
-  const restoEncabezado = plantilla?.encabezado?.split("\n").slice(1).join("\n");
-  if (restoEncabezado) y = wrap(doc, restoEncabezado, margin, y, width, 4.5) + 2;
+  const encabezado = [plantilla?.direccion, plantilla?.telefono].filter(Boolean).join(" · ");
+  if (encabezado) y = wrap(doc, encabezado, margin, y, width, 4.5) + 2;
 
   doc.setDrawColor(180);
   doc.line(margin, y, 210 - margin, y);
@@ -62,10 +62,18 @@ export function generarRecetaPDF({ paciente, contenido, fecha, plantilla, titulo
   doc.setFontSize(12);
   y = wrap(doc, contenido || "—", margin, y, width, 7);
 
-  const firmaY = Math.max(y + 30, 240);
+  const firmaY = Math.max(y + 30, 235);
   doc.setFontSize(9);
   doc.line(margin, firmaY, margin + 70, firmaY);
-  if (plantilla?.firma) wrap(doc, plantilla.firma, margin, firmaY + 5, 90, 4.5);
+  const firma = [plantilla?.profesional, plantilla?.matricula ? `Mat. ${plantilla.matricula}` : null]
+    .filter(Boolean)
+    .join("\n");
+  if (firma) wrap(doc, firma, margin, firmaY + 5, 90, 4.5);
+  if (plantilla?.pie_pagina) {
+    doc.setFontSize(8);
+    doc.setTextColor(120);
+    wrap(doc, plantilla.pie_pagina, margin, 283, width, 4);
+  }
 
   doc.save(`${titulo.toLowerCase()}-${paciente.apellido}-${fecha.toISOString().slice(0, 10)}.pdf`);
 }
