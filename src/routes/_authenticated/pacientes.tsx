@@ -71,9 +71,16 @@ function Pacientes() {
     mutationFn: async () => {
       const parsed = pacienteSchema.parse(form);
       await createPaciente({
-        ...parsed,
+        nombre: parsed.nombre,
+        apellido: parsed.apellido,
+        dni: parsed.dni || null,
         fecha_nacimiento: parsed.fecha_nacimiento || null,
+        telefono: parsed.telefono || null,
         email: parsed.email || null,
+        direccion: parsed.direccion || null,
+        obra_social: parsed.obra_social || null,
+        nro_afiliado: parsed.nro_afiliado || null,
+        notas: parsed.notas || null,
       });
     },
     onSuccess: () => {
