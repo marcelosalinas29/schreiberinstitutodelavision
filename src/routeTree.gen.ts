@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
+import { Route as AuthenticatedCajaRouteImport } from './routes/_authenticated/caja'
 import { Route as AuthenticatedConsultaRouteImport } from './routes/_authenticated/consulta'
 import { Route as AuthenticatedImportarRouteImport } from './routes/_authenticated/importar'
 import { Route as AuthenticatedPacientesRouteImport } from './routes/_authenticated/pacientes'
@@ -35,6 +36,11 @@ const AuthRoute = AuthRouteImport.update({
 const AuthenticatedAgendaRoute = AuthenticatedAgendaRouteImport.update({
   id: '/agenda',
   path: '/agenda',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCajaRoute = AuthenticatedCajaRouteImport.update({
+  id: '/caja',
+  path: '/caja',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedConsultaRoute = AuthenticatedConsultaRouteImport.update({
@@ -62,6 +68,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/agenda': typeof AuthenticatedAgendaRoute
+  '/caja': typeof AuthenticatedCajaRoute
   '/consulta': typeof AuthenticatedConsultaRoute
   '/importar': typeof AuthenticatedImportarRoute
   '/pacientes': typeof AuthenticatedPacientesRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/agenda': typeof AuthenticatedAgendaRoute
+  '/caja': typeof AuthenticatedCajaRoute
   '/consulta': typeof AuthenticatedConsultaRoute
   '/importar': typeof AuthenticatedImportarRoute
   '/pacientes': typeof AuthenticatedPacientesRoute
@@ -82,6 +90,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
+  '/_authenticated/caja': typeof AuthenticatedCajaRoute
   '/_authenticated/consulta': typeof AuthenticatedConsultaRoute
   '/_authenticated/importar': typeof AuthenticatedImportarRoute
   '/_authenticated/pacientes': typeof AuthenticatedPacientesRoute
@@ -93,6 +102,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/agenda'
+    | '/caja'
     | '/consulta'
     | '/importar'
     | '/pacientes'
@@ -102,6 +112,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/agenda'
+    | '/caja'
     | '/consulta'
     | '/importar'
     | '/pacientes'
@@ -112,6 +123,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/agenda'
+    | '/_authenticated/caja'
     | '/_authenticated/consulta'
     | '/_authenticated/importar'
     | '/_authenticated/pacientes'
@@ -154,6 +166,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAgendaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/caja': {
+      id: '/_authenticated/caja'
+      path: '/caja'
+      fullPath: '/caja'
+      preLoaderRoute: typeof AuthenticatedCajaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/consulta': {
       id: '/_authenticated/consulta'
       path: '/consulta'
@@ -187,6 +206,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
+  AuthenticatedCajaRoute: typeof AuthenticatedCajaRoute
   AuthenticatedConsultaRoute: typeof AuthenticatedConsultaRoute
   AuthenticatedImportarRoute: typeof AuthenticatedImportarRoute
   AuthenticatedPacientesRoute: typeof AuthenticatedPacientesRoute
@@ -195,6 +215,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgendaRoute: AuthenticatedAgendaRoute,
+  AuthenticatedCajaRoute: AuthenticatedCajaRoute,
   AuthenticatedConsultaRoute: AuthenticatedConsultaRoute,
   AuthenticatedImportarRoute: AuthenticatedImportarRoute,
   AuthenticatedPacientesRoute: AuthenticatedPacientesRoute,
