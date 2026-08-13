@@ -14,9 +14,9 @@ import { ESTADOS_TURNO } from "@/types/domain";
 export const Route = createFileRoute("/_authenticated/panel")({
   head: () => ({
     meta: [
-      { title: "Panel del día — Riz Oftalmología" },
+      { title: "Panel del día — Digital Eye" },
       { name: "description", content: "Resumen diario de turnos, pacientes y recaudación del consultorio." },
-      { property: "og:title", content: "Panel del día — Riz Oftalmología" },
+      { property: "og:title", content: "Panel del día — Digital Eye" },
       { property: "og:description", content: "Turnos del día, estado de la sala de espera y caja en tiempo real." },
     ],
   }),

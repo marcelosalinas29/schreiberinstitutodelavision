@@ -18,9 +18,9 @@ import { createPaciente, listPacientes } from "@/services/pacientes";
 export const Route = createFileRoute("/_authenticated/importar")({
   head: () => ({
     meta: [
-      { title: "Importar fichas antiguas — Riz Oftalmología" },
+      { title: "Importar fichas antiguas — Digital Eye" },
       { name: "description", content: "Subí fichas en papel escaneadas o PDF y la IA genera un borrador editable de historia clínica." },
-      { property: "og:title", content: "Importar fichas antiguas — Riz Oftalmología" },
+      { property: "og:title", content: "Importar fichas antiguas — Digital Eye" },
       { property: "og:description", content: "Digitalización asistida por IA de historias clínicas previas con revisión manual." },
     ],
   }),

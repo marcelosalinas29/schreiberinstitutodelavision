@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Riz Oftalmología — Historia clínica y gestión de consultorio" },
+      { title: "Digital Eye — Historia clínica y gestión de consultorio" },
       {
         name: "description",
         content:
           "Sistema oftalmológico integral: agenda de turnos, historia clínica con dictado por IA, caja diaria y recetas en PDF. Funciona sin conexión.",
       },
-      { property: "og:title", content: "Riz Oftalmología — Historia clínica digital" },
+      { property: "og:title", content: "Digital Eye — Historia clínica digital" },
       {
         property: "og:description",
         content:
@@ -40,7 +40,7 @@ function Landing() {
           <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground">
             <Eye className="size-5" />
           </span>
-          <span className="text-sm font-semibold">Riz Oftalmología</span>
+          <span className="text-sm font-semibold">Digital Eye</span>
         </div>
         <Button asChild size="sm">
           <Link to="/auth">Ingresar</Link>
@@ -83,7 +83,7 @@ function Landing() {
 
       <footer className="border-t border-border">
         <div className="mx-auto max-w-6xl px-6 py-8 text-xs text-muted-foreground">
-          Riz Oftalmología · Datos clínicos protegidos con control de acceso por rol.
+          Digital Eye · Datos clínicos protegidos con control de acceso por rol.
         </div>
       </footer>
     </div>

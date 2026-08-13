@@ -25,7 +25,7 @@ export function generarRecetaPDF({ paciente, contenido, fecha, plantilla, titulo
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(15);
-  doc.text(plantilla?.institucion ?? "Riz Oftalmología", margin, y);
+  doc.text(plantilla?.institucion ?? "Digital Eye", margin, y);
   y += 6;
 
   doc.setFont("helvetica", "normal");

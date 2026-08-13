@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Riz Oftalmología — sistema de diseño multitema.
+ * Digital Eye — sistema de diseño multitema.
  * Los temas se aplican con [data-theme] en <html>: dia | noche | neon | azul | sepia
  * Todos los colores en oklch. Nunca usar colores literales en componentes.
  */

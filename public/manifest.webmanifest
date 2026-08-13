@@ -1,6 +1,6 @@
 {
-  "name": "Riz Oftalmología",
-  "short_name": "Riz Oftalmo",
+  "name": "Digital Eye",
+  "short_name": "Digital Eye",
   "description": "Historia clínica oftalmológica, agenda, caja y recetas.",
   "start_url": "/panel",
   "scope": "/",
