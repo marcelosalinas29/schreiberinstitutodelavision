@@ -120,81 +120,31 @@ function AuthPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="ingresar">
-          <TabsList className="mb-5 grid w-full grid-cols-2">
-            <TabsTrigger value="ingresar">Ingresar</TabsTrigger>
-            <TabsTrigger value="registrar">Crear cuenta</TabsTrigger>
-          </TabsList>
+        <form onSubmit={ingresar} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="password">Contraseña</Label>
+            <Input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? <Loader2 className="size-4 animate-spin" /> : "Ingresar"}
+          </Button>
+        </form>
 
-          <TabsContent value="ingresar">
-            <form onSubmit={ingresar} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="password">Contraseña</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? <Loader2 className="size-4 animate-spin" /> : "Ingresar"}
-              </Button>
-            </form>
-          </TabsContent>
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          El registro está cerrado. Las cuentas del personal las crea el médico responsable desde Configuración.
+        </p>
 
-          <TabsContent value="registrar">
-            <form onSubmit={registrar} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="nombre">Nombre y apellido</Label>
-                <Input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="rol">Rol</Label>
-                <Select value={role} onValueChange={(v) => setRole(v as AppRole)}>
-                  <SelectTrigger id="rol">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="medico">Médico</SelectItem>
-                    <SelectItem value="secretaria">Secretaria</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="email-registro">Email</Label>
-                <Input
-                  id="email-registro"
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="password-registro">Contraseña</Label>
-                <Input
-                  id="password-registro"
-                  type="password"
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? <Loader2 className="size-4 animate-spin" /> : "Crear cuenta"}
-              </Button>
-            </form>
-          </TabsContent>
-        </Tabs>
 
         <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
           <span className="h-px flex-1 bg-border" /> o <span className="h-px flex-1 bg-border" />
