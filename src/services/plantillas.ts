@@ -10,7 +10,9 @@ export async function listPlantillas(): Promise<Plantilla[]> {
   return data ?? [];
 }
 
-export async function upsertPlantilla(values: PlantillaInsert & { id?: string }): Promise<Plantilla> {
+export async function upsertPlantilla(
+  values: Omit<PlantillaInsert, "owner_id"> & { id?: string },
+): Promise<Plantilla> {
   const { data: auth } = await supabase.auth.getUser();
   const ownerId = auth.user?.id;
   if (!ownerId) throw new Error("Sesión no válida");
@@ -24,7 +26,7 @@ export async function upsertPlantilla(values: PlantillaInsert & { id?: string })
 
   const { data, error } = await supabase
     .from("plantillas")
-    .insert({ ...values, owner_id: ownerId })
+    .insert({ ...values, nombre: values.nombre ?? "Receta estándar", owner_id: ownerId })
     .select("*")
     .single();
   if (error) throw error;
