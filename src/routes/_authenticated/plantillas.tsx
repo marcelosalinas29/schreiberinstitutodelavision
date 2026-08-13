@@ -15,9 +15,9 @@ import { listPlantillas, upsertPlantilla } from "@/services/plantillas";
 export const Route = createFileRoute("/_authenticated/plantillas")({
   head: () => ({
     meta: [
-      { title: "Plantilla de recetas — Riz Oftalmología" },
+      { title: "Plantilla de recetas — Digital Eye" },
       { name: "description", content: "Configurá el membrete, los datos del profesional y el pie de página de las recetas en PDF." },
-      { property: "og:title", content: "Plantilla de recetas — Riz Oftalmología" },
+      { property: "og:title", content: "Plantilla de recetas — Digital Eye" },
       { property: "og:description", content: "Membrete institucional, matrícula y firma para recetas e indicaciones." },
     ],
   }),
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_authenticated/plantillas")({
 
 const VACIO = {
   nombre: "Receta estándar",
-  institucion: "Riz Oftalmología",
+  institucion: "Digital Eye",
   profesional: "",
   matricula: "",
   direccion: "",

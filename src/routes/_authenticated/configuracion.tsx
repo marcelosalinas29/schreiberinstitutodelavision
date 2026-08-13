@@ -18,9 +18,9 @@ import type { AppRole } from "@/types/domain";
 export const Route = createFileRoute("/_authenticated/configuracion")({
   head: () => ({
     meta: [
-      { title: "Configuración — Riz Oftalmología" },
+      { title: "Configuración — Digital Eye" },
       { name: "description", content: "Perfil profesional, rol asignado y tema visual de la aplicación clínica." },
-      { property: "og:title", content: "Configuración — Riz Oftalmología" },
+      { property: "og:title", content: "Configuración — Digital Eye" },
       { property: "og:description", content: "Ajustes de cuenta, permisos y apariencia del consultorio digital." },
     ],
   }),

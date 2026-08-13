@@ -20,9 +20,9 @@ import { listPlantillas } from "@/services/plantillas";
 export const Route = createFileRoute("/_authenticated/consulta")({
   head: () => ({
     meta: [
-      { title: "Consulta y dictado — Riz Oftalmología" },
+      { title: "Consulta y dictado — Digital Eye" },
       { name: "description", content: "Cargá la historia clínica oftalmológica dictando libremente: la IA ordena cada dato en su campo." },
-      { property: "og:title", content: "Consulta y dictado — Riz Oftalmología" },
+      { property: "og:title", content: "Consulta y dictado — Digital Eye" },
       { property: "og:description", content: "Historia clínica estructurada con dictado inteligente y receta en PDF." },
     ],
   }),

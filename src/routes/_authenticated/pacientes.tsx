@@ -18,9 +18,9 @@ import type { Paciente } from "@/types/domain";
 export const Route = createFileRoute("/_authenticated/pacientes")({
   head: () => ({
     meta: [
-      { title: "Pacientes — Riz Oftalmología" },
+      { title: "Pacientes — Digital Eye" },
       { name: "description", content: "Buscá, registrá y consultá la ficha completa de cada paciente del consultorio." },
-      { property: "og:title", content: "Pacientes — Riz Oftalmología" },
+      { property: "og:title", content: "Pacientes — Digital Eye" },
       { property: "og:description", content: "Padrón de pacientes con datos de contacto, obra social e historial de consultas." },
     ],
   }),
