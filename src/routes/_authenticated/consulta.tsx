@@ -20,9 +20,9 @@ import { listPlantillas } from "@/services/plantillas";
 export const Route = createFileRoute("/_authenticated/consulta")({
   head: () => ({
     meta: [
-      { title: "Consulta y dictado — Digital Eye" },
+      { title: "Consulta y dictado — Schreiber Instituto de la Visión" },
       { name: "description", content: "Cargá la historia clínica oftalmológica dictando libremente: la IA ordena cada dato en su campo." },
-      { property: "og:title", content: "Consulta y dictado — Digital Eye" },
+      { property: "og:title", content: "Consulta y dictado — Schreiber Instituto de la Visión" },
       { property: "og:description", content: "Historia clínica estructurada con dictado inteligente y receta en PDF." },
     ],
   }),
@@ -105,7 +105,7 @@ function Consulta() {
       toast.error("Elegí un paciente");
       return;
     }
-    generarRecetaPDF({
+    void generarRecetaPDF({
       paciente,
       contenido: draft.tratamiento || draft.diagnostico || "",
       fecha: new Date(),

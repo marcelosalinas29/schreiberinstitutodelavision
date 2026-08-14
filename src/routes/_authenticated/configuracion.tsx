@@ -18,9 +18,9 @@ import type { AppRole } from "@/types/domain";
 export const Route = createFileRoute("/_authenticated/configuracion")({
   head: () => ({
     meta: [
-      { title: "Configuración — Digital Eye" },
+      { title: "Configuración — Schreiber Instituto de la Visión" },
       { name: "description", content: "Perfil profesional, rol asignado y tema visual de la aplicación clínica." },
-      { property: "og:title", content: "Configuración — Digital Eye" },
+      { property: "og:title", content: "Configuración — Schreiber Instituto de la Visión" },
       { property: "og:description", content: "Ajustes de cuenta, permisos y apariencia del consultorio digital." },
     ],
   }),

@@ -18,9 +18,9 @@ import type { Paciente } from "@/types/domain";
 export const Route = createFileRoute("/_authenticated/pacientes")({
   head: () => ({
     meta: [
-      { title: "Pacientes — Digital Eye" },
+      { title: "Pacientes — Schreiber Instituto de la Visión" },
       { name: "description", content: "Buscá, registrá y consultá la ficha completa de cada paciente del consultorio." },
-      { property: "og:title", content: "Pacientes — Digital Eye" },
+      { property: "og:title", content: "Pacientes — Schreiber Instituto de la Visión" },
       { property: "og:description", content: "Padrón de pacientes con datos de contacto, obra social e historial de consultas." },
     ],
   }),

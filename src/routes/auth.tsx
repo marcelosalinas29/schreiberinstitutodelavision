@@ -1,12 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Eye, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LogoWordmark } from "@/components/layout/Logo";
 import { ThemeSwitcher } from "@/components/layout/ThemeSwitcher";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -14,9 +15,9 @@ import { lovable } from "@/integrations/lovable/index";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Ingresar — Digital Eye" },
-      { name: "description", content: "Acceso al sistema de gestión clínica de Digital Eye para médicos y secretaría." },
-      { property: "og:title", content: "Ingresar — Digital Eye" },
+      { title: "Ingresar — Schreiber Instituto de la Visión" },
+      { name: "description", content: "Acceso al sistema de gestión clínica de Schreiber Instituto de la Visión para médicos y secretaría." },
+      { property: "og:title", content: "Ingresar — Schreiber Instituto de la Visión" },
       { property: "og:description", content: "Acceso seguro al consultorio digital: agenda, historia clínica y caja." },
       { name: "robots", content: "noindex" },
     ],
@@ -76,14 +77,10 @@ function AuthPage() {
         <ThemeSwitcher />
       </div>
       <div className="panel w-full max-w-md p-6 sm:p-8">
-        <div className="mb-6 flex items-center gap-2.5">
-          <span className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground">
-            <Eye className="size-5" />
-          </span>
-          <div>
-            <h1 className="text-lg font-semibold">Digital Eye</h1>
-            <p className="text-xs text-muted-foreground">Acceso al consultorio digital</p>
-          </div>
+        <div className="mb-6 flex flex-col items-center text-center">
+          <LogoWordmark className="h-auto w-full max-w-[300px]" />
+          <h1 className="sr-only">Schreiber Instituto de la Visión</h1>
+          <p className="mt-2 text-xs text-muted-foreground">Acceso al consultorio digital</p>
         </div>
 
         <form onSubmit={ingresar} className="space-y-4">

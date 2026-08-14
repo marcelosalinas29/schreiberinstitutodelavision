@@ -15,9 +15,9 @@ import { listPlantillas, upsertPlantilla } from "@/services/plantillas";
 export const Route = createFileRoute("/_authenticated/plantillas")({
   head: () => ({
     meta: [
-      { title: "Plantilla de recetas — Digital Eye" },
+      { title: "Plantilla de recetas — Schreiber Instituto de la Visión" },
       { name: "description", content: "Configurá el membrete, los datos del profesional y el pie de página de las recetas en PDF." },
-      { property: "og:title", content: "Plantilla de recetas — Digital Eye" },
+      { property: "og:title", content: "Plantilla de recetas — Schreiber Instituto de la Visión" },
       { property: "og:description", content: "Membrete institucional, matrícula y firma para recetas e indicaciones." },
     ],
   }),
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_authenticated/plantillas")({
 
 const VACIO = {
   nombre: "Receta estándar",
-  institucion: "Digital Eye",
+  institucion: "Schreiber Instituto de la Visión",
   profesional: "",
   matricula: "",
   direccion: "",
@@ -90,7 +90,7 @@ function Plantillas() {
               variant="outline"
               size="sm"
               onClick={() =>
-                generarRecetaPDF({
+                void generarRecetaPDF({
                   paciente: { nombre: "Ejemplo", apellido: "Paciente", dni: "00000000", obra_social: null, nro_afiliado: null },
                   contenido: "Lágrimas artificiales 1 gota cada 6 hs por 15 días.",
                   fecha: new Date(),

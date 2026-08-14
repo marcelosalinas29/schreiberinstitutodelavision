@@ -1,18 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Eye, ShieldCheck, Mic, Wallet, CalendarDays, ScanLine, WifiOff } from "lucide-react";
+import { ShieldCheck, Mic, Wallet, CalendarDays, ScanLine, WifiOff } from "lucide-react";
 
+import { Logo } from "@/components/layout/Logo";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Digital Eye — Historia clínica y gestión de consultorio" },
+      { title: "Schreiber Instituto de la Visión — Historia clínica y gestión de consultorio" },
       {
         name: "description",
         content:
           "Sistema oftalmológico integral: agenda de turnos, historia clínica con dictado por IA, caja diaria y recetas en PDF. Funciona sin conexión.",
       },
-      { property: "og:title", content: "Digital Eye — Historia clínica digital" },
+      { property: "og:title", content: "Schreiber Instituto de la Visión — Historia clínica digital" },
       {
         property: "og:description",
         content:
@@ -36,12 +37,7 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <div className="flex items-center gap-2.5">
-          <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground">
-            <Eye className="size-5" />
-          </span>
-          <span className="text-sm font-semibold">Digital Eye</span>
-        </div>
+        <Logo size="sm" />
         <Button asChild size="sm">
           <Link to="/auth">Ingresar</Link>
         </Button>
@@ -83,7 +79,7 @@ function Landing() {
 
       <footer className="border-t border-border">
         <div className="mx-auto max-w-6xl px-6 py-8 text-xs text-muted-foreground">
-          Digital Eye · Datos clínicos protegidos con control de acceso por rol.
+          Schreiber Instituto de la Visión · Datos clínicos protegidos con control de acceso por rol.
         </div>
       </footer>
     </div>
