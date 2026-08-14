@@ -16,15 +16,41 @@ function wrap(doc: jsPDF, text: string, x: number, y: number, width: number, lin
   return y + lines.length * lineHeight;
 }
 
+let logoCache: string | null | undefined;
+
+async function cargarLogo(): Promise<string | null> {
+  if (logoCache !== undefined) return logoCache;
+  try {
+    const res = await fetch(LOGO_HORIZONTAL_URL);
+    const blob = await res.blob();
+    logoCache = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    logoCache = null;
+  }
+  return logoCache;
+}
+
 /** Genera una receta / indicación en PDF usando la plantilla del profesional. */
-export function generarRecetaPDF({ paciente, contenido, fecha, plantilla, titulo = "Receta" }: RecetaInput) {
+export async function generarRecetaPDF({ paciente, contenido, fecha, plantilla, titulo = "Receta" }: RecetaInput) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const margin = 18;
   const width = 210 - margin * 2;
   let y = margin;
 
+  const logo = await cargarLogo();
+  if (logo) {
+    // El logo apaisado mantiene su proporción aproximada 2:1.
+    doc.addImage(logo, "JPEG", margin, y - 4, 74, 36, undefined, "FAST");
+    y += 34;
+  }
+
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(15);
+  doc.setFontSize(13);
   doc.text(plantilla?.institucion ?? "Schreiber Instituto de la Visión", margin, y);
   y += 6;
 
@@ -36,6 +62,7 @@ export function generarRecetaPDF({ paciente, contenido, fecha, plantilla, titulo
   doc.setDrawColor(180);
   doc.line(margin, y, 210 - margin, y);
   y += 8;
+
 
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
