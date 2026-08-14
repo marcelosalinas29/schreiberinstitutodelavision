@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { ThemeSwitcher } from "@/components/layout/ThemeSwitcher";
+import { Logo } from "@/components/layout/Logo";
 import { useCurrentUser } from "@/features/auth/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -85,17 +86,7 @@ function NavLinks({ isMedico, onNavigate }: { isMedico: boolean; onNavigate?: ()
 }
 
 function Brand() {
-  return (
-    <div className="flex items-center gap-2.5">
-      <span className="grid size-9 place-items-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
-        <Eye className="size-5" />
-      </span>
-      <span className="leading-tight">
-        <span className="block text-sm font-semibold text-sidebar-foreground">Schreiber Instituto de la Visión</span>
-        <span className="block text-[11px] text-sidebar-foreground/60">Historia clínica digital</span>
-      </span>
-    </div>
-  );
+  return <Logo size="sm" className="[&_span]:text-sidebar-foreground" />;
 }
 
 export function AppShell({ children }: { children: ReactNode }) {

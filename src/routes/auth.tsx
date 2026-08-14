@@ -7,6 +7,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LogoWordmark } from "@/components/layout/Logo";
 import { ThemeSwitcher } from "@/components/layout/ThemeSwitcher";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -76,14 +77,10 @@ function AuthPage() {
         <ThemeSwitcher />
       </div>
       <div className="panel w-full max-w-md p-6 sm:p-8">
-        <div className="mb-6 flex items-center gap-2.5">
-          <span className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground">
-            <Eye className="size-5" />
-          </span>
-          <div>
-            <h1 className="text-lg font-semibold">Schreiber Instituto de la Visión</h1>
-            <p className="text-xs text-muted-foreground">Acceso al consultorio digital</p>
-          </div>
+        <div className="mb-6 flex flex-col items-center text-center">
+          <LogoWordmark className="h-16" />
+          <h1 className="sr-only">Schreiber Instituto de la Visión</h1>
+          <p className="mt-2 text-xs text-muted-foreground">Acceso al consultorio digital</p>
         </div>
 
         <form onSubmit={ingresar} className="space-y-4">

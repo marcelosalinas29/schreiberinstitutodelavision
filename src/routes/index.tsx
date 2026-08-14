@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Eye, ShieldCheck, Mic, Wallet, CalendarDays, ScanLine, WifiOff } from "lucide-react";
 
+import { Logo } from "@/components/layout/Logo";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -36,12 +37,7 @@ function Landing() {
   return (
     <div className="min-h-screen bg-background">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <div className="flex items-center gap-2.5">
-          <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground">
-            <Eye className="size-5" />
-          </span>
-          <span className="text-sm font-semibold">Schreiber Instituto de la Visión</span>
-        </div>
+        <Logo size="sm" />
         <Button asChild size="sm">
           <Link to="/auth">Ingresar</Link>
         </Button>
