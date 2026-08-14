@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Eye, ShieldCheck, Mic, Wallet, CalendarDays, ScanLine, WifiOff } from "lucide-react";
+import { ShieldCheck, Mic, Wallet, CalendarDays, ScanLine, WifiOff } from "lucide-react";
 
 import { Logo } from "@/components/layout/Logo";
 import { Button } from "@/components/ui/button";

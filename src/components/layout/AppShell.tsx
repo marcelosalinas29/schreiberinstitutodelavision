@@ -9,7 +9,6 @@ import {
   LayoutDashboard,
   Settings,
   LogOut,
-  Eye,
   Menu,
   WifiOff,
 } from "lucide-react";

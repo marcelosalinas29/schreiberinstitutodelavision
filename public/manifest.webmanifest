@@ -1,14 +1,14 @@
 {
   "name": "Schreiber Instituto de la Visión",
-  "short_name": "Schreiber Instituto de la Visión",
+  "short_name": "Schreiber",
   "description": "Historia clínica oftalmológica, agenda, caja y recetas.",
   "start_url": "/panel",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f7fafc",
-  "theme_color": "#0b5f8a",
+  "background_color": "#faf6ef",
+  "theme_color": "#0e4a52",
   "lang": "es-AR",
   "icons": [
-    { "src": "/favicon.ico", "sizes": "48x48", "type": "image/x-icon" }
+    { "src": "/favicon.png", "sizes": "64x64", "type": "image/png", "purpose": "any" }
   ]
 }
