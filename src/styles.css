@@ -372,3 +372,56 @@
     linear-gradient(to bottom, color-mix(in oklch, var(--color-border) 60%, transparent) 1px, transparent 1px);
   background-size: 44px 44px;
 }
+
+/* ---------- Marca de agua institucional (reversible) ----------
+ * .bg-watermark-full  -> patrón en toda la pantalla (isotipo + wordmark alternados)
+ * .bg-watermark-edges -> mismo patrón, desvanecido hacia el centro (alternativa suave)
+ * Quitar la clase del contenedor revierte el efecto sin tocar nada más.
+ */
+@utility bg-watermark-full {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-color: var(--color-foreground);
+    opacity: 0.07;
+    -webkit-mask-image: var(--watermark-tile);
+    mask-image: var(--watermark-tile);
+    -webkit-mask-size: 260px 260px;
+    mask-size: 260px 260px;
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
+  }
+}
+
+@utility bg-watermark-edges {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-color: var(--color-foreground);
+    opacity: 0.07;
+    -webkit-mask-image: var(--watermark-tile);
+    mask-image: var(--watermark-tile);
+    -webkit-mask-size: 260px 260px;
+    mask-repeat: repeat;
+    -webkit-mask-repeat: repeat;
+    mask-size: 260px 260px;
+    background-image: radial-gradient(ellipse at center, transparent 0%, var(--color-foreground) 75%);
+    background-color: transparent;
+  }
+}
+
+:root {
+  --watermark-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'%3E%3Cg fill='none' stroke='%23000' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M14 56 Q56 16 98 56 Q56 96 14 56 Z'/%3E%3C/g%3E%3Ccircle cx='56' cy='56' r='13' fill='%23000'/%3E%3Ctext x='130' y='140' text-anchor='middle' font-family='Outfit, Helvetica, Arial, sans-serif' font-size='24' font-weight='600' letter-spacing='5' fill='%23000'%3ESCHREIBER%3C/text%3E%3Cg fill='none' stroke='%23000' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M162 208 Q204 168 246 208 Q204 248 162 208 Z'/%3E%3C/g%3E%3Ccircle cx='204' cy='208' r='13' fill='%23000'/%3E%3C/svg%3E");
+}
