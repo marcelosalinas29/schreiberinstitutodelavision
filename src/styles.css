@@ -381,7 +381,7 @@
  * Quitar la clase del contenedor revierte el efecto sin tocar nada más.
  */
 :root {
-  --watermark-tile: url("/__l5e/assets-v1/120ace44-8cf7-48d0-a07b-f4d05f9c5b5a/schreiber-horizontal.jpg");
+  --watermark-tile: url("/__l5e/assets-v1/2bd1b673-c05a-46eb-bc1c-dcb886e1d7c9/schreiber-horizontal-transparente.png");
   --watermark-size: 320px auto;
   --watermark-opacity: 0.07;
 }
@@ -400,7 +400,6 @@
     background-repeat: repeat;
     background-size: var(--watermark-size);
     opacity: var(--watermark-opacity);
-    mix-blend-mode: multiply;
   }
 
   .dark &::before,
@@ -425,7 +424,6 @@
     background-repeat: repeat;
     background-size: var(--watermark-size);
     opacity: var(--watermark-opacity);
-    mix-blend-mode: multiply;
     -webkit-mask-image: radial-gradient(ellipse at center, transparent 20%, #000 78%);
     mask-image: radial-gradient(ellipse at center, transparent 20%, #000 78%);
   }
