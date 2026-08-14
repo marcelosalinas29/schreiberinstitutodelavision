@@ -236,6 +236,9 @@ export type Database = {
       pacientes: {
         Row: {
           apellido: string
+          consiente_administrativo: boolean
+          consiente_recetas: boolean
+          consiente_recordatorios: boolean
           created_at: string
           created_by: string | null
           direccion: string | null
@@ -243,16 +246,21 @@ export type Database = {
           email: string | null
           fecha_nacimiento: string | null
           id: string
+          localidad: string | null
           nombre: string
           notas: string | null
           nro_afiliado: string | null
           obra_social: string | null
+          plan: string | null
           sexo: string | null
           telefono: string | null
           updated_at: string
         }
         Insert: {
           apellido: string
+          consiente_administrativo?: boolean
+          consiente_recetas?: boolean
+          consiente_recordatorios?: boolean
           created_at?: string
           created_by?: string | null
           direccion?: string | null
@@ -260,16 +268,21 @@ export type Database = {
           email?: string | null
           fecha_nacimiento?: string | null
           id?: string
+          localidad?: string | null
           nombre: string
           notas?: string | null
           nro_afiliado?: string | null
           obra_social?: string | null
+          plan?: string | null
           sexo?: string | null
           telefono?: string | null
           updated_at?: string
         }
         Update: {
           apellido?: string
+          consiente_administrativo?: boolean
+          consiente_recetas?: boolean
+          consiente_recordatorios?: boolean
           created_at?: string
           created_by?: string | null
           direccion?: string | null
@@ -277,10 +290,12 @@ export type Database = {
           email?: string | null
           fecha_nacimiento?: string | null
           id?: string
+          localidad?: string | null
           nombre?: string
           notas?: string | null
           nro_afiliado?: string | null
           obra_social?: string | null
+          plan?: string | null
           sexo?: string | null
           telefono?: string | null
           updated_at?: string

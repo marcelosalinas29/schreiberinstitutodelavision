@@ -21,6 +21,15 @@ export async function getPaciente(id: string): Promise<Paciente | null> {
   return data;
 }
 
+export async function buscarPacientePorDni(dni: string): Promise<Paciente | null> {
+  const term = dni.trim();
+  if (!term) return null;
+  const { data, error } = await supabase.from("pacientes").select("*").ilike("dni", term).limit(1).maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+
 export async function createPaciente(values: PacienteInsert): Promise<Paciente> {
   const { data: auth } = await supabase.auth.getUser();
   const { data, error } = await supabase
