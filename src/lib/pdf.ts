@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 
+import { LOGO_HORIZONTAL_URL } from "@/components/layout/Logo";
 import type { Paciente, Plantilla } from "@/types/domain";
 
 interface RecetaInput {
