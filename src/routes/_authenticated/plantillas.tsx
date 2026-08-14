@@ -90,7 +90,7 @@ function Plantillas() {
               variant="outline"
               size="sm"
               onClick={() =>
-                generarRecetaPDF({
+                void generarRecetaPDF({
                   paciente: { nombre: "Ejemplo", apellido: "Paciente", dni: "00000000", obra_social: null, nro_afiliado: null },
                   contenido: "Lágrimas artificiales 1 gota cada 6 hs por 15 días.",
                   fecha: new Date(),

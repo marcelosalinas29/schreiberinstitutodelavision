@@ -105,7 +105,7 @@ function Consulta() {
       toast.error("Elegí un paciente");
       return;
     }
-    generarRecetaPDF({
+    void generarRecetaPDF({
       paciente,
       contenido: draft.tratamiento || draft.diagnostico || "",
       fecha: new Date(),
