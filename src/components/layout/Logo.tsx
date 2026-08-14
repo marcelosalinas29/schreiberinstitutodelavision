@@ -1,10 +1,12 @@
 import horizontal from "@/assets/schreiber-horizontal.jpg.asset.json";
 import sello from "@/assets/schreiber-sello.jpg.asset.json";
+import horizontalTransparente from "@/assets/schreiber-horizontal-transparente.png";
 
 import { cn } from "@/lib/utils";
 
 export const LOGO_HORIZONTAL_URL = horizontal.url;
 export const LOGO_SELLO_URL = sello.url;
+export const LOGO_HORIZONTAL_TRANSPARENTE_URL = horizontalTransparente;
 
 /** Marca institucional: sello circular + wordmark. */
 export function Logo({
