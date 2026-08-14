@@ -38,13 +38,14 @@ export function Logo({
   );
 }
 
-/** Versión apaisada del logo, para portadas y encabezados amplios. */
-export function LogoWordmark({ className }: { className?: string }) {
+/** Versión apaisada del logo, para portadas y encabezados amplios.
+ *  `transparente` usa el PNG sin fondo, para integrarse a cualquier superficie. */
+export function LogoWordmark({ className, transparente = false }: { className?: string; transparente?: boolean }) {
   return (
     <img
-      src={LOGO_HORIZONTAL_URL}
+      src={transparente ? LOGO_HORIZONTAL_TRANSPARENTE_URL : LOGO_HORIZONTAL_URL}
       alt="Schreiber Instituto de la Visión — Porque cada mirada es única"
-      className={cn("h-20 w-auto object-contain", className)}
+      className={cn("h-20 w-auto object-contain", !transparente && "mix-blend-multiply", className)}
     />
   );
 }
