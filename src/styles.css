@@ -374,10 +374,18 @@
 }
 
 /* ---------- Marca de agua institucional (reversible) ----------
- * .bg-watermark-full  -> patrón en toda la pantalla (isotipo + wordmark alternados)
+ * Usa el archivo original del logo (imagen subida, sin recrear vectores).
+ * .bg-watermark-full  -> patrón repetido en toda la pantalla
  * .bg-watermark-edges -> mismo patrón, desvanecido hacia el centro (alternativa suave)
+ * Ajustar densidad con --watermark-size / intensidad con --watermark-opacity.
  * Quitar la clase del contenedor revierte el efecto sin tocar nada más.
  */
+:root {
+  --watermark-tile: url("/__l5e/assets-v1/120ace44-8cf7-48d0-a07b-f4d05f9c5b5a/schreiber-horizontal.jpg");
+  --watermark-size: 320px auto;
+  --watermark-opacity: 0.07;
+}
+
 @utility bg-watermark-full {
   position: relative;
   isolation: isolate;
@@ -388,14 +396,18 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background-color: var(--color-foreground);
-    opacity: 0.07;
-    -webkit-mask-image: var(--watermark-tile);
-    mask-image: var(--watermark-tile);
-    -webkit-mask-size: 260px 260px;
-    mask-size: 260px 260px;
-    -webkit-mask-repeat: repeat;
-    mask-repeat: repeat;
+    background-image: var(--watermark-tile);
+    background-repeat: repeat;
+    background-size: var(--watermark-size);
+    opacity: var(--watermark-opacity);
+    mix-blend-mode: multiply;
+  }
+
+  .dark &::before,
+  [data-theme="noche"] &::before,
+  [data-theme="neon"] &::before {
+    mix-blend-mode: screen;
+    filter: invert(1);
   }
 }
 
@@ -409,19 +421,20 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background-color: var(--color-foreground);
-    opacity: 0.07;
-    -webkit-mask-image: var(--watermark-tile);
-    mask-image: var(--watermark-tile);
-    -webkit-mask-size: 260px 260px;
-    mask-repeat: repeat;
-    -webkit-mask-repeat: repeat;
-    mask-size: 260px 260px;
-    background-image: radial-gradient(ellipse at center, transparent 0%, var(--color-foreground) 75%);
-    background-color: transparent;
+    background-image: var(--watermark-tile);
+    background-repeat: repeat;
+    background-size: var(--watermark-size);
+    opacity: var(--watermark-opacity);
+    mix-blend-mode: multiply;
+    -webkit-mask-image: radial-gradient(ellipse at center, transparent 20%, #000 78%);
+    mask-image: radial-gradient(ellipse at center, transparent 20%, #000 78%);
+  }
+
+  .dark &::before,
+  [data-theme="noche"] &::before,
+  [data-theme="neon"] &::before {
+    mix-blend-mode: screen;
+    filter: invert(1);
   }
 }
 
-:root {
-  --watermark-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'%3E%3Cg fill='none' stroke='%23000' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M14 56 Q56 16 98 56 Q56 96 14 56 Z'/%3E%3C/g%3E%3Ccircle cx='56' cy='56' r='13' fill='%23000'/%3E%3Ctext x='130' y='140' text-anchor='middle' font-family='Outfit, Helvetica, Arial, sans-serif' font-size='24' font-weight='600' letter-spacing='5' fill='%23000'%3ESCHREIBER%3C/text%3E%3Cg fill='none' stroke='%23000' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M162 208 Q204 168 246 208 Q204 248 162 208 Z'/%3E%3C/g%3E%3Ccircle cx='204' cy='208' r='13' fill='%23000'/%3E%3C/svg%3E");
-}
