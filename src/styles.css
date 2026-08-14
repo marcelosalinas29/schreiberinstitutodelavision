@@ -424,7 +424,6 @@
     background-repeat: repeat;
     background-size: var(--watermark-size);
     opacity: var(--watermark-opacity);
-    mix-blend-mode: multiply;
     -webkit-mask-image: radial-gradient(ellipse at center, transparent 20%, #000 78%);
     mask-image: radial-gradient(ellipse at center, transparent 20%, #000 78%);
   }
