@@ -6,11 +6,12 @@ export const THEMES = [
   { id: "neon", label: "Neón", hint: "Alto contraste" },
   { id: "azul", label: "Azul médico", hint: "Profesional" },
   { id: "sepia", label: "Sepia", hint: "Descanso visual" },
+  { id: "dorado", label: "Dorado", hint: "Identidad Schreiber" },
 ] as const;
 
 export type ThemeId = (typeof THEMES)[number]["id"];
 
-const STORAGE_KEY = "riz-theme";
+const STORAGE_KEY = "schreiber-theme";
 const DARK_THEMES: ThemeId[] = ["noche", "neon"];
 
 interface ThemeContextValue {

@@ -6,7 +6,7 @@
 
 /*
  * Schreiber Instituto de la Visión — sistema de diseño multitema.
- * Los temas se aplican con [data-theme] en <html>: dia | noche | neon | azul | sepia
+ * Los temas se aplican con [data-theme] en <html>: dia | noche | neon | azul | sepia | dorado
  * Todos los colores en oklch. Nunca usar colores literales en componentes.
  */
 
