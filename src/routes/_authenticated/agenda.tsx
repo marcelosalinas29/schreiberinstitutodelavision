@@ -19,9 +19,9 @@ import { ESTADOS_TURNO, type TurnoEstado } from "@/types/domain";
 export const Route = createFileRoute("/_authenticated/agenda")({
   head: () => ({
     meta: [
-      { title: "Agenda de turnos — Digital Eye" },
+      { title: "Agenda de turnos — Schreiber Instituto de la Visión" },
       { name: "description", content: "Programá turnos, controlá la sala de espera y actualizá el estado de cada paciente." },
-      { property: "og:title", content: "Agenda de turnos — Digital Eye" },
+      { property: "og:title", content: "Agenda de turnos — Schreiber Instituto de la Visión" },
       { property: "og:description", content: "Turnos del día con estados en vivo: pendiente, en espera, en consulta y atendido." },
     ],
   }),

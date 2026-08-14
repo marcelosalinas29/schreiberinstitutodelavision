@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Digital Eye — Historia clínica y gestión de consultorio" },
+      { title: "Schreiber Instituto de la Visión — Historia clínica y gestión de consultorio" },
       {
         name: "description",
         content:
           "Sistema oftalmológico integral: agenda de turnos, historia clínica con dictado por IA, caja diaria y recetas en PDF. Funciona sin conexión.",
       },
-      { property: "og:title", content: "Digital Eye — Historia clínica digital" },
+      { property: "og:title", content: "Schreiber Instituto de la Visión — Historia clínica digital" },
       {
         property: "og:description",
         content:
@@ -40,7 +40,7 @@ function Landing() {
           <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground">
             <Eye className="size-5" />
           </span>
-          <span className="text-sm font-semibold">Digital Eye</span>
+          <span className="text-sm font-semibold">Schreiber Instituto de la Visión</span>
         </div>
         <Button asChild size="sm">
           <Link to="/auth">Ingresar</Link>
@@ -83,7 +83,7 @@ function Landing() {
 
       <footer className="border-t border-border">
         <div className="mx-auto max-w-6xl px-6 py-8 text-xs text-muted-foreground">
-          Digital Eye · Datos clínicos protegidos con control de acceso por rol.
+          Schreiber Instituto de la Visión · Datos clínicos protegidos con control de acceso por rol.
         </div>
       </footer>
     </div>

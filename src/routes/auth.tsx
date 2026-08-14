@@ -14,9 +14,9 @@ import { lovable } from "@/integrations/lovable/index";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Ingresar — Digital Eye" },
-      { name: "description", content: "Acceso al sistema de gestión clínica de Digital Eye para médicos y secretaría." },
-      { property: "og:title", content: "Ingresar — Digital Eye" },
+      { title: "Ingresar — Schreiber Instituto de la Visión" },
+      { name: "description", content: "Acceso al sistema de gestión clínica de Schreiber Instituto de la Visión para médicos y secretaría." },
+      { property: "og:title", content: "Ingresar — Schreiber Instituto de la Visión" },
       { property: "og:description", content: "Acceso seguro al consultorio digital: agenda, historia clínica y caja." },
       { name: "robots", content: "noindex" },
     ],
@@ -81,7 +81,7 @@ function AuthPage() {
             <Eye className="size-5" />
           </span>
           <div>
-            <h1 className="text-lg font-semibold">Digital Eye</h1>
+            <h1 className="text-lg font-semibold">Schreiber Instituto de la Visión</h1>
             <p className="text-xs text-muted-foreground">Acceso al consultorio digital</p>
           </div>
         </div>

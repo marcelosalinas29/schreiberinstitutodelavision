@@ -1,6 +1,6 @@
 {
-  "name": "Digital Eye",
-  "short_name": "Digital Eye",
+  "name": "Schreiber Instituto de la Visión",
+  "short_name": "Schreiber Instituto de la Visión",
   "description": "Historia clínica oftalmológica, agenda, caja y recetas.",
   "start_url": "/panel",
   "scope": "/",

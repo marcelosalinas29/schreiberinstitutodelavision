@@ -91,7 +91,7 @@ function Brand() {
         <Eye className="size-5" />
       </span>
       <span className="leading-tight">
-        <span className="block text-sm font-semibold text-sidebar-foreground">Digital Eye</span>
+        <span className="block text-sm font-semibold text-sidebar-foreground">Schreiber Instituto de la Visión</span>
         <span className="block text-[11px] text-sidebar-foreground/60">Historia clínica digital</span>
       </span>
     </div>

@@ -19,9 +19,9 @@ import { MEDIOS_PAGO, TIPOS_COBRO, type MedioPago, type TipoCobro } from "@/type
 export const Route = createFileRoute("/_authenticated/caja")({
   head: () => ({
     meta: [
-      { title: "Caja y liquidación — Digital Eye" },
+      { title: "Caja y liquidación — Schreiber Instituto de la Visión" },
       { name: "description", content: "Registro de copagos, bonos y coseguros con arqueo diario por medio de pago." },
-      { property: "og:title", content: "Caja y liquidación — Digital Eye" },
+      { property: "og:title", content: "Caja y liquidación — Schreiber Instituto de la Visión" },
       { property: "og:description", content: "Control de ingresos del consultorio y cierre de caja por turno." },
     ],
   }),
