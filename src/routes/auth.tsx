@@ -78,7 +78,7 @@ function AuthPage() {
       </div>
       <div className="panel w-full max-w-md p-6 sm:p-8">
         <div className="mb-6 flex flex-col items-center text-center">
-          <LogoWordmark transparente className="h-auto w-full max-w-[280px]" />
+          <LogoWordmark className="h-auto w-full max-w-[280px]" />
           <h1 className="sr-only">Schreiber Instituto de la Visión</h1>
           <p className="mt-2 text-xs text-muted-foreground">Acceso al consultorio digital</p>
         </div>
