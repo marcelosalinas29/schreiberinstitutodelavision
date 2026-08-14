@@ -1,12 +1,12 @@
 import horizontal from "@/assets/schreiber-horizontal.jpg.asset.json";
 import sello from "@/assets/schreiber-sello.jpg.asset.json";
-import horizontalTransparente from "@/assets/schreiber-horizontal-transparente.png";
 
 import { cn } from "@/lib/utils";
 
 export const LOGO_HORIZONTAL_URL = horizontal.url;
 export const LOGO_SELLO_URL = sello.url;
-export const LOGO_HORIZONTAL_TRANSPARENTE_URL = horizontalTransparente;
+export const LOGO_HORIZONTAL_TRANSPARENTE_URL = horizontal.url;
+
 
 /** Marca institucional: sello circular + wordmark. */
 export function Logo({
@@ -38,14 +38,15 @@ export function Logo({
   );
 }
 
-/** Versión apaisada del logo, para portadas y encabezados amplios.
- *  `transparente` usa el PNG sin fondo, para integrarse a cualquier superficie. */
-export function LogoWordmark({ className, transparente = false }: { className?: string; transparente?: boolean }) {
+/** Versión apaisada del logo (archivo original), integrada con mix-blend-mode
+ *  para que el fondo blanco de la foto se funda con la superficie. */
+export function LogoWordmark({ className }: { className?: string; transparente?: boolean }) {
   return (
     <img
-      src={transparente ? LOGO_HORIZONTAL_TRANSPARENTE_URL : LOGO_HORIZONTAL_URL}
+      src={LOGO_HORIZONTAL_URL}
       alt="Schreiber Instituto de la Visión — Porque cada mirada es única"
-      className={cn("h-20 w-auto object-contain", !transparente && "mix-blend-multiply", className)}
+      className={cn("h-20 w-auto object-contain mix-blend-multiply dark:mix-blend-screen", className)}
     />
   );
+
 }
