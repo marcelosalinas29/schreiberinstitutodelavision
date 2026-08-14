@@ -1,17 +1,15 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Plus, Search } from "lucide-react";
-import { toast } from "sonner";
-import { z } from "zod";
+import { Pencil, Plus, Search } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { createPaciente, listPacientes } from "@/services/pacientes";
+import { PatientForm, calcularEdad } from "@/features/patients/PatientForm";
+import { listPacientes } from "@/services/pacientes";
 import { listHistoriasPaciente } from "@/services/historias";
 import type { Paciente } from "@/types/domain";
 
@@ -27,37 +25,11 @@ export const Route = createFileRoute("/_authenticated/pacientes")({
   component: Pacientes,
 });
 
-const pacienteSchema = z.object({
-  nombre: z.string().trim().min(2, "Ingresá el nombre").max(80),
-  apellido: z.string().trim().min(2, "Ingresá el apellido").max(80),
-  dni: z.string().trim().max(20).optional(),
-  fecha_nacimiento: z.string().optional(),
-  telefono: z.string().trim().max(40).optional(),
-  email: z.string().trim().max(255).optional(),
-  direccion: z.string().trim().max(200).optional(),
-  obra_social: z.string().trim().max(120).optional(),
-  nro_afiliado: z.string().trim().max(60).optional(),
-  notas: z.string().trim().max(2000).optional(),
-});
-
-const VACIO = {
-  nombre: "",
-  apellido: "",
-  dni: "",
-  fecha_nacimiento: "",
-  telefono: "",
-  email: "",
-  direccion: "",
-  obra_social: "",
-  nro_afiliado: "",
-  notas: "",
-};
-
 function Pacientes() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState(VACIO);
+  const [editando, setEditando] = useState<Paciente | null>(null);
   const [seleccionado, setSeleccionado] = useState<Paciente | null>(null);
 
   const pacientes = useQuery({ queryKey: ["pacientes", search], queryFn: () => listPacientes(search) });
@@ -67,38 +39,12 @@ function Pacientes() {
     queryFn: () => listHistoriasPaciente(seleccionado!.id),
   });
 
-  const crear = useMutation({
-    mutationFn: async () => {
-      const parsed = pacienteSchema.parse(form);
-      await createPaciente({
-        nombre: parsed.nombre,
-        apellido: parsed.apellido,
-        dni: parsed.dni || null,
-        fecha_nacimiento: parsed.fecha_nacimiento || null,
-        telefono: parsed.telefono || null,
-        email: parsed.email || null,
-        direccion: parsed.direccion || null,
-        obra_social: parsed.obra_social || null,
-        nro_afiliado: parsed.nro_afiliado || null,
-        notas: parsed.notas || null,
-      });
-    },
-    onSuccess: () => {
-      toast.success("Paciente registrado");
-      setOpen(false);
-      setForm(VACIO);
-      void qc.invalidateQueries({ queryKey: ["pacientes"] });
-    },
-    onError: (error: unknown) =>
-      toast.error(error instanceof z.ZodError ? (error.issues[0]?.message ?? "Datos inválidos") : "No se pudo guardar"),
-  });
-
-  const campo = (key: keyof typeof VACIO, label: string, type = "text") => (
-    <div className="space-y-1.5">
-      <Label htmlFor={key}>{label}</Label>
-      <Input id={key} type={type} value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
-    </div>
-  );
+  const alGuardar = (p: Paciente) => {
+    setOpen(false);
+    setEditando(null);
+    setSeleccionado(p);
+    void qc.invalidateQueries({ queryKey: ["pacientes"] });
+  };
 
   return (
     <div>
@@ -106,36 +52,33 @@ function Pacientes() {
         title="Pacientes"
         description="Padrón del consultorio con historial clínico asociado."
         actions={
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog
+            open={open}
+            onOpenChange={(v) => {
+              setOpen(v);
+              if (!v) setEditando(null);
+            }}
+          >
             <DialogTrigger asChild>
-              <Button size="sm">
+              <Button size="sm" onClick={() => setEditando(null)}>
                 <Plus className="size-4" /> Nuevo paciente
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-h-[85vh] overflow-y-auto">
+            <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Nuevo paciente</DialogTitle>
+                <DialogTitle>{editando ? "Editar paciente" : "Nuevo paciente"}</DialogTitle>
               </DialogHeader>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {campo("apellido", "Apellido")}
-                {campo("nombre", "Nombre")}
-                {campo("dni", "DNI")}
-                {campo("fecha_nacimiento", "Fecha de nacimiento", "date")}
-                {campo("telefono", "Teléfono")}
-                {campo("email", "Email", "email")}
-                {campo("obra_social", "Obra social")}
-                {campo("nro_afiliado", "N° de afiliado")}
-                <div className="sm:col-span-2">{campo("direccion", "Dirección")}</div>
-                <div className="space-y-1.5 sm:col-span-2">
-                  <Label htmlFor="notas">Notas</Label>
-                  <Textarea id="notas" rows={2} value={form.notas} onChange={(e) => setForm({ ...form, notas: e.target.value })} />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button onClick={() => crear.mutate()} disabled={crear.isPending}>
-                  Guardar
-                </Button>
-              </DialogFooter>
+              <PatientForm
+                key={editando?.id ?? "nuevo"}
+                paciente={editando}
+                onSaved={alGuardar}
+                onAbrirExistente={(p) => {
+                  setOpen(false);
+                  setEditando(null);
+                  setSeleccionado(p);
+                }}
+                onCancel={() => setOpen(false)}
+              />
             </DialogContent>
           </Dialog>
         }
@@ -184,17 +127,39 @@ function Pacientes() {
             <p className="py-10 text-center text-sm text-muted-foreground">Elegí un paciente para ver su ficha.</p>
           ) : (
             <>
-              <h2 className="text-lg font-semibold">
-                {seleccionado.apellido}, {seleccionado.nombre}
-              </h2>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold">
+                    {seleccionado.apellido}, {seleccionado.nombre}
+                  </h2>
+                  {seleccionado.fecha_nacimiento && calcularEdad(seleccionado.fecha_nacimiento) ? (
+                    <Badge variant="secondary" className="mt-1">
+                      {calcularEdad(seleccionado.fecha_nacimiento)}
+                    </Badge>
+                  ) : null}
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setEditando(seleccionado);
+                    setOpen(true);
+                  }}
+                >
+                  <Pencil className="size-4" /> Editar
+                </Button>
+              </div>
               <dl className="mt-3 space-y-1.5 text-sm">
                 <Dato label="DNI" value={seleccionado.dni} />
                 <Dato label="Nacimiento" value={seleccionado.fecha_nacimiento} />
                 <Dato label="Teléfono" value={seleccionado.telefono} />
                 <Dato label="Email" value={seleccionado.email} />
                 <Dato label="Obra social" value={seleccionado.obra_social} />
+                <Dato label="Plan" value={seleccionado.plan} />
                 <Dato label="Afiliado" value={seleccionado.nro_afiliado} />
                 <Dato label="Dirección" value={seleccionado.direccion} />
+                <Dato label="Localidad" value={seleccionado.localidad} />
+                <Dato label="Notas" value={seleccionado.notas} />
               </dl>
 
               <h3 className="mb-2 mt-6 text-sm font-semibold">Consultas</h3>
