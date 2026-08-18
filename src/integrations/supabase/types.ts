@@ -352,25 +352,40 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string
+          email: string | null
+          especialidad: string | null
+          firma_sello_url: string | null
           id: string
           matricula: string | null
+          matricula_nacional: string | null
           nombre_completo: string
           telefono: string | null
           updated_at: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
+          email?: string | null
+          especialidad?: string | null
+          firma_sello_url?: string | null
           id: string
           matricula?: string | null
+          matricula_nacional?: string | null
           nombre_completo?: string
           telefono?: string | null
           updated_at?: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
+          email?: string | null
+          especialidad?: string | null
+          firma_sello_url?: string | null
           id?: string
           matricula?: string | null
+          matricula_nacional?: string | null
           nombre_completo?: string
           telefono?: string | null
           updated_at?: string
