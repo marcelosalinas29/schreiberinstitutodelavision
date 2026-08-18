@@ -41,7 +41,7 @@ async function cargarLogo(): Promise<string | null> {
 }
 
 /** Genera una receta / indicación en PDF usando la plantilla del profesional. */
-export async function generarRecetaPDF({ paciente, contenido, fecha, plantilla, titulo = "Receta" }: RecetaInput) {
+export async function generarRecetaPDF({ paciente, contenido, fecha, plantilla, medico, titulo = "Receta" }: RecetaInput) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const margin = 18;
   const width = 210 - margin * 2;
