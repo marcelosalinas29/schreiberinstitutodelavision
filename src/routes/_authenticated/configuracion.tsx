@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MedicoProfileForm } from "@/features/profile/MedicoProfileForm";
 import { useCurrentUser } from "@/features/auth/useAuth";
 import { crearUsuarioPersonal, listarPersonal } from "@/lib/staff.functions";
 import type { AppRole } from "@/types/domain";
@@ -65,6 +66,8 @@ function Configuracion() {
           </div>
         </section>
       </div>
+
+      <MedicoProfileForm />
 
       {isMedico ? <PersonalPanel /> : null}
     </div>
