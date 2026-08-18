@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { generarRecetaPDF } from "@/lib/pdf";
+import { datosMedicoReceta } from "@/services/perfil";
 import { listPlantillas, upsertPlantilla } from "@/services/plantillas";
 
 export const Route = createFileRoute("/_authenticated/plantillas")({
@@ -90,12 +91,16 @@ function Plantillas() {
               variant="outline"
               size="sm"
               onClick={() =>
-                void generarRecetaPDF({
-                  paciente: { nombre: "Ejemplo", apellido: "Paciente", dni: "00000000", obra_social: null, nro_afiliado: null },
-                  contenido: "Lágrimas artificiales 1 gota cada 6 hs por 15 días.",
-                  fecha: new Date(),
-                  plantilla: actual,
-                })
+                void (async () => {
+                  const medico = await datosMedicoReceta();
+                  await generarRecetaPDF({
+                    paciente: { nombre: "Ejemplo", apellido: "Paciente", dni: "00000000", obra_social: null, nro_afiliado: null },
+                    contenido: "Lágrimas artificiales 1 gota cada 6 hs por 15 días.",
+                    fecha: new Date(),
+                    plantilla: actual,
+                    medico,
+                  });
+                })()
               }
             >
               Vista previa PDF

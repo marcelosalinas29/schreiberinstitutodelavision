@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/historias/HistoriaForm";
 import { parseDictado } from "@/lib/ai.functions";
 import { generarRecetaPDF } from "@/lib/pdf";
+import { datosMedicoReceta } from "@/services/perfil";
 import { createHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
@@ -105,12 +106,16 @@ function Consulta() {
       toast.error("Elegí un paciente");
       return;
     }
-    void generarRecetaPDF({
-      paciente,
-      contenido: draft.tratamiento || draft.diagnostico || "",
-      fecha: new Date(),
-      plantilla: plantillas.data?.[0] ?? null,
-    });
+    void (async () => {
+      const medico = await datosMedicoReceta();
+      await generarRecetaPDF({
+        paciente,
+        contenido: draft.tratamiento || draft.diagnostico || "",
+        fecha: new Date(),
+        plantilla: plantillas.data?.[0] ?? null,
+        medico,
+      });
+    })();
   };
 
   return (
