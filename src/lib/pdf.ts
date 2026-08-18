@@ -94,13 +94,38 @@ export async function generarRecetaPDF({ paciente, contenido, fecha, plantilla, 
   doc.setFontSize(12);
   y = wrap(doc, contenido || "—", margin, y, width, 7);
 
-  const firmaY = Math.max(y + 30, 235);
+  // Pie de firma: se ubica debajo del texto clínico, sin superponerse nunca.
+  const pieTexto = plantilla?.pie_pagina ? 279 : 288;
+  const firmaY = Math.min(Math.max(y + 34, 235), pieTexto - 16);
+
+  // Sello / firma digital del profesional logueado, sobre la línea de firma.
+  if (medico?.firmaDataUrl) {
+    try {
+      const props = doc.getImageProperties(medico.firmaDataUrl);
+      const maxW = 55;
+      const maxH = 24;
+      const ratio = Math.min(maxW / props.width, maxH / props.height);
+      const w = props.width * ratio;
+      const h = props.height * ratio;
+      doc.addImage(medico.firmaDataUrl, margin + (70 - w) / 2, firmaY - h - 1, w, h, undefined, "FAST");
+    } catch {
+      /* firma inválida: se omite */
+    }
+  }
+
   doc.setFontSize(9);
+  doc.setTextColor(0);
   doc.line(margin, firmaY, margin + 70, firmaY);
-  const firma = [plantilla?.profesional, plantilla?.matricula ? `Mat. ${plantilla.matricula}` : null]
+  const firma = [
+    medico?.nombre ?? plantilla?.profesional,
+    medico?.especialidad ?? null,
+    medico?.matricula ?? plantilla?.matricula ? `M.P. ${medico?.matricula ?? plantilla?.matricula}` : null,
+    medico?.matricula_nacional ? `M.N. ${medico.matricula_nacional}` : null,
+  ]
     .filter(Boolean)
     .join("\n");
   if (firma) wrap(doc, firma, margin, firmaY + 5, 90, 4.5);
+
   if (plantilla?.pie_pagina) {
     doc.setFontSize(8);
     doc.setTextColor(120);
