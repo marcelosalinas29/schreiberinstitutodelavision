@@ -119,7 +119,7 @@ export async function generarRecetaPDF({ paciente, contenido, fecha, plantilla, 
   const firma = [
     medico?.nombre ?? plantilla?.profesional,
     medico?.especialidad ?? null,
-    medico?.matricula ?? plantilla?.matricula ? `M.P. ${medico?.matricula ?? plantilla?.matricula}` : null,
+    (medico?.matricula ?? plantilla?.matricula) ? `M.P. ${medico?.matricula ?? plantilla?.matricula}` : null,
     medico?.matricula_nacional ? `M.N. ${medico.matricula_nacional}` : null,
   ]
     .filter(Boolean)
