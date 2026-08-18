@@ -120,12 +120,12 @@ export async function generarRecetaPDF({ paciente, contenido, fecha, plantilla, 
   if (firmaImg) {
     try {
       const props = doc.getImageProperties(firmaImg);
-      const maxW = 55;
-      const maxH = 24;
+      const maxW = usaSelloInstitucional ? 78 : 55;
+      const maxH = usaSelloInstitucional ? 40 : 24;
       const ratio = Math.min(maxW / props.width, maxH / props.height);
       const w = props.width * ratio;
       const h = props.height * ratio;
-      doc.addImage(firmaImg, margin + (70 - w) / 2, firmaY - h - 1, w, h, undefined, "FAST");
+      doc.addImage(firmaImg, margin + (78 - w) / 2, firmaY - h + (usaSelloInstitucional ? 6 : -1), w, h, undefined, "FAST");
     } catch {
       /* firma inválida: se omite */
     }
@@ -133,7 +133,8 @@ export async function generarRecetaPDF({ paciente, contenido, fecha, plantilla, 
 
   doc.setFontSize(9);
   doc.setTextColor(0);
-  doc.line(margin, firmaY, margin + 70, firmaY);
+  // El sello institucional trae su propia línea de firma.
+  if (!usaSelloInstitucional) doc.line(margin, firmaY, margin + 70, firmaY);
   const firma = [
     medico?.nombre ?? plantilla?.profesional,
     medico?.especialidad ?? null,
