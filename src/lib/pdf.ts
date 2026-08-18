@@ -115,6 +115,7 @@ export async function generarRecetaPDF({ paciente, contenido, fecha, plantilla, 
   const firmaY = Math.min(Math.max(y + 34, 235), pieTexto - 16);
 
   // Sello / firma digital del profesional logueado; si no cargó ninguno se usa el sello institucional.
+  const usaSelloInstitucional = !medico?.firmaDataUrl;
   const firmaImg = medico?.firmaDataUrl ?? (await cargarImagen(firmaSelloAsset.url));
   if (firmaImg) {
     try {
@@ -141,7 +142,8 @@ export async function generarRecetaPDF({ paciente, contenido, fecha, plantilla, 
   ]
     .filter(Boolean)
     .join("\n");
-  if (firma) wrap(doc, firma, margin, firmaY + 5, 90, 4.5);
+  // El sello institucional ya incluye nombre y matrícula: no se duplica el texto.
+  if (firma && !usaSelloInstitucional) wrap(doc, firma, margin, firmaY + 5, 90, 4.5);
 
   doc.setFontSize(8);
   doc.setTextColor(120);
