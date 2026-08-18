@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 
 import { LOGO_HORIZONTAL_URL } from "@/components/layout/Logo";
+import type { MedicoReceta } from "@/services/perfil";
 import type { Paciente, Plantilla } from "@/types/domain";
 
 interface RecetaInput {
@@ -9,7 +10,10 @@ interface RecetaInput {
   fecha: Date;
   plantilla?: Plantilla | null;
   titulo?: string;
+  /** Datos del profesional logueado (nombre, matrículas y firma/sello). */
+  medico?: MedicoReceta | null;
 }
+
 
 function wrap(doc: jsPDF, text: string, x: number, y: number, width: number, lineHeight = 6): number {
   const lines = doc.splitTextToSize(text, width) as string[];
