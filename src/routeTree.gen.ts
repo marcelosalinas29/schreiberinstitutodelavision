@@ -20,6 +20,7 @@ import { Route as AuthenticatedImportarRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedPacientesRouteImport } from './routes/_authenticated/pacientes'
 import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/panel'
 import { Route as AuthenticatedPlantillasRouteImport } from './routes/_authenticated/plantillas'
+import { Route as AuthenticatedPracticasRouteImport } from './routes/_authenticated/practicas'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -76,6 +77,11 @@ const AuthenticatedPlantillasRoute = AuthenticatedPlantillasRouteImport.update({
   path: '/plantillas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPracticasRoute = AuthenticatedPracticasRouteImport.update({
+  id: '/practicas',
+  path: '/practicas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/pacientes': typeof AuthenticatedPacientesRoute
   '/panel': typeof AuthenticatedPanelRoute
   '/plantillas': typeof AuthenticatedPlantillasRoute
+  '/practicas': typeof AuthenticatedPracticasRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/pacientes': typeof AuthenticatedPacientesRoute
   '/panel': typeof AuthenticatedPanelRoute
   '/plantillas': typeof AuthenticatedPlantillasRoute
+  '/practicas': typeof AuthenticatedPracticasRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/_authenticated/pacientes': typeof AuthenticatedPacientesRoute
   '/_authenticated/panel': typeof AuthenticatedPanelRoute
   '/_authenticated/plantillas': typeof AuthenticatedPlantillasRoute
+  '/_authenticated/practicas': typeof AuthenticatedPracticasRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/pacientes'
     | '/panel'
     | '/plantillas'
+    | '/practicas'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/pacientes'
     | '/panel'
     | '/plantillas'
+    | '/practicas'
   id:
     | '__root__'
     | '/'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pacientes'
     | '/_authenticated/panel'
     | '/_authenticated/plantillas'
+    | '/_authenticated/practicas'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -240,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlantillasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/practicas': {
+      id: '/_authenticated/practicas'
+      path: '/practicas'
+      fullPath: '/practicas'
+      preLoaderRoute: typeof AuthenticatedPracticasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -252,6 +271,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPacientesRoute: typeof AuthenticatedPacientesRoute
   AuthenticatedPanelRoute: typeof AuthenticatedPanelRoute
   AuthenticatedPlantillasRoute: typeof AuthenticatedPlantillasRoute
+  AuthenticatedPracticasRoute: typeof AuthenticatedPracticasRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -263,6 +283,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPacientesRoute: AuthenticatedPacientesRoute,
   AuthenticatedPanelRoute: AuthenticatedPanelRoute,
   AuthenticatedPlantillasRoute: AuthenticatedPlantillasRoute,
+  AuthenticatedPracticasRoute: AuthenticatedPracticasRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
