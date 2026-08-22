@@ -73,9 +73,12 @@ function Consulta() {
   const [pacienteId, setPacienteId] = useState("");
   const [transcripcion, setTranscripcion] = useState("");
   const [draft, setDraft] = useState<HistoriaDraft>(HISTORIA_VACIA);
+  const [pedidoAbierto, setPedidoAbierto] = useState(false);
+  const [seleccionadas, setSeleccionadas] = useState<string[]>([]);
 
   const pacientes = useQuery({ queryKey: ["pacientes", ""], queryFn: () => listPacientes("") });
   const plantillas = useQuery({ queryKey: ["plantillas"], queryFn: listPlantillas });
+  const practicas = useQuery({ queryKey: ["practicas"], queryFn: listPracticas });
   const paciente = (pacientes.data ?? []).find((p) => p.id === pacienteId) ?? null;
 
   const { grabando, alternar } = useDictado((texto) => setTranscripcion((prev) => `${prev} ${texto}`.trim()));
