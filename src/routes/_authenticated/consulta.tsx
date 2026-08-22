@@ -216,6 +216,47 @@ function Consulta() {
       </div>
 
       <HistoriaForm value={draft} onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))} />
+
+      <Dialog open={pedidoAbierto} onOpenChange={setPedidoAbierto}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pedido de estudios</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {paciente?.obra_social ? `Obra social: ${paciente.obra_social}` : "Paciente particular / sin obra social"}
+          </p>
+          <div className="max-h-72 space-y-3 overflow-y-auto">
+            {disponibles.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No hay prácticas cargadas. Agregalas en la pantalla “Prácticas y estudios”.
+              </p>
+            ) : null}
+            {disponibles.map((p) => (
+              <label key={p.id} className="flex cursor-pointer items-start gap-3 text-sm">
+                <Checkbox
+                  checked={seleccionadas.includes(p.id)}
+                  onCheckedChange={(v) =>
+                    setSeleccionadas((prev) => (v ? [...prev, p.id] : prev.filter((id) => id !== p.id)))
+                  }
+                />
+                <span className="min-w-0">
+                  <span className="font-medium">{p.nombre}</span>
+                  {p.codigo ? <span className="ml-2 text-xs text-muted-foreground">{p.codigo}</span> : null}
+                  <span className="block text-xs text-muted-foreground">{p.contenido}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" size="sm" onClick={() => setPedidoAbierto(false)}>
+              Cancelar
+            </Button>
+            <Button size="sm" onClick={generarPedido} disabled={seleccionadas.length === 0}>
+              <FileDown className="size-4" /> Generar PDF
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
