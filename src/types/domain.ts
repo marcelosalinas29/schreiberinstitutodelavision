@@ -29,6 +29,9 @@ export type CierreCajaInsert = Tables["cierres_caja"]["Insert"];
 export type Plantilla = Tables["plantillas"]["Row"];
 export type PlantillaInsert = Tables["plantillas"]["Insert"];
 
+export type PracticaEstudio = Tables["practicas_estudios"]["Row"];
+export type PracticaEstudioInsert = Tables["practicas_estudios"]["Insert"];
+
 export type Profile = Tables["profiles"]["Row"];
 
 export const ESTADOS_TURNO: { value: TurnoEstado; label: string }[] = [
