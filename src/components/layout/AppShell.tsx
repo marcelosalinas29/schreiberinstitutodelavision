@@ -6,6 +6,7 @@ import {
   Wallet,
   FileText,
   ScanLine,
+  ClipboardList,
   LayoutDashboard,
   Settings,
   LogOut,
@@ -38,6 +39,7 @@ const NAV: NavItem[] = [
   { to: "/importar", label: "Importar fichas", icon: ScanLine, soloMedico: true },
   { to: "/caja", label: "Caja", icon: Wallet },
   { to: "/plantillas", label: "Plantillas", icon: FileText, soloMedico: true },
+  { to: "/practicas", label: "Prácticas y estudios", icon: ClipboardList, soloMedico: true },
   { to: "/configuracion", label: "Configuración", icon: Settings },
 ];
 

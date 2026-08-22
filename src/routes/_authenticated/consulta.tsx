@@ -2,13 +2,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useRef, useState } from "react";
-import { Loader2, Mic, Save, Sparkles, Square, FileDown } from "lucide-react";
+import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/historias/HistoriaForm";
 import { parseDictado } from "@/lib/ai.functions";
@@ -17,6 +19,7 @@ import { datosMedicoReceta } from "@/services/perfil";
 import { createHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
+import { listPracticas, practicasParaObraSocial } from "@/services/practicas";
 
 export const Route = createFileRoute("/_authenticated/consulta")({
   head: () => ({
@@ -70,9 +73,12 @@ function Consulta() {
   const [pacienteId, setPacienteId] = useState("");
   const [transcripcion, setTranscripcion] = useState("");
   const [draft, setDraft] = useState<HistoriaDraft>(HISTORIA_VACIA);
+  const [pedidoAbierto, setPedidoAbierto] = useState(false);
+  const [seleccionadas, setSeleccionadas] = useState<string[]>([]);
 
   const pacientes = useQuery({ queryKey: ["pacientes", ""], queryFn: () => listPacientes("") });
   const plantillas = useQuery({ queryKey: ["plantillas"], queryFn: listPlantillas });
+  const practicas = useQuery({ queryKey: ["practicas"], queryFn: listPracticas });
   const paciente = (pacientes.data ?? []).find((p) => p.id === pacienteId) ?? null;
 
   const { grabando, alternar } = useDictado((texto) => setTranscripcion((prev) => `${prev} ${texto}`.trim()));
@@ -118,6 +124,37 @@ function Consulta() {
     })();
   };
 
+  const disponibles = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
+
+  const abrirPedido = () => {
+    if (!paciente) {
+      toast.error("Elegí un paciente");
+      return;
+    }
+    setSeleccionadas([]);
+    setPedidoAbierto(true);
+  };
+
+  const generarPedido = () => {
+    if (!paciente || seleccionadas.length === 0) return;
+    const elegidas = disponibles.filter((p) => seleccionadas.includes(p.id));
+    const contenido = elegidas
+      .map((p) => `• ${p.nombre}${p.codigo ? ` (${p.codigo})` : ""}\n${p.contenido}`)
+      .join("\n\n");
+    setPedidoAbierto(false);
+    void (async () => {
+      const medico = await datosMedicoReceta();
+      await generarRecetaPDF({
+        paciente,
+        contenido,
+        fecha: new Date(),
+        plantilla: plantillas.data?.[0] ?? null,
+        medico,
+        titulo: "Pedido de estudios",
+      });
+    })();
+  };
+
   return (
     <div>
       <PageHeader
@@ -127,6 +164,9 @@ function Consulta() {
           <>
             <Button variant="outline" size="sm" onClick={receta}>
               <FileDown className="size-4" /> Receta PDF
+            </Button>
+            <Button variant="outline" size="sm" onClick={abrirPedido}>
+              <ClipboardList className="size-4" /> Pedido de estudios
             </Button>
             <Button size="sm" onClick={() => guardar.mutate()} disabled={guardar.isPending}>
               {guardar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Guardar
@@ -176,6 +216,47 @@ function Consulta() {
       </div>
 
       <HistoriaForm value={draft} onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))} />
+
+      <Dialog open={pedidoAbierto} onOpenChange={setPedidoAbierto}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pedido de estudios</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {paciente?.obra_social ? `Obra social: ${paciente.obra_social}` : "Paciente particular / sin obra social"}
+          </p>
+          <div className="max-h-72 space-y-3 overflow-y-auto">
+            {disponibles.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No hay prácticas cargadas. Agregalas en la pantalla “Prácticas y estudios”.
+              </p>
+            ) : null}
+            {disponibles.map((p) => (
+              <label key={p.id} className="flex cursor-pointer items-start gap-3 text-sm">
+                <Checkbox
+                  checked={seleccionadas.includes(p.id)}
+                  onCheckedChange={(v) =>
+                    setSeleccionadas((prev) => (v ? [...prev, p.id] : prev.filter((id) => id !== p.id)))
+                  }
+                />
+                <span className="min-w-0">
+                  <span className="font-medium">{p.nombre}</span>
+                  {p.codigo ? <span className="ml-2 text-xs text-muted-foreground">{p.codigo}</span> : null}
+                  <span className="block text-xs text-muted-foreground">{p.contenido}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" size="sm" onClick={() => setPedidoAbierto(false)}>
+              Cancelar
+            </Button>
+            <Button size="sm" onClick={generarPedido} disabled={seleccionadas.length === 0}>
+              <FileDown className="size-4" /> Generar PDF
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
