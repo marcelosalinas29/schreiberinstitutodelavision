@@ -350,6 +350,39 @@ export type Database = {
         }
         Relationships: []
       }
+      practicas_estudios: {
+        Row: {
+          codigo: string | null
+          contenido: string
+          created_at: string
+          id: string
+          nombre: string
+          obra_social: string | null
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          codigo?: string | null
+          contenido: string
+          created_at?: string
+          id?: string
+          nombre: string
+          obra_social?: string | null
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          codigo?: string | null
+          contenido?: string
+          created_at?: string
+          id?: string
+          nombre?: string
+          obra_social?: string | null
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
