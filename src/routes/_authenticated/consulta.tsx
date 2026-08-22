@@ -124,6 +124,37 @@ function Consulta() {
     })();
   };
 
+  const disponibles = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
+
+  const abrirPedido = () => {
+    if (!paciente) {
+      toast.error("Elegí un paciente");
+      return;
+    }
+    setSeleccionadas([]);
+    setPedidoAbierto(true);
+  };
+
+  const generarPedido = () => {
+    if (!paciente || seleccionadas.length === 0) return;
+    const elegidas = disponibles.filter((p) => seleccionadas.includes(p.id));
+    const contenido = elegidas
+      .map((p) => `• ${p.nombre}${p.codigo ? ` (${p.codigo})` : ""}\n${p.contenido}`)
+      .join("\n\n");
+    setPedidoAbierto(false);
+    void (async () => {
+      const medico = await datosMedicoReceta();
+      await generarRecetaPDF({
+        paciente,
+        contenido,
+        fecha: new Date(),
+        plantilla: plantillas.data?.[0] ?? null,
+        medico,
+        titulo: "Pedido de estudios",
+      });
+    })();
+  };
+
   return (
     <div>
       <PageHeader
@@ -133,6 +164,9 @@ function Consulta() {
           <>
             <Button variant="outline" size="sm" onClick={receta}>
               <FileDown className="size-4" /> Receta PDF
+            </Button>
+            <Button variant="outline" size="sm" onClick={abrirPedido}>
+              <ClipboardList className="size-4" /> Pedido de estudios
             </Button>
             <Button size="sm" onClick={() => guardar.mutate()} disabled={guardar.isPending}>
               {guardar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Guardar
