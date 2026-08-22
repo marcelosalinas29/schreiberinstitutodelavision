@@ -9,6 +9,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/historias/HistoriaForm";
 import { parseDictado } from "@/lib/ai.functions";
@@ -17,6 +19,7 @@ import { datosMedicoReceta } from "@/services/perfil";
 import { createHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
+import { listPracticas, practicasParaObraSocial } from "@/services/practicas";
 
 export const Route = createFileRoute("/_authenticated/consulta")({
   head: () => ({

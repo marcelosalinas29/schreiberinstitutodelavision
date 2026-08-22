@@ -6,6 +6,7 @@ import {
   Wallet,
   FileText,
   ScanLine,
+  ClipboardList,
   LayoutDashboard,
   Settings,
   LogOut,
