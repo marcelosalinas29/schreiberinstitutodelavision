@@ -22,6 +22,8 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import { Badge } from "@/components/ui/badge";
 import { ThemeSwitcher } from "@/components/layout/ThemeSwitcher";
 import { Logo } from "@/components/layout/Logo";
+import { ChatWidget } from "@/features/chat/ChatWidget";
+
 import { useCurrentUser } from "@/features/auth/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
