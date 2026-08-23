@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { generarRecetaPDF } from "@/lib/pdf";
 import { datosMedicoReceta } from "@/services/perfil";
-import { listPlantillas, upsertPlantilla } from "@/services/plantillas";
+import { getMiPlantilla, upsertPlantilla } from "@/services/plantillas";
 
 export const Route = createFileRoute("/_authenticated/plantillas")({
   head: () => ({
