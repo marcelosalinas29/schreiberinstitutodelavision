@@ -7,6 +7,7 @@ import {
   FileText,
   ScanLine,
   ClipboardList,
+  Pill,
   LayoutDashboard,
   Settings,
   LogOut,
@@ -40,6 +41,7 @@ const NAV: NavItem[] = [
   { to: "/caja", label: "Caja", icon: Wallet },
   { to: "/plantillas", label: "Plantillas", icon: FileText, soloMedico: true },
   { to: "/practicas", label: "Prácticas y estudios", icon: ClipboardList, soloMedico: true },
+  { to: "/medicamentos", label: "Medicamentos", icon: Pill, soloMedico: true },
   { to: "/configuracion", label: "Configuración", icon: Settings },
 ];
 

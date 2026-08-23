@@ -233,6 +233,42 @@ export type Database = {
           },
         ]
       }
+      medicamentos: {
+        Row: {
+          created_at: string
+          dosis: string | null
+          id: string
+          nombre: string
+          owner_id: string | null
+          posologia: string
+          unidades_envase: string | null
+          updated_at: string
+          via_administracion: string | null
+        }
+        Insert: {
+          created_at?: string
+          dosis?: string | null
+          id?: string
+          nombre: string
+          owner_id?: string | null
+          posologia: string
+          unidades_envase?: string | null
+          updated_at?: string
+          via_administracion?: string | null
+        }
+        Update: {
+          created_at?: string
+          dosis?: string | null
+          id?: string
+          nombre?: string
+          owner_id?: string | null
+          posologia?: string
+          unidades_envase?: string | null
+          updated_at?: string
+          via_administracion?: string | null
+        }
+        Relationships: []
+      }
       pacientes: {
         Row: {
           apellido: string
