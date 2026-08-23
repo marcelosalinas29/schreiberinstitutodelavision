@@ -174,8 +174,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export function HistoriaForm({ value, onChange }: Props) {
-  const props = { value, onChange };
+export function HistoriaForm({ value, onChange, historiaId }: Props) {
+  const props = { value, onChange, historiaId };
+
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
