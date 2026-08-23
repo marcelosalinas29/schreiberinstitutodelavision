@@ -35,6 +35,10 @@ export type PracticaEstudioInsert = Tables["practicas_estudios"]["Insert"];
 export type Medicamento = Tables["medicamentos"]["Row"];
 export type MedicamentoInsert = Tables["medicamentos"]["Insert"];
 
+export type DocumentoClinico = Tables["documentos_clinicos"]["Row"];
+export type DocumentoClinicoInsert = Tables["documentos_clinicos"]["Insert"];
+export type DocumentoTipo = "consentimiento" | "protocolo_quirurgico";
+
 export type Profile = Tables["profiles"]["Row"];
 
 export const ESTADOS_TURNO: { value: TurnoEstado; label: string }[] = [
