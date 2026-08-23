@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Plus, Search, UserPlus } from "lucide-react";
+import { MessageCircle, Plus, Search, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PatientForm } from "@/features/patients/PatientForm";
 import { listPacientes } from "@/services/pacientes";
+import { armarLinkRecordatorioTurno } from "@/lib/whatsapp";
 import { createTurno, deleteTurno, listTurnosPorRango, setEstadoTurno } from "@/services/turnos";
 import { ESTADOS_TURNO, type Paciente, type TurnoEstado } from "@/types/domain";
 
@@ -255,6 +256,31 @@ function Agenda() {
                   {turno.paciente?.obra_social ? ` · ${turno.paciente.obra_social}` : ""}
                 </p>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!turno.paciente?.telefono}
+                title={turno.paciente?.telefono ? "Enviar recordatorio por WhatsApp" : "Paciente sin teléfono cargado"}
+                onClick={() => {
+                  const tel = turno.paciente?.telefono;
+                  if (!tel) return;
+                  const fechaHora = new Date(turno.inicio).toLocaleString("es-AR", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                  const url = armarLinkRecordatorioTurno(
+                    tel,
+                    `${turno.paciente?.nombre ?? ""} ${turno.paciente?.apellido ?? ""}`.trim(),
+                    fechaHora,
+                  );
+                  window.open(url, "_blank", "noopener,noreferrer");
+                }}
+              >
+                <MessageCircle className="size-4" /> WhatsApp
+              </Button>
               <Select value={turno.estado} onValueChange={(v) => cambiarEstado.mutate({ id: turno.id, estado: v as TurnoEstado })}>
                 <SelectTrigger className="w-40">
                   <SelectValue />

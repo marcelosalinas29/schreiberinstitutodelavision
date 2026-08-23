@@ -14,7 +14,7 @@ export type PacienteUpdate = Tables["pacientes"]["Update"];
 export type Turno = Tables["turnos"]["Row"];
 export type TurnoInsert = Tables["turnos"]["Insert"];
 export type TurnoUpdate = Tables["turnos"]["Update"];
-export type TurnoConPaciente = Turno & { paciente: Pick<Paciente, "id" | "nombre" | "apellido" | "dni" | "obra_social"> | null };
+export type TurnoConPaciente = Turno & { paciente: Pick<Paciente, "id" | "nombre" | "apellido" | "dni" | "obra_social" | "telefono"> | null };
 
 export type HistoriaClinica = Tables["historias_clinicas"]["Row"];
 export type HistoriaClinicaInsert = Tables["historias_clinicas"]["Insert"];

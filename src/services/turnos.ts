@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { TurnoConPaciente, TurnoEstado, TurnoInsert, TurnoUpdate } from "@/types/domain";
 
-const SELECT = "*, paciente:pacientes(id, nombre, apellido, dni, obra_social)";
+const SELECT = "*, paciente:pacientes(id, nombre, apellido, dni, obra_social, telefono)";
 
 export async function listTurnosPorRango(desdeISO: string, hastaISO: string): Promise<TurnoConPaciente[]> {
   const { data, error } = await supabase
