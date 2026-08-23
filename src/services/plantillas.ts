@@ -7,7 +7,29 @@ export async function listPlantillas(): Promise<Plantilla[]> {
     .select("*")
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return data ?? [];
+  const rows = data ?? [];
+  // Cada médico sólo puede editar su propia plantilla (RLS por owner_id),
+  // así que priorizamos la del usuario actual.
+  const { data: auth } = await supabase.auth.getUser();
+  const uid = auth.user?.id;
+  if (!uid) return rows;
+  return [...rows].sort((a, b) => Number(b.owner_id === uid) - Number(a.owner_id === uid));
+}
+
+/** Plantilla propia del usuario actual (la única que puede editar). */
+export async function getMiPlantilla(): Promise<Plantilla | null> {
+  const { data: auth } = await supabase.auth.getUser();
+  const uid = auth.user?.id;
+  if (!uid) return null;
+  const { data, error } = await supabase
+    .from("plantillas")
+    .select("*")
+    .eq("owner_id", uid)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data ?? null;
 }
 
 export async function upsertPlantilla(
