@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Plus, Search, UserPlus } from "lucide-react";
+import { MessageCircle, Plus, Search, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
