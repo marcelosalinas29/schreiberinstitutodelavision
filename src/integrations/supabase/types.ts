@@ -162,11 +162,15 @@ export type Database = {
           bmc_oi: string | null
           cie10: string | null
           created_at: string
+          cv_od_imagen_url: string | null
+          cv_oi_imagen_url: string | null
           diagnostico: string | null
           dictado_crudo: string | null
           fecha: string
           fo_od: string | null
+          fo_od_imagen_url: string | null
           fo_oi: string | null
+          fo_oi_imagen_url: string | null
           id: string
           motivo_consulta: string | null
           paciente_id: string
@@ -195,11 +199,15 @@ export type Database = {
           bmc_oi?: string | null
           cie10?: string | null
           created_at?: string
+          cv_od_imagen_url?: string | null
+          cv_oi_imagen_url?: string | null
           diagnostico?: string | null
           dictado_crudo?: string | null
           fecha?: string
           fo_od?: string | null
+          fo_od_imagen_url?: string | null
           fo_oi?: string | null
+          fo_oi_imagen_url?: string | null
           id?: string
           motivo_consulta?: string | null
           paciente_id: string
@@ -228,11 +236,15 @@ export type Database = {
           bmc_oi?: string | null
           cie10?: string | null
           created_at?: string
+          cv_od_imagen_url?: string | null
+          cv_oi_imagen_url?: string | null
           diagnostico?: string | null
           dictado_crudo?: string | null
           fecha?: string
           fo_od?: string | null
+          fo_od_imagen_url?: string | null
           fo_oi?: string | null
+          fo_oi_imagen_url?: string | null
           id?: string
           motivo_consulta?: string | null
           paciente_id?: string
