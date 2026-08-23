@@ -157,6 +157,7 @@ function Consulta() {
         plantilla: plantillas.data?.[0] ?? null,
         medico,
         titulo: "Pedido de estudios",
+        formato: "a5",
       });
     })();
   };
