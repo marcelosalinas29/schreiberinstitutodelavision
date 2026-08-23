@@ -125,6 +125,7 @@ function Consulta() {
         fecha: new Date(),
         plantilla: plantillas.data?.[0] ?? null,
         medico,
+        formato: "a5",
       });
     })();
   };
