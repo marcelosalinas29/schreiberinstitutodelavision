@@ -116,6 +116,36 @@ export type Database = {
           },
         ]
       }
+      documentos_clinicos: {
+        Row: {
+          contenido: string
+          created_at: string
+          id: string
+          nombre: string
+          owner_id: string | null
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          contenido: string
+          created_at?: string
+          id?: string
+          nombre: string
+          owner_id?: string | null
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          contenido?: string
+          created_at?: string
+          id?: string
+          nombre?: string
+          owner_id?: string | null
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       historias_clinicas: {
         Row: {
           antecedentes_familiares: string | null

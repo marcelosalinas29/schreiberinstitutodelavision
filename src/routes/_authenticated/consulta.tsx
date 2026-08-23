@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useRef, useState } from "react";
-import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList } from "lucide-react";
+import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -20,6 +20,8 @@ import { createHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
 import { listPracticas, practicasParaObraSocial } from "@/services/practicas";
+import { TIPOS_DOCUMENTO, completarDocumento, listDocumentos } from "@/services/documentosClinicos";
+import type { DocumentoTipo } from "@/types/domain";
 
 export const Route = createFileRoute("/_authenticated/consulta")({
   head: () => ({
@@ -75,10 +77,13 @@ function Consulta() {
   const [draft, setDraft] = useState<HistoriaDraft>(HISTORIA_VACIA);
   const [pedidoAbierto, setPedidoAbierto] = useState(false);
   const [seleccionadas, setSeleccionadas] = useState<string[]>([]);
+  const [docsAbierto, setDocsAbierto] = useState(false);
+  const [docElegido, setDocElegido] = useState("");
 
   const pacientes = useQuery({ queryKey: ["pacientes", ""], queryFn: () => listPacientes("") });
   const plantillas = useQuery({ queryKey: ["plantillas"], queryFn: listPlantillas });
   const practicas = useQuery({ queryKey: ["practicas"], queryFn: listPracticas });
+  const documentos = useQuery({ queryKey: ["documentos-clinicos"], queryFn: listDocumentos });
   const paciente = (pacientes.data ?? []).find((p) => p.id === pacienteId) ?? null;
 
   const { grabando, alternar } = useDictado((texto) => setTranscripcion((prev) => `${prev} ${texto}`.trim()));
@@ -155,6 +160,39 @@ function Consulta() {
     })();
   };
 
+  const abrirDocumentos = () => {
+    if (!paciente) {
+      toast.error("Elegí un paciente");
+      return;
+    }
+    setDocElegido("");
+    setDocsAbierto(true);
+  };
+
+  const generarDocumento = () => {
+    const doc = (documentos.data ?? []).find((d) => d.id === docElegido);
+    if (!paciente || !doc) return;
+    setDocsAbierto(false);
+    void (async () => {
+      const medico = await datosMedicoReceta();
+      const fecha = new Date();
+      await generarRecetaPDF({
+        paciente,
+        contenido: completarDocumento(doc.contenido, {
+          nombrePaciente: `${paciente.apellido}, ${paciente.nombre}`,
+          dniPaciente: paciente.dni,
+          matriculaMedico: medico?.matricula ?? null,
+          fecha,
+        }),
+        fecha,
+        plantilla: plantillas.data?.[0] ?? null,
+        medico,
+        titulo: doc.nombre,
+      });
+    })();
+  };
+
+
   return (
     <div>
       <PageHeader
@@ -167,6 +205,9 @@ function Consulta() {
             </Button>
             <Button variant="outline" size="sm" onClick={abrirPedido}>
               <ClipboardList className="size-4" /> Pedido de estudios
+            </Button>
+            <Button variant="outline" size="sm" onClick={abrirDocumentos}>
+              <FileSignature className="size-4" /> Consentimientos y protocolos
             </Button>
             <Button size="sm" onClick={() => guardar.mutate()} disabled={guardar.isPending}>
               {guardar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Guardar
@@ -257,6 +298,51 @@ function Consulta() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={docsAbierto} onOpenChange={setDocsAbierto}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Consentimientos y protocolos</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-72 space-y-4 overflow-y-auto">
+            {(documentos.data ?? []).length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No hay documentos cargados. Agregalos en “Consentimientos y protocolos”.
+              </p>
+            ) : null}
+            {TIPOS_DOCUMENTO.map((t) => {
+              const items = (documentos.data ?? []).filter((d) => (d.tipo as DocumentoTipo) === t.value);
+              if (items.length === 0) return null;
+              return (
+                <div key={t.value} className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.label}</p>
+                  {items.map((d) => (
+                    <label key={d.id} className="flex cursor-pointer items-center gap-3 text-sm">
+                      <input
+                        type="radio"
+                        name="documento"
+                        className="accent-primary"
+                        checked={docElegido === d.id}
+                        onChange={() => setDocElegido(d.id)}
+                      />
+                      <span className="min-w-0 font-medium">{d.nombre}</span>
+                    </label>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" size="sm" onClick={() => setDocsAbierto(false)}>
+              Cancelar
+            </Button>
+            <Button size="sm" onClick={generarDocumento} disabled={!docElegido}>
+              <FileDown className="size-4" /> Generar PDF
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
+
   );
 }
