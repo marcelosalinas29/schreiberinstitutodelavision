@@ -206,6 +206,9 @@ function Consulta() {
             <Button variant="outline" size="sm" onClick={abrirPedido}>
               <ClipboardList className="size-4" /> Pedido de estudios
             </Button>
+            <Button variant="outline" size="sm" onClick={abrirDocumentos}>
+              <FileSignature className="size-4" /> Consentimientos y protocolos
+            </Button>
             <Button size="sm" onClick={() => guardar.mutate()} disabled={guardar.isPending}>
               {guardar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Guardar
             </Button>
