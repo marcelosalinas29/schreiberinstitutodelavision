@@ -242,7 +242,22 @@ export function HistoriaForm({ value, onChange, historiaId }: Props) {
           </div>
         </div>
         <Bilateral {...props} label="Fondo de ojo" odKey="fo_od" oiKey="fo_oi" />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <AdjuntoEstudio {...props} label="retinografía OD" tipo="fo_od" />
+          <AdjuntoEstudio {...props} label="retinografía OI" tipo="fo_oi" />
+        </div>
       </Section>
+
+      <Section title="Campo visual">
+        <p className="text-xs text-muted-foreground">
+          Adjuntá el estudio de campo visual de cada ojo (imagen o PDF exportado del equipo).
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <AdjuntoEstudio {...props} label="campo visual OD" tipo="cv_od" />
+          <AdjuntoEstudio {...props} label="campo visual OI" tipo="cv_oi" />
+        </div>
+      </Section>
+
 
       <Section title="Diagnóstico">
         <div className="space-y-1.5">
