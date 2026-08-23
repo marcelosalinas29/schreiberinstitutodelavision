@@ -37,8 +37,8 @@ const VACIO = {
 
 function Plantillas() {
   const qc = useQueryClient();
-  const plantillas = useQuery({ queryKey: ["plantillas"], queryFn: listPlantillas });
-  const actual = plantillas.data?.[0] ?? null;
+  const plantillas = useQuery({ queryKey: ["mi-plantilla"], queryFn: getMiPlantilla });
+  const actual = plantillas.data ?? null;
   const [form, setForm] = useState(VACIO);
 
   useEffect(() => {
