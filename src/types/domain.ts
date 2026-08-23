@@ -32,6 +32,9 @@ export type PlantillaInsert = Tables["plantillas"]["Insert"];
 export type PracticaEstudio = Tables["practicas_estudios"]["Row"];
 export type PracticaEstudioInsert = Tables["practicas_estudios"]["Insert"];
 
+export type Medicamento = Tables["medicamentos"]["Row"];
+export type MedicamentoInsert = Tables["medicamentos"]["Insert"];
+
 export type Profile = Tables["profiles"]["Row"];
 
 export const ESTADOS_TURNO: { value: TurnoEstado; label: string }[] = [
