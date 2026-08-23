@@ -68,9 +68,13 @@ function Plantillas() {
       }),
     onSuccess: () => {
       toast.success("Plantilla guardada");
+      void qc.invalidateQueries({ queryKey: ["mi-plantilla"] });
       void qc.invalidateQueries({ queryKey: ["plantillas"] });
     },
-    onError: () => toast.error("No se pudo guardar la plantilla"),
+    onError: (e: unknown) =>
+      toast.error(
+        e instanceof Error ? `No se pudo guardar la plantilla: ${e.message}` : "No se pudo guardar la plantilla",
+      ),
   });
 
   const campo = (key: keyof typeof VACIO, label: string) => (
