@@ -13,7 +13,6 @@ export interface MensajeChatConAutor extends MensajeChat {
 
 /** Borra mensajes de más de 28 días (respaldo por si el cron no corre). */
 export async function limpiarMensajesViejos(): Promise<void> {
-  // @ts-expect-error función RPC agregada por migración nueva
   await supabase.rpc("limpiar_mensajes_chat_viejos");
 }
 
