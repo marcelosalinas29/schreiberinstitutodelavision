@@ -1,8 +1,18 @@
+import { useEffect, useRef, useState } from "react";
+import { FileText, ImagePlus, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
 import type { HistoriaClinicaInsert } from "@/types/domain";
 import { MedicamentoPicker } from "@/features/historias/MedicamentoPicker";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  subirImagenHistoria,
+  urlFirmadaImagenHistoria,
+  type ImagenHistoriaTipo,
+} from "@/services/historias";
 
 export type HistoriaDraft = Omit<HistoriaClinicaInsert, "paciente_id">;
 
@@ -27,6 +37,10 @@ export const HISTORIA_VACIA: HistoriaDraft = {
   pio_hora: "",
   fo_od: "",
   fo_oi: "",
+  fo_od_imagen_url: null,
+  fo_oi_imagen_url: null,
+  cv_od_imagen_url: null,
+  cv_oi_imagen_url: null,
   diagnostico: "",
   cie10: "",
   tratamiento: "",
@@ -36,7 +50,91 @@ export const HISTORIA_VACIA: HistoriaDraft = {
 interface Props {
   value: HistoriaDraft;
   onChange: (patch: Partial<HistoriaDraft>) => void;
+  historiaId?: string;
 }
+
+const COLUMNA_IMAGEN = {
+  fo_od: "fo_od_imagen_url",
+  fo_oi: "fo_oi_imagen_url",
+  cv_od: "cv_od_imagen_url",
+  cv_oi: "cv_oi_imagen_url",
+} as const satisfies Record<ImagenHistoriaTipo, keyof HistoriaDraft>;
+
+function AdjuntoEstudio({
+  label,
+  tipo,
+  value,
+  onChange,
+  historiaId,
+}: Props & { label: string; tipo: ImagenHistoriaTipo }) {
+  const input = useRef<HTMLInputElement>(null);
+  const [subiendo, setSubiendo] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const path = (value[COLUMNA_IMAGEN[tipo]] as string | null) ?? null;
+  const esPdf = !!path && path.toLowerCase().endsWith(".pdf");
+
+  useEffect(() => {
+    let vigente = true;
+    void urlFirmadaImagenHistoria(path).then((url) => {
+      if (vigente) setPreview(url);
+    });
+    return () => {
+      vigente = false;
+    };
+  }, [path]);
+
+  const subir = async (file: File) => {
+    setSubiendo(true);
+    try {
+      const nuevaRuta = await subirImagenHistoria(file, historiaId ?? "nueva", tipo);
+      onChange({ [COLUMNA_IMAGEN[tipo]]: nuevaRuta } as Partial<HistoriaDraft>);
+      toast.success(`${label}: archivo adjuntado`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "No se pudo subir el archivo");
+    } finally {
+      setSubiendo(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted">
+        {preview && !esPdf ? (
+          <img src={preview} alt={label} className="size-full object-cover" />
+        ) : preview && esPdf ? (
+          <FileText className="size-6 text-muted-foreground" />
+        ) : (
+          <ImagePlus className="size-5 text-muted-foreground" />
+        )}
+      </div>
+      <div className="space-y-1">
+        <Button type="button" variant="outline" size="sm" disabled={subiendo} onClick={() => input.current?.click()}>
+          {subiendo ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}
+          {path ? "Reemplazar" : "Adjuntar"} {label}
+        </Button>
+        {preview ? (
+          <a href={preview} target="_blank" rel="noreferrer" className="block text-xs text-primary underline">
+            Ver archivo adjunto
+          </a>
+        ) : (
+          <p className="text-xs text-muted-foreground">JPG, PNG o PDF</p>
+        )}
+      </div>
+      <input
+        ref={input}
+        type="file"
+        accept="image/png,image/jpeg,image/webp,application/pdf"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) void subir(file);
+          e.target.value = "";
+        }}
+      />
+    </div>
+  );
+}
+
 
 function Bilateral({
   label,
