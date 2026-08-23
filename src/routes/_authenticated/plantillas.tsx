@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { generarRecetaPDF } from "@/lib/pdf";
 import { datosMedicoReceta } from "@/services/perfil";
-import { listPlantillas, upsertPlantilla } from "@/services/plantillas";
+import { getMiPlantilla, upsertPlantilla } from "@/services/plantillas";
 
 export const Route = createFileRoute("/_authenticated/plantillas")({
   head: () => ({
@@ -37,8 +37,8 @@ const VACIO = {
 
 function Plantillas() {
   const qc = useQueryClient();
-  const plantillas = useQuery({ queryKey: ["plantillas"], queryFn: listPlantillas });
-  const actual = plantillas.data?.[0] ?? null;
+  const plantillas = useQuery({ queryKey: ["mi-plantilla"], queryFn: getMiPlantilla });
+  const actual = plantillas.data ?? null;
   const [form, setForm] = useState(VACIO);
 
   useEffect(() => {
@@ -68,9 +68,13 @@ function Plantillas() {
       }),
     onSuccess: () => {
       toast.success("Plantilla guardada");
+      void qc.invalidateQueries({ queryKey: ["mi-plantilla"] });
       void qc.invalidateQueries({ queryKey: ["plantillas"] });
     },
-    onError: () => toast.error("No se pudo guardar la plantilla"),
+    onError: (e: unknown) =>
+      toast.error(
+        e instanceof Error ? `No se pudo guardar la plantilla: ${e.message}` : "No se pudo guardar la plantilla",
+      ),
   });
 
   const campo = (key: keyof typeof VACIO, label: string) => (
