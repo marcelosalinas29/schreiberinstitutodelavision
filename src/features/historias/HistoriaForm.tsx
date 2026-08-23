@@ -158,6 +158,12 @@ export function HistoriaForm({ value, onChange }: Props) {
       <Section title="Plan y tratamiento">
         <div className="space-y-1.5">
           <Label htmlFor="tto">Tratamiento / indicaciones</Label>
+          <MedicamentoPicker
+            onAgregar={(linea) => {
+              const actual = (value.tratamiento ?? "").replace(/\s+$/, "");
+              onChange({ tratamiento: actual ? `${actual}\n${linea}` : linea });
+            }}
+          />
           <Textarea id="tto" rows={6} value={value.tratamiento ?? ""} onChange={(e) => onChange({ tratamiento: e.target.value })} />
         </div>
         <div className="space-y-1.5">
