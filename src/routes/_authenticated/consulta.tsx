@@ -125,6 +125,7 @@ function Consulta() {
         fecha: new Date(),
         plantilla: plantillas.data?.[0] ?? null,
         medico,
+        formato: "a5",
       });
     })();
   };
@@ -156,6 +157,7 @@ function Consulta() {
         plantilla: plantillas.data?.[0] ?? null,
         medico,
         titulo: "Pedido de estudios",
+        formato: "a5",
       });
     })();
   };
