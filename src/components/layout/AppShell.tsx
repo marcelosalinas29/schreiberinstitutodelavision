@@ -22,6 +22,8 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import { Badge } from "@/components/ui/badge";
 import { ThemeSwitcher } from "@/components/layout/ThemeSwitcher";
 import { Logo } from "@/components/layout/Logo";
+import { ChatWidget } from "@/features/chat/ChatWidget";
+
 import { useCurrentUser } from "@/features/auth/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -154,6 +156,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <main className="flex-1 p-4 sm:p-6">{children}</main>
       </div>
+      <ChatWidget />
+
     </div>
   );
 }

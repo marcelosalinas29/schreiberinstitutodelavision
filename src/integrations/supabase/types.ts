@@ -311,6 +311,27 @@ export type Database = {
         }
         Relationships: []
       }
+      mensajes_chat: {
+        Row: {
+          autor_id: string
+          contenido: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          autor_id: string
+          contenido: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          autor_id?: string
+          contenido?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
       pacientes: {
         Row: {
           apellido: string
@@ -584,6 +605,7 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      limpiar_mensajes_chat_viejos: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "medico" | "secretaria"
