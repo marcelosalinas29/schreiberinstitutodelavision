@@ -8,6 +8,7 @@ import {
   ScanLine,
   ClipboardList,
   Pill,
+  FileSignature,
   LayoutDashboard,
   Settings,
   LogOut,
