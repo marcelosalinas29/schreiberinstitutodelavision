@@ -7,6 +7,7 @@ import {
   FileText,
   ScanLine,
   ClipboardList,
+  Pill,
   LayoutDashboard,
   Settings,
   LogOut,
