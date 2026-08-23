@@ -64,7 +64,7 @@ export async function generarRecetaPDF({
   titulo = "Receta",
   formato = "a4",
 }: RecetaInput) {
-  const doc = new jsPDF({ unit: "mm", format });
+  const doc = new jsPDF({ unit: "mm", format: formato });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
   const esA5 = formato === "a5";
