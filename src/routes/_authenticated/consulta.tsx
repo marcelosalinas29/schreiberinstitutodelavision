@@ -160,6 +160,39 @@ function Consulta() {
     })();
   };
 
+  const abrirDocumentos = () => {
+    if (!paciente) {
+      toast.error("Elegí un paciente");
+      return;
+    }
+    setDocElegido("");
+    setDocsAbierto(true);
+  };
+
+  const generarDocumento = () => {
+    const doc = (documentos.data ?? []).find((d) => d.id === docElegido);
+    if (!paciente || !doc) return;
+    setDocsAbierto(false);
+    void (async () => {
+      const medico = await datosMedicoReceta();
+      const fecha = new Date();
+      await generarRecetaPDF({
+        paciente,
+        contenido: completarDocumento(doc.contenido, {
+          nombrePaciente: `${paciente.apellido}, ${paciente.nombre}`,
+          dniPaciente: paciente.dni,
+          matriculaMedico: medico?.matricula ?? null,
+          fecha,
+        }),
+        fecha,
+        plantilla: plantillas.data?.[0] ?? null,
+        medico,
+        titulo: doc.nombre,
+      });
+    })();
+  };
+
+
   return (
     <div>
       <PageHeader
