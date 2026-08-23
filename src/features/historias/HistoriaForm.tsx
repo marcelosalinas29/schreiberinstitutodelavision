@@ -50,7 +50,7 @@ export const HISTORIA_VACIA: HistoriaDraft = {
 interface Props {
   value: HistoriaDraft;
   onChange: (patch: Partial<HistoriaDraft>) => void;
-  historiaId?: string;
+  historiaId?: string | undefined;
 }
 
 const COLUMNA_IMAGEN = {
