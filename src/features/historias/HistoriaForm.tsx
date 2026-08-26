@@ -166,6 +166,45 @@ function Bilateral({
   );
 }
 
+/** Muestra, sólo lectura, datos históricos de campos que ya no se editan. */
+function DatosPrevios({
+  value,
+  campos,
+}: {
+  value: HistoriaDraft;
+  campos: [label: string, key: keyof HistoriaDraft][];
+}) {
+  const cargados = campos.filter(([, key]) => {
+    const v = value[key];
+    return typeof v === "string" && v.trim() !== "";
+  });
+  if (cargados.length === 0) return null;
+  return (
+    <div className="rounded-lg border border-dashed border-border bg-muted/40 p-3">
+      <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        Datos previos (formato anterior)
+      </p>
+      <ul className="space-y-0.5 text-sm">
+        {cargados.map(([label, key]) => (
+          <li key={String(key)}>
+            <span className="text-muted-foreground">{label}:</span> {value[key] as string}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** Al cargar la primera PIO, completa la hora actual si aún está vacía. */
+function patchPio(campo: "pio_od" | "pio_oi", raw: string, value: HistoriaDraft): Partial<HistoriaDraft> {
+  const numero = raw === "" ? null : Number(raw);
+  const patch: Partial<HistoriaDraft> = { [campo]: numero } as Partial<HistoriaDraft>;
+  if (numero !== null && !(value.pio_hora ?? "").trim()) {
+    patch.pio_hora = new Date().toTimeString().slice(0, 5);
+  }
+  return patch;
+}
+
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="panel p-4">
