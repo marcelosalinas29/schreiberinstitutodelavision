@@ -290,6 +290,36 @@ export type Database = {
           },
         ]
       }
+      links_obras_sociales: {
+        Row: {
+          created_at: string
+          id: string
+          nombre_plataforma: string
+          obra_social: string
+          owner_id: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nombre_plataforma: string
+          obra_social: string
+          owner_id?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nombre_plataforma?: string
+          obra_social?: string
+          owner_id?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       medicamentos: {
         Row: {
           created_at: string
