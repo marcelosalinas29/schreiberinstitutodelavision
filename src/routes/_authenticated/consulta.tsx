@@ -21,7 +21,13 @@ import { datosMedicoReceta } from "@/services/perfil";
 import { createHistoria, getHistoria, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
-import { listPracticas, practicasParaObraSocial } from "@/services/practicas";
+import {
+  idsPracticasUsadas,
+  listPracticas,
+  practicasOrdenadasPorUso,
+  practicasParaObraSocial,
+  registrarUsoPractica,
+} from "@/services/practicas";
 import { TIPOS_DOCUMENTO, completarDocumento, listDocumentos } from "@/services/documentosClinicos";
 import type { DocumentoTipo } from "@/types/domain";
 
@@ -382,6 +388,11 @@ function Consulta() {
                 <span className="min-w-0">
                   <span className="font-medium">{p.nombre}</span>
                   {p.codigo ? <span className="ml-2 text-xs text-muted-foreground">{p.codigo}</span> : null}
+                  {usadasAntes.includes(p.id) ? (
+                    <span className="ml-2 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground">
+                      Pedido antes
+                    </span>
+                  ) : null}
                   <span className="block text-xs text-muted-foreground">{p.contenido}</span>
                 </span>
               </label>
