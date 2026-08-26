@@ -14,6 +14,7 @@ import {
   LogOut,
   Menu,
   WifiOff,
+  ExternalLink,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
