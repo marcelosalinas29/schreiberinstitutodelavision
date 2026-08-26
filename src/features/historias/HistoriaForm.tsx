@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { buscarCie10, listCie10 } from "@/services/cie10";
 import { ExternalLink, FileText, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -265,6 +266,31 @@ function LinksObrasSocialesChips({ obraSocial }: { obraSocial?: string | null | 
 export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props & { obraSocial?: string | null | undefined }) {
   const props = { value, onChange, historiaId };
 
+  const diccionarioCie10 = useQuery({ queryKey: ["cie10"], queryFn: listCie10 });
+  const [cie10Sugerido, setCie10Sugerido] = useState<string | null>(null);
+  const diagnostico = value.diagnostico ?? "";
+  const cie10Actual = value.cie10 ?? "";
+  const sugeridoRef = useRef<string | null>(null);
+  sugeridoRef.current = cie10Sugerido;
+
+  useEffect(() => {
+    const entradas = diccionarioCie10.data;
+    if (!entradas || entradas.length === 0) return;
+    const t = setTimeout(() => {
+      const match = buscarCie10(diagnostico, entradas);
+      if (!match) return;
+      const puedeCompletar = cie10Actual.trim() === "" || cie10Actual === sugeridoRef.current;
+      if (puedeCompletar && cie10Actual !== match.codigo) {
+        setCie10Sugerido(match.codigo);
+        onChange({ cie10: match.codigo });
+      }
+    }, 600);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [diagnostico, diccionarioCie10.data, cie10Actual]);
+
+
+
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -429,8 +455,21 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props 
           <Textarea id="dx" rows={3} value={value.diagnostico ?? ""} onChange={(e) => onChange({ diagnostico: e.target.value })} />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="cie10">CIE-10</Label>
-          <Input id="cie10" placeholder="H52.1" value={value.cie10 ?? ""} onChange={(e) => onChange({ cie10: e.target.value })} />
+          <Label htmlFor="cie10" className="flex items-center gap-2">
+            CIE-10
+            {cie10Sugerido && cie10Actual === cie10Sugerido ? (
+              <span className="text-xs font-normal text-muted-foreground">(sugerido automáticamente)</span>
+            ) : null}
+          </Label>
+          <Input
+            id="cie10"
+            placeholder="H52.1"
+            value={value.cie10 ?? ""}
+            onChange={(e) => {
+              setCie10Sugerido(null);
+              onChange({ cie10: e.target.value });
+            }}
+          />
         </div>
       </Section>
 

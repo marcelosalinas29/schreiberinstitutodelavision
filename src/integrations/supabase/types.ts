@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      cie10_diccionario: {
+        Row: {
+          codigo: string
+          created_at: string
+          descripcion: string
+          id: string
+          owner_id: string | null
+          palabra_clave: string
+          updated_at: string
+        }
+        Insert: {
+          codigo: string
+          created_at?: string
+          descripcion: string
+          id?: string
+          owner_id?: string | null
+          palabra_clave: string
+          updated_at?: string
+        }
+        Update: {
+          codigo?: string
+          created_at?: string
+          descripcion?: string
+          id?: string
+          owner_id?: string | null
+          palabra_clave?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cierres_caja: {
         Row: {
           cerrado_por: string | null

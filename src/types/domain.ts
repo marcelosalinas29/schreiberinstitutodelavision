@@ -35,6 +35,9 @@ export type PracticaEstudioInsert = Tables["practicas_estudios"]["Insert"];
 export type LinkObraSocial = Tables["links_obras_sociales"]["Row"];
 export type LinkObraSocialInsert = Tables["links_obras_sociales"]["Insert"];
 
+export type Cie10Entry = Tables["cie10_diccionario"]["Row"];
+export type Cie10EntryInsert = Tables["cie10_diccionario"]["Insert"];
+
 export type Medicamento = Tables["medicamentos"]["Row"];
 export type MedicamentoInsert = Tables["medicamentos"]["Insert"];
 
