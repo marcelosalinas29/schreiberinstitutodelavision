@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Pencil, Plus, Search } from "lucide-react";
 
@@ -27,6 +27,7 @@ export const Route = createFileRoute("/_authenticated/pacientes")({
 
 function Pacientes() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editando, setEditando] = useState<Paciente | null>(null);
@@ -170,7 +171,21 @@ function Pacientes() {
               ) : (
                 <ul className="space-y-2">
                   {historias.data!.map((h) => (
-                    <li key={h.id} className="rounded-lg border border-border p-3">
+                    <li
+                      key={h.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() =>
+                        void navigate({ to: "/consulta", search: { paciente: seleccionado.id, historia: h.id } })
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          void navigate({ to: "/consulta", search: { paciente: seleccionado.id, historia: h.id } });
+                        }
+                      }}
+                      className="cursor-pointer rounded-lg border border-border p-3 transition-colors hover:border-primary/50 hover:bg-accent/60"
+                    >
                       <p className="text-xs font-medium text-muted-foreground">
                         {new Date(h.fecha).toLocaleDateString("es-AR")}
                       </p>

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature } from "lucide-react";
 import { toast } from "sonner";
 
@@ -16,7 +16,7 @@ import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/his
 import { parseDictado } from "@/lib/ai.functions";
 import { generarRecetaPDF } from "@/lib/pdf";
 import { datosMedicoReceta } from "@/services/perfil";
-import { createHistoria } from "@/services/historias";
+import { createHistoria, getHistoria, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
 import { listPracticas, practicasParaObraSocial } from "@/services/practicas";
@@ -24,8 +24,9 @@ import { TIPOS_DOCUMENTO, completarDocumento, listDocumentos } from "@/services/
 import type { DocumentoTipo } from "@/types/domain";
 
 export const Route = createFileRoute("/_authenticated/consulta")({
-  validateSearch: (search: Record<string, unknown>): { paciente?: string | undefined } => ({
+  validateSearch: (search: Record<string, unknown>): { paciente?: string | undefined; historia?: string | undefined } => ({
     paciente: typeof search["paciente"] === "string" ? search["paciente"] : undefined,
+    historia: typeof search["historia"] === "string" ? search["historia"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -75,7 +76,7 @@ function useDictado(onTexto: (texto: string) => void) {
 
 function Consulta() {
   const qc = useQueryClient();
-  const { paciente: pacienteDeUrl } = Route.useSearch();
+  const { paciente: pacienteDeUrl, historia: historiaDeUrl } = Route.useSearch();
   const [pacienteId, setPacienteId] = useState(pacienteDeUrl ?? "");
   const [transcripcion, setTranscripcion] = useState("");
   const [draft, setDraft] = useState<HistoriaDraft>(HISTORIA_VACIA);
@@ -89,6 +90,27 @@ function Consulta() {
   const practicas = useQuery({ queryKey: ["practicas"], queryFn: listPracticas });
   const documentos = useQuery({ queryKey: ["documentos-clinicos"], queryFn: listDocumentos });
   const paciente = (pacientes.data ?? []).find((p) => p.id === pacienteId) ?? null;
+
+  // Edición de una consulta existente (?historia=<id>)
+  const historiaExistente = useQuery({
+    queryKey: ["historia", historiaDeUrl],
+    enabled: Boolean(historiaDeUrl),
+    queryFn: () => getHistoria(historiaDeUrl!),
+  });
+
+  useEffect(() => {
+    const h = historiaExistente.data;
+    if (!h) return;
+    const { id: _id, paciente_id, created_at: _createdAt, ...campos } = h as Record<string, unknown> & {
+      id: string;
+      paciente_id: string;
+      created_at?: string;
+    };
+    setDraft(campos as unknown as HistoriaDraft);
+    if (paciente_id) setPacienteId(paciente_id);
+    setTranscripcion((h.dictado_crudo as string | null) ?? "");
+  }, [historiaExistente.data]);
+
 
   const { grabando, alternar } = useDictado((texto) => setTranscripcion((prev) => `${prev} ${texto}`.trim()));
 
@@ -105,12 +127,18 @@ function Consulta() {
   const guardar = useMutation({
     mutationFn: async () => {
       if (!pacienteId) throw new Error("Elegí un paciente");
+      if (historiaDeUrl) {
+        await updateHistoria(historiaDeUrl, { ...draft, dictado_crudo: transcripcion || null });
+        return;
+      }
       await createHistoria({ ...draft, paciente_id: pacienteId, dictado_crudo: transcripcion || null });
     },
     onSuccess: () => {
-      toast.success("Historia clínica guardada");
-      setDraft(HISTORIA_VACIA);
-      setTranscripcion("");
+      toast.success(historiaDeUrl ? "Consulta actualizada" : "Historia clínica guardada");
+      if (!historiaDeUrl) {
+        setDraft(HISTORIA_VACIA);
+        setTranscripcion("");
+      }
       void qc.invalidateQueries({ queryKey: ["historias"] });
     },
     onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo guardar"),
@@ -261,6 +289,15 @@ function Consulta() {
           </div>
         </div>
       </div>
+
+      {historiaDeUrl ? (
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+          Editando consulta
+          {historiaExistente.data?.fecha
+            ? ` del ${new Date(historiaExistente.data.fecha).toLocaleDateString("es-AR")}`
+            : ""}
+        </div>
+      ) : null}
 
       <HistoriaForm value={draft} onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))} />
 
