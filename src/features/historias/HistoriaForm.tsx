@@ -248,7 +248,25 @@ export function HistoriaForm({ value, onChange, historiaId }: Props) {
             />
           </div>
         </div>
-        <Bilateral {...props} label="Fondo de ojo" odKey="fo_od" oiKey="fo_oi" />
+        <DatosPrevios
+          value={value}
+          campos={[
+            ["Biomicroscopía OD", "bmc_od"],
+            ["Biomicroscopía OI", "bmc_oi"],
+            ["Fondo de ojo OD", "fo_od"],
+            ["Fondo de ojo OI", "fo_oi"],
+          ]}
+        />
+        <div className="space-y-1.5">
+          <Label htmlFor="examen-obs">Biomicroscopía, fondo de ojo y otras observaciones</Label>
+          <Textarea
+            id="examen-obs"
+            rows={8}
+            placeholder="Biomicroscopía, fondo de ojo y cualquier otra observación del examen…"
+            value={value.examen_ocular_obs ?? ""}
+            onChange={(e) => onChange({ examen_ocular_obs: e.target.value })}
+          />
+        </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <AdjuntoEstudio {...props} label="retinografía OD" tipo="fo_od" />
           <AdjuntoEstudio {...props} label="retinografía OI" tipo="fo_oi" />
