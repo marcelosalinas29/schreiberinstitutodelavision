@@ -85,6 +85,9 @@ function Consulta() {
   const [seleccionadas, setSeleccionadas] = useState<string[]>([]);
   const [docsAbierto, setDocsAbierto] = useState(false);
   const [docElegido, setDocElegido] = useState("");
+  const [docManual, setDocManual] = useState(false);
+  const [manualTitulo, setManualTitulo] = useState("");
+  const [manualContenido, setManualContenido] = useState("");
 
   const pacientes = useQuery({ queryKey: ["pacientes", ""], queryFn: () => listPacientes("") });
   const plantillas = useQuery({ queryKey: ["plantillas"], queryFn: listPlantillas });
@@ -201,7 +204,33 @@ function Consulta() {
       return;
     }
     setDocElegido("");
+    setDocManual(false);
+    setManualTitulo("");
+    setManualContenido("");
     setDocsAbierto(true);
+  };
+
+  /** Documento escrito a mano para un caso puntual: no se guarda, solo se imprime. */
+  const generarDocumentoManual = () => {
+    if (!paciente || !manualContenido.trim()) return;
+    setDocsAbierto(false);
+    void (async () => {
+      const medico = await datosMedicoReceta();
+      const fecha = new Date();
+      await generarRecetaPDF({
+        paciente,
+        contenido: completarDocumento(manualContenido, {
+          nombrePaciente: `${paciente.apellido}, ${paciente.nombre}`,
+          dniPaciente: paciente.dni,
+          matriculaMedico: medico?.matricula ?? null,
+          fecha,
+        }),
+        fecha,
+        plantilla: plantillas.data?.[0] ?? null,
+        medico,
+        titulo: manualTitulo.trim() || "Documento",
+      });
+    })();
   };
 
   const generarDocumento = () => {
