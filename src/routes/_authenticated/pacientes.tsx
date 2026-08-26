@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Pencil, Plus, Search } from "lucide-react";
 
@@ -27,6 +27,7 @@ export const Route = createFileRoute("/_authenticated/pacientes")({
 
 function Pacientes() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editando, setEditando] = useState<Paciente | null>(null);
