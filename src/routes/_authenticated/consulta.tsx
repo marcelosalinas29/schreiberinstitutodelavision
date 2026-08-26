@@ -413,6 +413,85 @@ function Consulta() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={pedidoListo !== null} onOpenChange={(v) => (v ? null : setPedidoListo(null))}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pedido de estudios generado</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            El PDF ya se descargó. También podés imprimirlo o avisarle al paciente por WhatsApp (el aviso es solo texto:
+            el PDF no se adjunta automáticamente).
+          </p>
+          <DialogFooter className="flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (!paciente || !pedidoListo) return;
+                void (async () => {
+                  const medico = await datosMedicoReceta();
+                  await generarRecetaPDF(
+                    {
+                      paciente,
+                      contenido: pedidoListo.contenido,
+                      fecha: pedidoListo.fecha,
+                      plantilla: plantillas.data?.[0] ?? null,
+                      medico,
+                      titulo: "Pedido de estudios",
+                      formato: "a5",
+                    },
+                    { modo: "imprimir" },
+                  );
+                })();
+              }}
+            >
+              <Printer className="size-4" /> Imprimir
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (!paciente || !pedidoListo) return;
+                void (async () => {
+                  const medico = await datosMedicoReceta();
+                  await generarRecetaPDF({
+                    paciente,
+                    contenido: pedidoListo.contenido,
+                    fecha: pedidoListo.fecha,
+                    plantilla: plantillas.data?.[0] ?? null,
+                    medico,
+                    titulo: "Pedido de estudios",
+                    formato: "a5",
+                  });
+                })();
+              }}
+            >
+              <FileDown className="size-4" /> Descargar
+            </Button>
+            {paciente?.telefono ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (!paciente?.telefono || !pedidoListo) return;
+                  const mensaje = `Hola ${paciente.nombre}, tiene listo su pedido de estudios de ${pedidoListo.fecha.toLocaleDateString("es-AR")}. Puede pasar a buscarlo o coordinar el envío por este medio.`;
+                  window.open(
+                    armarLinkWhatsAppTexto(paciente.telefono, mensaje),
+                    "_blank",
+                    "noopener,noreferrer",
+                  );
+                }}
+              >
+                <MessageCircle className="size-4" /> Enviar por WhatsApp
+              </Button>
+            ) : null}
+            <Button size="sm" onClick={() => setPedidoListo(null)}>
+              Listo
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={docsAbierto} onOpenChange={setDocsAbierto}>
         <DialogContent>
           <DialogHeader>
