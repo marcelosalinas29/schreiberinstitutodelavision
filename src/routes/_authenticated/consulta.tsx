@@ -213,6 +213,12 @@ function Consulta() {
         titulo: "Pedido de estudios",
         formato: "a5",
       });
+      // Memoria de uso: no debe interrumpir la generación del PDF.
+      await Promise.all(
+        elegidas.map((p) =>
+          registrarUsoPractica(p.id, paciente.id).catch((e: unknown) => console.error(e)),
+        ),
+      );
     })();
   };
 
