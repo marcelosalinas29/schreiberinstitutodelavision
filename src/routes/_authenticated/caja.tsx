@@ -181,32 +181,77 @@ function Caja() {
                     </Select>
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Medio de pago</Label>
-                    <Select value={form.medio} onValueChange={(v) => setForm({ ...form, medio: v as MedioPago })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {MEDIOS_PAGO.map((m) => (
-                          <SelectItem key={m.value} value={m.value}>
-                            {m.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="monto">Monto</Label>
-                    <Input id="monto" type="number" min={0} step="0.01" value={form.monto} onChange={(e) => setForm({ ...form, monto: e.target.value })} />
-                  </div>
-                  <div className="space-y-1.5">
                     <Label htmlFor="os">Obra social</Label>
                     <Input id="os" value={form.obra_social} onChange={(e) => setForm({ ...form, obra_social: e.target.value })} />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label>Formas de pago</Label>
+                    {lineas.map((linea, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <Select
+                          value={linea.medio}
+                          onValueChange={(v) =>
+                            setLineas(lineas.map((l, j) => (j === i ? { ...l, medio: v as MedioPago } : l)))
+                          }
+                        >
+                          <SelectTrigger className="w-44">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {MEDIOS_PAGO.map((m) => (
+                              <SelectItem key={m.value} value={m.value}>
+                                {m.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Input
+                          type="number"
+                          min={0}
+                          step="0.01"
+                          placeholder="Monto"
+                          aria-label={`Monto ${i + 1}`}
+                          value={linea.monto}
+                          onChange={(e) => setLineas(lineas.map((l, j) => (j === i ? { ...l, monto: e.target.value } : l)))}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Quitar forma de pago"
+                          disabled={lineas.length === 1}
+                          onClick={() => setLineas(lineas.filter((_, j) => j !== i))}
+                        >
+                          <X className="size-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <div className="flex items-center justify-between">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLineas([...lineas, { medio: "efectivo", monto: "" }])}
+                      >
+                        <Plus className="size-4" /> Agregar forma de pago
+                      </Button>
+                      <span className="text-sm font-semibold tabular-nums">Total: {money(totalFormulario)}</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <Label htmlFor="comprobante">Comprobante de pago (imagen o PDF)</Label>
+                    <Input
+                      id="comprobante"
+                      type="file"
+                      accept="image/*,application/pdf"
+                      onChange={(e) => setComprobante(e.target.files?.[0] ?? null)}
+                    />
                   </div>
                   <div className="space-y-1.5 sm:col-span-2">
                     <Label htmlFor="concepto">Concepto</Label>
                     <Input id="concepto" value={form.concepto} onChange={(e) => setForm({ ...form, concepto: e.target.value })} />
                   </div>
+
                 </div>
                 <DialogFooter>
                   <Button onClick={() => registrar.mutate()} disabled={registrar.isPending}>
