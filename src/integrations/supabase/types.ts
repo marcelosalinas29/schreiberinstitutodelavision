@@ -88,6 +88,7 @@ export type Database = {
       }
       cobros: {
         Row: {
+          comprobante_url: string | null
           concepto: string | null
           created_at: string
           created_by: string | null
@@ -102,6 +103,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          comprobante_url?: string | null
           concepto?: string | null
           created_at?: string
           created_by?: string | null
@@ -116,6 +118,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          comprobante_url?: string | null
           concepto?: string | null
           created_at?: string
           created_by?: string | null
@@ -142,6 +145,38 @@ export type Database = {
             columns: ["turno_id"]
             isOneToOne: false
             referencedRelation: "turnos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cobros_pagos: {
+        Row: {
+          cobro_id: string
+          created_at: string
+          id: string
+          medio: Database["public"]["Enums"]["medio_pago"]
+          monto: number
+        }
+        Insert: {
+          cobro_id: string
+          created_at?: string
+          id?: string
+          medio: Database["public"]["Enums"]["medio_pago"]
+          monto: number
+        }
+        Update: {
+          cobro_id?: string
+          created_at?: string
+          id?: string
+          medio?: Database["public"]["Enums"]["medio_pago"]
+          monto?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cobros_pagos_cobro_id_fkey"
+            columns: ["cobro_id"]
+            isOneToOne: false
+            referencedRelation: "cobros"
             referencedColumns: ["id"]
           },
         ]
