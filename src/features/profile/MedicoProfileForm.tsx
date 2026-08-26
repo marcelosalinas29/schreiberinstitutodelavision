@@ -147,6 +147,22 @@ export function MedicoProfileForm() {
     }
   };
 
+  const eliminarFirma = async () => {
+    if (!window.confirm("¿Seguro que querés quitar la firma?")) return;
+    setSubiendo("firma");
+    try {
+      await actualizarMiPerfil({ firma_sello_url: null });
+      setFirmaPreview(null);
+      toast.success("Firma / sello eliminado");
+      void qc.invalidateQueries({ queryKey: ["mi-perfil"] });
+      void qc.invalidateQueries({ queryKey: ["medico-receta"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "No se pudo quitar la firma");
+    } finally {
+      setSubiendo(null);
+    }
+  };
+
   const campo = (key: keyof typeof VACIO, label: string, type = "text") => (
     <div className="space-y-1.5">
       <Label htmlFor={`perfil-${key}`}>{label}</Label>
