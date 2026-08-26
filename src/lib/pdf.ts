@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 
-import firmaSelloAsset from "@/assets/firma-sello-schreiber.png.asset.json";
+
 import { LOGO_HORIZONTAL_TRANSPARENTE_URL } from "@/components/layout/Logo";
 import type { MedicoReceta } from "@/services/perfil";
 import type { Paciente, Plantilla } from "@/types/domain";
@@ -177,29 +177,21 @@ export async function generarRecetaPDF(
   const firmaMin = esA5 ? pageH * 0.62 : 235;
   const firmaY = Math.min(Math.max(y + (esA5 ? 24 : 34), firmaMin), pieY - (esA5 ? 14 : 16));
 
-  // Sello / firma digital del profesional logueado; si no cargó ninguno se usa el sello institucional.
-  const usaSelloInstitucional = !medico?.firmaDataUrl;
-  const firmaImg = medico?.firmaDataUrl ?? (await cargarImagen(firmaSelloAsset.url));
+  // Firma digital del profesional logueado. Si no cargó ninguna, no se dibuja imagen:
+  // se imprime el mismo bloque de texto (nombre, especialidad, matrículas) del médico logueado.
+  const firmaImg = medico?.firmaDataUrl ?? null;
   const cajaFirmaW = esA5 ? 58 : 78;
   if (firmaImg) {
     try {
       const props = doc.getImageProperties(firmaImg);
-      const maxW = usaSelloInstitucional ? cajaFirmaW : cajaFirmaW * 0.7;
+      const maxW = cajaFirmaW * 0.7;
       // Alto máximo acotado al espacio libre entre el texto y el pie.
-      const espacioLibre = Math.max(12, firmaY - y + (usaSelloInstitucional ? 6 : 0));
-      const maxH = Math.min(usaSelloInstitucional ? (esA5 ? 30 : 40) : esA5 ? 18 : 24, espacioLibre);
+      const espacioLibre = Math.max(12, firmaY - y);
+      const maxH = Math.min(esA5 ? 18 : 24, espacioLibre);
       const ratio = Math.min(maxW / props.width, maxH / props.height);
       const w = props.width * ratio;
       const h = props.height * ratio;
-      doc.addImage(
-        firmaImg,
-        margin + (cajaFirmaW - w) / 2,
-        firmaY - h + (usaSelloInstitucional ? 6 : -1),
-        w,
-        h,
-        undefined,
-        "FAST",
-      );
+      doc.addImage(firmaImg, margin + (cajaFirmaW - w) / 2, firmaY - h - 1, w, h, undefined, "FAST");
     } catch {
       /* firma inválida: se omite */
     }
@@ -207,8 +199,7 @@ export async function generarRecetaPDF(
 
   doc.setFontSize(fs.firma);
   doc.setTextColor(0);
-  // El sello institucional trae su propia línea de firma.
-  if (!usaSelloInstitucional) doc.line(margin, firmaY, margin + (esA5 ? 52 : 70), firmaY);
+  doc.line(margin, firmaY, margin + (esA5 ? 52 : 70), firmaY);
   const firma = [
     medico?.nombre ?? plantilla?.profesional,
     medico?.especialidad ?? null,
@@ -217,8 +208,7 @@ export async function generarRecetaPDF(
   ]
     .filter(Boolean)
     .join("\n");
-  // El sello institucional ya incluye nombre y matrícula: no se duplica el texto.
-  if (firma && !usaSelloInstitucional) wrap(doc, firma, margin, firmaY + 5, esA5 ? 70 : 90, esA5 ? 4 : 4.5);
+  if (firma) wrap(doc, firma, margin, firmaY + 5, esA5 ? 70 : 90, esA5 ? 4 : 4.5);
 
   dibujarPie();
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Save, Upload, UserRound } from "lucide-react";
+import { Loader2, Save, Trash2, Upload, UserRound } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ function AssetUploader({
   redondo,
   onFile,
   subiendo,
+  onEliminar,
 }: {
   label: string;
   descripcion: string;
@@ -31,6 +32,7 @@ function AssetUploader({
   redondo?: boolean;
   onFile: (file: File) => void;
   subiendo: boolean;
+  onEliminar?: () => void;
 }) {
   const input = useRef<HTMLInputElement>(null);
 
@@ -50,9 +52,22 @@ function AssetUploader({
           )}
         </div>
         <div className="space-y-1">
-          <Button type="button" variant="outline" size="sm" disabled={subiendo} onClick={() => input.current?.click()}>
-            {subiendo ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />} Subir imagen
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={subiendo}
+              onClick={() => input.current?.click()}
+            >
+              {subiendo ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />} Subir imagen
+            </Button>
+            {onEliminar && preview ? (
+              <Button type="button" variant="ghost" size="sm" disabled={subiendo} onClick={onEliminar}>
+                <Trash2 className="size-4" /> Eliminar firma
+              </Button>
+            ) : null}
+          </div>
           <p className="text-xs text-muted-foreground">{descripcion}</p>
         </div>
         <input
@@ -132,6 +147,22 @@ export function MedicoProfileForm() {
     }
   };
 
+  const eliminarFirma = async () => {
+    if (!window.confirm("¿Seguro que querés quitar la firma?")) return;
+    setSubiendo("firma");
+    try {
+      await actualizarMiPerfil({ firma_sello_url: null });
+      setFirmaPreview(null);
+      toast.success("Firma / sello eliminado");
+      void qc.invalidateQueries({ queryKey: ["mi-perfil"] });
+      void qc.invalidateQueries({ queryKey: ["medico-receta"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "No se pudo quitar la firma");
+    } finally {
+      setSubiendo(null);
+    }
+  };
+
   const campo = (key: keyof typeof VACIO, label: string, type = "text") => (
     <div className="space-y-1.5">
       <Label htmlFor={`perfil-${key}`}>{label}</Label>
@@ -179,6 +210,7 @@ export function MedicoProfileForm() {
           preview={firmaPreview}
           subiendo={subiendo === "firma"}
           onFile={(f) => void subir(f, "firma")}
+          onEliminar={() => void eliminarFirma()}
         />
 
         <div className="sm:col-span-2">
