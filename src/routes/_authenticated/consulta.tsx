@@ -24,8 +24,8 @@ import { TIPOS_DOCUMENTO, completarDocumento, listDocumentos } from "@/services/
 import type { DocumentoTipo } from "@/types/domain";
 
 export const Route = createFileRoute("/_authenticated/consulta")({
-  validateSearch: (search: Record<string, unknown>): { paciente?: string } => ({
-    paciente: typeof search.paciente === "string" && search.paciente ? search.paciente : undefined,
+  validateSearch: (search: Record<string, unknown>): { paciente: string } => ({
+    paciente: typeof search["paciente"] === "string" ? search["paciente"] : "",
   }),
   head: () => ({
     meta: [
