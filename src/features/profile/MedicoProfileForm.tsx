@@ -24,6 +24,7 @@ function AssetUploader({
   redondo,
   onFile,
   subiendo,
+  onEliminar,
 }: {
   label: string;
   descripcion: string;
@@ -31,6 +32,7 @@ function AssetUploader({
   redondo?: boolean;
   onFile: (file: File) => void;
   subiendo: boolean;
+  onEliminar?: () => void;
 }) {
   const input = useRef<HTMLInputElement>(null);
 
