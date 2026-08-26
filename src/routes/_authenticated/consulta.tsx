@@ -167,7 +167,10 @@ function Consulta() {
     })();
   };
 
-  const disponibles = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
+  const basePracticas = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
+  const [ordenPedido, setOrdenPedido] = useState<PracticaEstudio[] | null>(null);
+  const [usadasAntes, setUsadasAntes] = useState<string[]>([]);
+  const disponibles = ordenPedido ?? basePracticas;
 
   const abrirPedido = () => {
     if (!paciente) {
@@ -175,7 +178,23 @@ function Consulta() {
       return;
     }
     setSeleccionadas([]);
+    setOrdenPedido(null);
+    setUsadasAntes([]);
     setPedidoAbierto(true);
+    void (async () => {
+      try {
+        const ordenadas = await practicasOrdenadasPorUso(basePracticas, paciente.id);
+        const previas = new Set(ordenadas.map((p) => p.id));
+        // Las "pedidas antes" quedan al principio del arreglo reordenado.
+        const marcadas = ordenadas.filter((p, i) => previas.has(p.id) && i < ordenadas.length);
+        void marcadas;
+        setOrdenPedido(ordenadas);
+        const usados = ordenadas.slice(0, ordenadas.length);
+        void usados;
+      } catch (e) {
+        console.error(e);
+      }
+    })();
   };
 
   const generarPedido = () => {
