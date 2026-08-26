@@ -290,6 +290,15 @@ function Consulta() {
         </div>
       </div>
 
+      {historiaDeUrl ? (
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+          Editando consulta
+          {historiaExistente.data?.fecha
+            ? ` del ${new Date(historiaExistente.data.fecha).toLocaleDateString("es-AR")}`
+            : ""}
+        </div>
+      ) : null}
+
       <HistoriaForm value={draft} onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))} />
 
       <Dialog open={pedidoAbierto} onOpenChange={setPedidoAbierto}>
