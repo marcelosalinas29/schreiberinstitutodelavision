@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { FileText, ImagePlus, Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { ExternalLink, FileText, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+
+import { listLinksObrasSociales } from "@/services/linksObrasSociales";
 
 import type { HistoriaClinicaInsert } from "@/types/domain";
 import { MedicamentoPicker } from "@/features/historias/MedicamentoPicker";
@@ -218,7 +221,48 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-export function HistoriaForm({ value, onChange, historiaId }: Props) {
+function LinksObrasSocialesChips({ obraSocial }: { obraSocial?: string | null | undefined }) {
+  const links = useQuery({ queryKey: ["links-obras-sociales"], queryFn: listLinksObrasSociales });
+  const os = (obraSocial ?? "").trim().toLowerCase();
+  const items = [...(links.data ?? [])].sort((a, b) => {
+    const ca = a.obra_social.trim().toLowerCase() === os && os !== "" ? 0 : 1;
+    const cb = b.obra_social.trim().toLowerCase() === os && os !== "" ? 0 : 1;
+    return ca - cb;
+  });
+  if (items.length === 0) return null;
+
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+        Plataformas de recetas / pedidos online
+      </Label>
+      <div className="flex flex-wrap gap-2">
+        {items.map((l) => {
+          const coincide = os !== "" && l.obra_social.trim().toLowerCase() === os;
+          return (
+            <a
+              key={l.id}
+              href={l.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={`${l.nombre_plataforma} — ${l.obra_social}`}
+              className={
+                coincide
+                  ? "inline-flex items-center gap-1 rounded-full border border-primary bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                  : "inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:bg-muted"
+              }
+            >
+              {l.nombre_plataforma}
+              <ExternalLink className="size-3" />
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props & { obraSocial?: string | null | undefined }) {
   const props = { value, onChange, historiaId };
 
 
@@ -401,6 +445,7 @@ export function HistoriaForm({ value, onChange, historiaId }: Props) {
           />
           <Textarea id="tto" rows={6} value={value.tratamiento ?? ""} onChange={(e) => onChange({ tratamiento: e.target.value })} />
         </div>
+        <LinksObrasSocialesChips obraSocial={obraSocial} />
         <div className="space-y-1.5">
           <Label htmlFor="proxima">Próxima cita</Label>
           <Input id="proxima" placeholder="Control en 3 meses" value={value.proxima_cita ?? ""} onChange={(e) => onChange({ proxima_cita: e.target.value })} />

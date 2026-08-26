@@ -366,7 +366,11 @@ function Consulta() {
 
       {pacienteId ? <HistoricoPIO pacienteId={pacienteId} className="panel mb-4 p-4" /> : null}
 
-      <HistoriaForm value={draft} onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))} />
+      <HistoriaForm
+        value={draft}
+        onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))}
+        obraSocial={paciente?.obra_social ?? null}
+      />
 
       <Dialog open={pedidoAbierto} onOpenChange={setPedidoAbierto}>
         <DialogContent>
