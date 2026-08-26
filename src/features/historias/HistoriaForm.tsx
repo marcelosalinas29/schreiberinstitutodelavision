@@ -42,6 +42,10 @@ export const HISTORIA_VACIA: HistoriaDraft = {
   fo_oi_imagen_url: null,
   cv_od_imagen_url: null,
   cv_oi_imagen_url: null,
+  curva_pio_ayunas_od: null,
+  curva_pio_ayunas_oi: null,
+  curva_pio_sobrecarga_od: null,
+  curva_pio_sobrecarga_oi: null,
   diagnostico: "",
   cie10: "",
   tratamiento: "",
@@ -319,6 +323,58 @@ export function HistoriaForm({ value, onChange, historiaId }: Props) {
         <div className="grid gap-3 sm:grid-cols-2">
           <AdjuntoEstudio {...props} label="campo visual OD" tipo="cv_od" />
           <AdjuntoEstudio {...props} label="campo visual OI" tipo="cv_oi" />
+        </div>
+
+        <div className="space-y-3 border-t border-border pt-3">
+          <h4 className="text-sm font-semibold">Curva de presión ocular</h4>
+          <div className="space-y-1.5">
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground">En ayunas (mmHg)</Label>
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                type="number"
+                step="0.1"
+                placeholder="OD"
+                aria-label="Curva de presión en ayunas ojo derecho"
+                value={value.curva_pio_ayunas_od ?? ""}
+                onChange={(e) => onChange({ curva_pio_ayunas_od: e.target.value === "" ? null : Number(e.target.value) })}
+              />
+              <Input
+                type="number"
+                step="0.1"
+                placeholder="OI"
+                aria-label="Curva de presión en ayunas ojo izquierdo"
+                value={value.curva_pio_ayunas_oi ?? ""}
+                onChange={(e) => onChange({ curva_pio_ayunas_oi: e.target.value === "" ? null : Number(e.target.value) })}
+              />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+              Con sobrecarga hídrica (mmHg)
+            </Label>
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                type="number"
+                step="0.1"
+                placeholder="OD"
+                aria-label="Curva de presión con sobrecarga hídrica ojo derecho"
+                value={value.curva_pio_sobrecarga_od ?? ""}
+                onChange={(e) =>
+                  onChange({ curva_pio_sobrecarga_od: e.target.value === "" ? null : Number(e.target.value) })
+                }
+              />
+              <Input
+                type="number"
+                step="0.1"
+                placeholder="OI"
+                aria-label="Curva de presión con sobrecarga hídrica ojo izquierdo"
+                value={value.curva_pio_sobrecarga_oi ?? ""}
+                onChange={(e) =>
+                  onChange({ curva_pio_sobrecarga_oi: e.target.value === "" ? null : Number(e.target.value) })
+                }
+              />
+            </div>
+          </div>
         </div>
       </Section>
 
