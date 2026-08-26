@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature } from "lucide-react";
+import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -17,6 +17,7 @@ import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/his
 import { HistoricoPIO } from "@/features/historias/HistoricoPIO";
 import { parseDictado } from "@/lib/ai.functions";
 import { generarRecetaPDF } from "@/lib/pdf";
+import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
 import { datosMedicoReceta } from "@/services/perfil";
 import { createHistoria, getHistoria, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
