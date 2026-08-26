@@ -21,7 +21,14 @@ import { datosMedicoReceta } from "@/services/perfil";
 import { createHistoria, getHistoria, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
-import { listPracticas, practicasParaObraSocial } from "@/services/practicas";
+import type { PracticaEstudio } from "@/types/domain";
+import {
+  idsPracticasUsadas,
+  listPracticas,
+  practicasOrdenadasPorUso,
+  practicasParaObraSocial,
+  registrarUsoPractica,
+} from "@/services/practicas";
 import { TIPOS_DOCUMENTO, completarDocumento, listDocumentos } from "@/services/documentosClinicos";
 import type { DocumentoTipo } from "@/types/domain";
 
@@ -167,7 +174,10 @@ function Consulta() {
     })();
   };
 
-  const disponibles = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
+  const basePracticas = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
+  const [ordenPedido, setOrdenPedido] = useState<PracticaEstudio[] | null>(null);
+  const [usadasAntes, setUsadasAntes] = useState<string[]>([]);
+  const disponibles = ordenPedido ?? basePracticas;
 
   const abrirPedido = () => {
     if (!paciente) {
@@ -175,7 +185,21 @@ function Consulta() {
       return;
     }
     setSeleccionadas([]);
+    setOrdenPedido(null);
+    setUsadasAntes([]);
     setPedidoAbierto(true);
+    void (async () => {
+      try {
+        const [ordenadas, usados] = await Promise.all([
+          practicasOrdenadasPorUso(basePracticas, paciente.id),
+          idsPracticasUsadas(paciente.id),
+        ]);
+        setOrdenPedido(ordenadas);
+        setUsadasAntes(usados);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
   };
 
   const generarPedido = () => {
@@ -196,6 +220,12 @@ function Consulta() {
         titulo: "Pedido de estudios",
         formato: "a5",
       });
+      // Memoria de uso: no debe interrumpir la generación del PDF.
+      await Promise.all(
+        elegidas.map((p) =>
+          registrarUsoPractica(p.id, paciente.id).catch((e: unknown) => console.error(e)),
+        ),
+      );
     })();
   };
 
@@ -359,6 +389,11 @@ function Consulta() {
                 <span className="min-w-0">
                   <span className="font-medium">{p.nombre}</span>
                   {p.codigo ? <span className="ml-2 text-xs text-muted-foreground">{p.codigo}</span> : null}
+                  {usadasAntes.includes(p.id) ? (
+                    <span className="ml-2 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground">
+                      Pedido antes
+                    </span>
+                  ) : null}
                   <span className="block text-xs text-muted-foreground">{p.contenido}</span>
                 </span>
               </label>

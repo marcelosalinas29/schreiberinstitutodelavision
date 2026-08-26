@@ -497,6 +497,42 @@ export type Database = {
         }
         Relationships: []
       }
+      practicas_uso: {
+        Row: {
+          created_at: string
+          id: string
+          paciente_id: string
+          practica_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          paciente_id: string
+          practica_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          paciente_id?: string
+          practica_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "practicas_uso_paciente_id_fkey"
+            columns: ["paciente_id"]
+            isOneToOne: false
+            referencedRelation: "pacientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "practicas_uso_practica_id_fkey"
+            columns: ["practica_id"]
+            isOneToOne: false
+            referencedRelation: "practicas_estudios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

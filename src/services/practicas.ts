@@ -56,3 +56,44 @@ export function practicasParaObraSocial(
   const generales = practicas.filter((p) => !p.obra_social || !p.obra_social.trim());
   return especificas.length ? [...especificas, ...generales] : generales;
 }
+
+/** Registra que una práctica fue pedida para un paciente (memoria de uso). */
+export async function registrarUsoPractica(practicaId: string, pacienteId: string): Promise<void> {
+  const { error } = await supabase
+    .from("practicas_uso")
+    .insert({ practica_id: practicaId, paciente_id: pacienteId });
+  if (error) throw error;
+}
+
+/** Reordena las prácticas poniendo primero las más pedidas para ese paciente. */
+export async function practicasOrdenadasPorUso(
+  practicas: PracticaEstudio[],
+  pacienteId: string,
+): Promise<PracticaEstudio[]> {
+  if (!pacienteId || practicas.length === 0) return practicas;
+  const { data, error } = await supabase
+    .from("practicas_uso")
+    .select("practica_id")
+    .eq("paciente_id", pacienteId);
+  if (error || !data?.length) return practicas;
+
+  const conteo = new Map<string, number>();
+  for (const fila of data) conteo.set(fila.practica_id, (conteo.get(fila.practica_id) ?? 0) + 1);
+
+  const usadas = practicas
+    .filter((p) => conteo.has(p.id))
+    .sort((a, b) => (conteo.get(b.id) ?? 0) - (conteo.get(a.id) ?? 0));
+  const resto = practicas.filter((p) => !conteo.has(p.id));
+  return [...usadas, ...resto];
+}
+
+/** Ids de prácticas que ya se pidieron alguna vez para ese paciente. */
+export async function idsPracticasUsadas(pacienteId: string): Promise<string[]> {
+  if (!pacienteId) return [];
+  const { data, error } = await supabase
+    .from("practicas_uso")
+    .select("practica_id")
+    .eq("paciente_id", pacienteId);
+  if (error || !data) return [];
+  return [...new Set(data.map((f) => f.practica_id))];
+}
