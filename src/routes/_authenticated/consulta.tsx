@@ -76,7 +76,7 @@ function useDictado(onTexto: (texto: string) => void) {
 
 function Consulta() {
   const qc = useQueryClient();
-  const { paciente: pacienteDeUrl } = Route.useSearch();
+  const { paciente: pacienteDeUrl, historia: historiaDeUrl } = Route.useSearch();
   const [pacienteId, setPacienteId] = useState(pacienteDeUrl ?? "");
   const [transcripcion, setTranscripcion] = useState("");
   const [draft, setDraft] = useState<HistoriaDraft>(HISTORIA_VACIA);
@@ -90,6 +90,27 @@ function Consulta() {
   const practicas = useQuery({ queryKey: ["practicas"], queryFn: listPracticas });
   const documentos = useQuery({ queryKey: ["documentos-clinicos"], queryFn: listDocumentos });
   const paciente = (pacientes.data ?? []).find((p) => p.id === pacienteId) ?? null;
+
+  // Edición de una consulta existente (?historia=<id>)
+  const historiaExistente = useQuery({
+    queryKey: ["historia", historiaDeUrl],
+    enabled: Boolean(historiaDeUrl),
+    queryFn: () => getHistoria(historiaDeUrl!),
+  });
+
+  useEffect(() => {
+    const h = historiaExistente.data;
+    if (!h) return;
+    const { id: _id, paciente_id, created_at: _createdAt, ...campos } = h as Record<string, unknown> & {
+      id: string;
+      paciente_id: string;
+      created_at?: string;
+    };
+    setDraft(campos as unknown as HistoriaDraft);
+    if (paciente_id) setPacienteId(paciente_id);
+    setTranscripcion((h.dictado_crudo as string | null) ?? "");
+  }, [historiaExistente.data]);
+
 
   const { grabando, alternar } = useDictado((texto) => setTranscripcion((prev) => `${prev} ${texto}`.trim()));
 
