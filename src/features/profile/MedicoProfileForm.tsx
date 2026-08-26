@@ -52,9 +52,22 @@ function AssetUploader({
           )}
         </div>
         <div className="space-y-1">
-          <Button type="button" variant="outline" size="sm" disabled={subiendo} onClick={() => input.current?.click()}>
-            {subiendo ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />} Subir imagen
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={subiendo}
+              onClick={() => input.current?.click()}
+            >
+              {subiendo ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />} Subir imagen
+            </Button>
+            {onEliminar && preview ? (
+              <Button type="button" variant="ghost" size="sm" disabled={subiendo} onClick={onEliminar}>
+                <Trash2 className="size-4" /> Eliminar firma
+              </Button>
+            ) : null}
+          </div>
           <p className="text-xs text-muted-foreground">{descripcion}</p>
         </div>
         <input
