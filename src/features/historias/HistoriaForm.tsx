@@ -221,7 +221,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function LinksObrasSocialesChips({ obraSocial }: { obraSocial?: string | null }) {
+function LinksObrasSocialesChips({ obraSocial }: { obraSocial?: string | null | undefined }) {
   const links = useQuery({ queryKey: ["links-obras-sociales"], queryFn: listLinksObrasSociales });
   const os = (obraSocial ?? "").trim().toLowerCase();
   const items = [...(links.data ?? [])].sort((a, b) => {
@@ -262,7 +262,7 @@ function LinksObrasSocialesChips({ obraSocial }: { obraSocial?: string | null })
   );
 }
 
-export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props & { obraSocial?: string | null }) {
+export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props & { obraSocial?: string | null | undefined }) {
   const props = { value, onChange, historiaId };
 
 

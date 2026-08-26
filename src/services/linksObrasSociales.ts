@@ -30,9 +30,15 @@ export async function upsertLinkObraSocial(
     return data;
   }
 
+  const { id: _omit, ...campos } = values;
   const { data, error } = await supabase
     .from("links_obras_sociales")
-    .insert({ ...values, owner_id: ownerId })
+    .insert({
+      obra_social: campos.obra_social,
+      nombre_plataforma: campos.nombre_plataforma,
+      url: campos.url,
+      owner_id: ownerId,
+    })
     .select("*")
     .single();
   if (error) throw error;
