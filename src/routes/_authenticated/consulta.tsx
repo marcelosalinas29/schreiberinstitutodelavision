@@ -183,14 +183,12 @@ function Consulta() {
     setPedidoAbierto(true);
     void (async () => {
       try {
-        const ordenadas = await practicasOrdenadasPorUso(basePracticas, paciente.id);
-        const previas = new Set(ordenadas.map((p) => p.id));
-        // Las "pedidas antes" quedan al principio del arreglo reordenado.
-        const marcadas = ordenadas.filter((p, i) => previas.has(p.id) && i < ordenadas.length);
-        void marcadas;
+        const [ordenadas, usados] = await Promise.all([
+          practicasOrdenadasPorUso(basePracticas, paciente.id),
+          idsPracticasUsadas(paciente.id),
+        ]);
         setOrdenPedido(ordenadas);
-        const usados = ordenadas.slice(0, ordenadas.length);
-        void usados;
+        setUsadasAntes(usados);
       } catch (e) {
         console.error(e);
       }
