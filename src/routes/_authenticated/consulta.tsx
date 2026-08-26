@@ -176,6 +176,7 @@ function Consulta() {
 
   const basePracticas = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
   const [ordenPedido, setOrdenPedido] = useState<PracticaEstudio[] | null>(null);
+  const [pedidoListo, setPedidoListo] = useState<{ contenido: string; fecha: Date } | null>(null);
   const [usadasAntes, setUsadasAntes] = useState<string[]>([]);
   const disponibles = ordenPedido ?? basePracticas;
 
