@@ -212,9 +212,15 @@ export function HistoriaForm({ value, onChange, historiaId }: Props) {
       <Section title="Examen oftalmológico">
         <Bilateral {...props} label="Autorrefractómetro (ARM)" odKey="arm_od" oiKey="arm_oi" placeholder="esf / cil x eje" />
         <Bilateral {...props} label="Refracción subjetiva" odKey="refraccion_od" oiKey="refraccion_oi" placeholder="esf / cil x eje" />
-        <Bilateral {...props} label="AV sin corrección" odKey="av_sc_od" oiKey="av_sc_oi" placeholder="20/…" />
-        <Bilateral {...props} label="AV con corrección" odKey="av_cc_od" oiKey="av_cc_oi" placeholder="20/…" />
-        <Bilateral {...props} label="Biomicroscopía" odKey="bmc_od" oiKey="bmc_oi" />
+        <DatosPrevios
+          value={value}
+          campos={[
+            ["AV sin corrección OD", "av_sc_od"],
+            ["AV sin corrección OI", "av_sc_oi"],
+            ["AV con corrección OD", "av_cc_od"],
+            ["AV con corrección OI", "av_cc_oi"],
+          ]}
+        />
         <div className="space-y-1.5">
           <Label className="text-xs uppercase tracking-wide text-muted-foreground">PIO (mmHg)</Label>
           <div className="grid grid-cols-3 gap-2">
