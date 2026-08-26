@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { PatientForm, calcularEdad } from "@/features/patients/PatientForm";
+import { HistoricoPIO } from "@/features/historias/HistoricoPIO";
 import { listPacientes } from "@/services/pacientes";
 import { listHistoriasPaciente } from "@/services/historias";
 import type { Paciente } from "@/types/domain";
@@ -162,6 +163,8 @@ function Pacientes() {
                 <Dato label="Localidad" value={seleccionado.localidad} />
                 <Dato label="Notas" value={seleccionado.notas} />
               </dl>
+
+              <HistoricoPIO pacienteId={seleccionado.id} className="mt-6" />
 
               <h3 className="mb-2 mt-6 text-sm font-semibold">Consultas</h3>
               {historias.isLoading ? (
