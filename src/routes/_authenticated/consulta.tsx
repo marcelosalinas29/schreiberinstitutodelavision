@@ -127,12 +127,18 @@ function Consulta() {
   const guardar = useMutation({
     mutationFn: async () => {
       if (!pacienteId) throw new Error("Elegí un paciente");
+      if (historiaDeUrl) {
+        await updateHistoria(historiaDeUrl, { ...draft, dictado_crudo: transcripcion || null });
+        return;
+      }
       await createHistoria({ ...draft, paciente_id: pacienteId, dictado_crudo: transcripcion || null });
     },
     onSuccess: () => {
-      toast.success("Historia clínica guardada");
-      setDraft(HISTORIA_VACIA);
-      setTranscripcion("");
+      toast.success(historiaDeUrl ? "Consulta actualizada" : "Historia clínica guardada");
+      if (!historiaDeUrl) {
+        setDraft(HISTORIA_VACIA);
+        setTranscripcion("");
+      }
       void qc.invalidateQueries({ queryKey: ["historias"] });
     },
     onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo guardar"),
