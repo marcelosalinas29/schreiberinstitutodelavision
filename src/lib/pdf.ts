@@ -222,5 +222,17 @@ export async function generarRecetaPDF(
 
   dibujarPie();
 
+  if (opciones?.modo === "imprimir") {
+    // Abre el PDF en una pestaña nueva y dispara el diálogo de impresión del navegador.
+    try {
+      (doc as unknown as { autoPrint?: () => void }).autoPrint?.();
+    } catch {
+      /* versión de jsPDF sin autoPrint: se abre igual, sin diálogo automático */
+    }
+    const url = doc.output("bloburl") as unknown as string;
+    window.open(String(url), "_blank", "noopener,noreferrer");
+    return;
+  }
+
   doc.save(`${titulo.toLowerCase()}-${paciente.apellido}-${fecha.toISOString().slice(0, 10)}.pdf`);
 }
