@@ -209,12 +209,14 @@ function Consulta() {
       .map((p) => `• ${p.nombre}${p.codigo ? ` (${p.codigo})` : ""}\n${p.contenido}`)
       .join("\n\n");
     setPedidoAbierto(false);
+    const fecha = new Date();
+    setPedidoListo({ contenido, fecha });
     void (async () => {
       const medico = await datosMedicoReceta();
       await generarRecetaPDF({
         paciente,
         contenido,
-        fecha: new Date(),
+        fecha,
         plantilla: plantillas.data?.[0] ?? null,
         medico,
         titulo: "Pedido de estudios",
