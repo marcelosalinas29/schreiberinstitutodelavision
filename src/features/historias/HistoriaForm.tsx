@@ -445,6 +445,7 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props 
           />
           <Textarea id="tto" rows={6} value={value.tratamiento ?? ""} onChange={(e) => onChange({ tratamiento: e.target.value })} />
         </div>
+        <LinksObrasSocialesChips obraSocial={obraSocial} />
         <div className="space-y-1.5">
           <Label htmlFor="proxima">Próxima cita</Label>
           <Input id="proxima" placeholder="Control en 3 meses" value={value.proxima_cita ?? ""} onChange={(e) => onChange({ proxima_cita: e.target.value })} />
