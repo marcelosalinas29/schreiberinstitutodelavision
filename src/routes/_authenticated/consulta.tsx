@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -85,6 +86,9 @@ function Consulta() {
   const [seleccionadas, setSeleccionadas] = useState<string[]>([]);
   const [docsAbierto, setDocsAbierto] = useState(false);
   const [docElegido, setDocElegido] = useState("");
+  const [docManual, setDocManual] = useState(false);
+  const [manualTitulo, setManualTitulo] = useState("");
+  const [manualContenido, setManualContenido] = useState("");
 
   const pacientes = useQuery({ queryKey: ["pacientes", ""], queryFn: () => listPacientes("") });
   const plantillas = useQuery({ queryKey: ["plantillas"], queryFn: listPlantillas });
@@ -201,7 +205,33 @@ function Consulta() {
       return;
     }
     setDocElegido("");
+    setDocManual(false);
+    setManualTitulo("");
+    setManualContenido("");
     setDocsAbierto(true);
+  };
+
+  /** Documento escrito a mano para un caso puntual: no se guarda, solo se imprime. */
+  const generarDocumentoManual = () => {
+    if (!paciente || !manualContenido.trim()) return;
+    setDocsAbierto(false);
+    void (async () => {
+      const medico = await datosMedicoReceta();
+      const fecha = new Date();
+      await generarRecetaPDF({
+        paciente,
+        contenido: completarDocumento(manualContenido, {
+          nombrePaciente: `${paciente.apellido}, ${paciente.nombre}`,
+          dniPaciente: paciente.dni,
+          matriculaMedico: medico?.matricula ?? null,
+          fecha,
+        }),
+        fecha,
+        plantilla: plantillas.data?.[0] ?? null,
+        medico,
+        titulo: manualTitulo.trim() || "Documento",
+      });
+    })();
   };
 
   const generarDocumento = () => {
@@ -350,41 +380,88 @@ function Consulta() {
           <DialogHeader>
             <DialogTitle>Consentimientos y protocolos</DialogTitle>
           </DialogHeader>
-          <div className="max-h-72 space-y-4 overflow-y-auto">
-            {(documentos.data ?? []).length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No hay documentos cargados. Agregalos en “Consentimientos y protocolos”.
-              </p>
-            ) : null}
-            {TIPOS_DOCUMENTO.map((t) => {
-              const items = (documentos.data ?? []).filter((d) => (d.tipo as DocumentoTipo) === t.value);
-              if (items.length === 0) return null;
-              return (
-                <div key={t.value} className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.label}</p>
-                  {items.map((d) => (
-                    <label key={d.id} className="flex cursor-pointer items-center gap-3 text-sm">
-                      <input
-                        type="radio"
-                        name="documento"
-                        className="accent-primary"
-                        checked={docElegido === d.id}
-                        onChange={() => setDocElegido(d.id)}
-                      />
-                      <span className="min-w-0 font-medium">{d.nombre}</span>
-                    </label>
-                  ))}
-                </div>
-              );
-            })}
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={docManual ? "outline" : "secondary"}
+              size="sm"
+              onClick={() => setDocManual(false)}
+            >
+              Documentos precargados
+            </Button>
+            <Button
+              variant={docManual ? "secondary" : "outline"}
+              size="sm"
+              onClick={() => setDocManual(true)}
+            >
+              <FileSignature className="size-4" /> Escribir documento manual
+            </Button>
           </div>
+
+          {docManual ? (
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="manual-titulo">Título del documento</Label>
+                <Input
+                  id="manual-titulo"
+                  placeholder="Autorización especial - motivo"
+                  value={manualTitulo}
+                  onChange={(e) => setManualTitulo(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="manual-contenido">Contenido</Label>
+                <Textarea
+                  id="manual-contenido"
+                  rows={10}
+                  placeholder="Escribí el texto del documento. Podés usar [NOMBRE_PACIENTE], [DNI_PACIENTE], [FECHA] y [MATRICULA_MEDICO]."
+                  value={manualContenido}
+                  onChange={(e) => setManualContenido(e.target.value)}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="max-h-72 space-y-4 overflow-y-auto">
+              {(documentos.data ?? []).length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No hay documentos cargados. Agregalos en “Consentimientos y protocolos”.
+                </p>
+              ) : null}
+              {TIPOS_DOCUMENTO.map((t) => {
+                const items = (documentos.data ?? []).filter((d) => (d.tipo as DocumentoTipo) === t.value);
+                if (items.length === 0) return null;
+                return (
+                  <div key={t.value} className="space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.label}</p>
+                    {items.map((d) => (
+                      <label key={d.id} className="flex cursor-pointer items-center gap-3 text-sm">
+                        <input
+                          type="radio"
+                          name="documento"
+                          className="accent-primary"
+                          checked={docElegido === d.id}
+                          onChange={() => setDocElegido(d.id)}
+                        />
+                        <span className="min-w-0 font-medium">{d.nombre}</span>
+                      </label>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          )}
           <DialogFooter>
             <Button variant="ghost" size="sm" onClick={() => setDocsAbierto(false)}>
               Cancelar
             </Button>
-            <Button size="sm" onClick={generarDocumento} disabled={!docElegido}>
-              <FileDown className="size-4" /> Generar PDF
-            </Button>
+            {docManual ? (
+              <Button size="sm" onClick={generarDocumentoManual} disabled={!manualContenido.trim()}>
+                <FileDown className="size-4" /> Generar PDF
+              </Button>
+            ) : (
+              <Button size="sm" onClick={generarDocumento} disabled={!docElegido}>
+                <FileDown className="size-4" /> Generar PDF
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
