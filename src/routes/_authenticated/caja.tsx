@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Lock, Plus, Trash2 } from "lucide-react";
+import { Download, FileText, Lock, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -12,7 +12,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { calcularTotales, cerrarCaja, createCobro, deleteCobro, listCierres, listCobrosPorFecha } from "@/services/caja";
+import {
+  calcularTotales,
+  cerrarCaja,
+  crearCobroConMultiplesPagos,
+  deleteCobro,
+  exportarCobrosCSV,
+  listCierres,
+  listCobrosPorFecha,
+  urlFirmadaComprobante,
+  type PagoLinea,
+} from "@/services/caja";
 import { listPacientes } from "@/services/pacientes";
 import { MEDIOS_PAGO, TIPOS_COBRO, type MedioPago, type TipoCobro } from "@/types/domain";
 
@@ -31,10 +41,14 @@ export const Route = createFileRoute("/_authenticated/caja")({
 const money = (n: number) => n.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
 
 const cobroSchema = z.object({
-  monto: z.coerce.number().positive("El monto debe ser mayor a cero").max(100_000_000),
   concepto: z.string().trim().max(200).optional(),
   obra_social: z.string().trim().max(120).optional(),
 });
+
+interface LineaPagoForm {
+  medio: MedioPago;
+  monto: string;
+}
 
 function Caja() {
   const qc = useQueryClient();
@@ -43,11 +57,11 @@ function Caja() {
   const [form, setForm] = useState({
     paciente_id: "",
     tipo: "consulta_particular" as TipoCobro,
-    medio: "efectivo" as MedioPago,
-    monto: "",
     concepto: "",
     obra_social: "",
   });
+  const [lineas, setLineas] = useState<LineaPagoForm[]>([{ medio: "efectivo", monto: "" }]);
+  const [comprobante, setComprobante] = useState<File | null>(null);
   const [turnoLabel, setTurnoLabel] = useState("Mañana");
   const [observaciones, setObservaciones] = useState("");
 
@@ -56,29 +70,50 @@ function Caja() {
   const cierres = useQuery({ queryKey: ["cierres"], queryFn: listCierres });
 
   const totales = calcularTotales(cobros.data ?? []);
+  const totalFormulario = lineas.reduce((acc, l) => acc + (Number(l.monto) || 0), 0);
 
   const registrar = useMutation({
     mutationFn: async () => {
       const parsed = cobroSchema.parse(form);
-      await createCobro({
-        fecha,
+      const pagos: PagoLinea[] = lineas
+        .map((l) => ({ medio: l.medio, monto: Number(l.monto) || 0 }))
+        .filter((p) => p.monto > 0);
+      if (pagos.length === 0) throw new Error("Agregá al menos una forma de pago con monto");
+      await crearCobroConMultiplesPagos(form.paciente_id || null, fecha, pagos, comprobante, {
         tipo: form.tipo,
-        medio: form.medio,
-        monto: parsed.monto,
         concepto: parsed.concepto || null,
         obra_social: parsed.obra_social || null,
-        paciente_id: form.paciente_id || null,
       });
     },
     onSuccess: () => {
       toast.success("Cobro registrado");
       setOpen(false);
-      setForm({ ...form, monto: "", concepto: "" });
+      setForm({ ...form, concepto: "" });
+      setLineas([{ medio: "efectivo", monto: "" }]);
+      setComprobante(null);
       void qc.invalidateQueries({ queryKey: ["cobros"] });
     },
     onError: (error: unknown) =>
-      toast.error(error instanceof z.ZodError ? (error.issues[0]?.message ?? "Datos inválidos") : "No se pudo registrar"),
+      toast.error(
+        error instanceof z.ZodError
+          ? (error.issues[0]?.message ?? "Datos inválidos")
+          : error instanceof Error
+            ? error.message
+            : "No se pudo registrar",
+      ),
   });
+
+  const exportar = useMutation({
+    mutationFn: () => exportarCobrosCSV(cobros.data ?? []),
+    onError: () => toast.error("No se pudo exportar"),
+  });
+
+  async function verComprobante(path: string) {
+    const url = await urlFirmadaComprobante(path);
+    if (url) window.open(url, "_blank", "noopener");
+    else toast.error("No se pudo abrir el comprobante");
+  }
+
 
   const borrar = useMutation({
     mutationFn: (id: string) => deleteCobro(id),
@@ -146,32 +181,77 @@ function Caja() {
                     </Select>
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Medio de pago</Label>
-                    <Select value={form.medio} onValueChange={(v) => setForm({ ...form, medio: v as MedioPago })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {MEDIOS_PAGO.map((m) => (
-                          <SelectItem key={m.value} value={m.value}>
-                            {m.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="monto">Monto</Label>
-                    <Input id="monto" type="number" min={0} step="0.01" value={form.monto} onChange={(e) => setForm({ ...form, monto: e.target.value })} />
-                  </div>
-                  <div className="space-y-1.5">
                     <Label htmlFor="os">Obra social</Label>
                     <Input id="os" value={form.obra_social} onChange={(e) => setForm({ ...form, obra_social: e.target.value })} />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label>Formas de pago</Label>
+                    {lineas.map((linea, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <Select
+                          value={linea.medio}
+                          onValueChange={(v) =>
+                            setLineas(lineas.map((l, j) => (j === i ? { ...l, medio: v as MedioPago } : l)))
+                          }
+                        >
+                          <SelectTrigger className="w-44">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {MEDIOS_PAGO.map((m) => (
+                              <SelectItem key={m.value} value={m.value}>
+                                {m.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Input
+                          type="number"
+                          min={0}
+                          step="0.01"
+                          placeholder="Monto"
+                          aria-label={`Monto ${i + 1}`}
+                          value={linea.monto}
+                          onChange={(e) => setLineas(lineas.map((l, j) => (j === i ? { ...l, monto: e.target.value } : l)))}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Quitar forma de pago"
+                          disabled={lineas.length === 1}
+                          onClick={() => setLineas(lineas.filter((_, j) => j !== i))}
+                        >
+                          <X className="size-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <div className="flex items-center justify-between">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLineas([...lineas, { medio: "efectivo", monto: "" }])}
+                      >
+                        <Plus className="size-4" /> Agregar forma de pago
+                      </Button>
+                      <span className="text-sm font-semibold tabular-nums">Total: {money(totalFormulario)}</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <Label htmlFor="comprobante">Comprobante de pago (imagen o PDF)</Label>
+                    <Input
+                      id="comprobante"
+                      type="file"
+                      accept="image/*,application/pdf"
+                      onChange={(e) => setComprobante(e.target.files?.[0] ?? null)}
+                    />
                   </div>
                   <div className="space-y-1.5 sm:col-span-2">
                     <Label htmlFor="concepto">Concepto</Label>
                     <Input id="concepto" value={form.concepto} onChange={(e) => setForm({ ...form, concepto: e.target.value })} />
                   </div>
+
                 </div>
                 <DialogFooter>
                   <Button onClick={() => registrar.mutate()} disabled={registrar.isPending}>
@@ -180,6 +260,9 @@ function Caja() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
+            <Button size="sm" variant="outline" onClick={() => exportar.mutate()} disabled={exportar.isPending}>
+              <Download className="size-4" /> Exportar CSV
+            </Button>
           </>
         }
       />
@@ -213,6 +296,16 @@ function Caja() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold tabular-nums">{money(Number(c.monto))}</span>
+                    {c.comprobante_url ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Ver comprobante"
+                        onClick={() => void verComprobante(c.comprobante_url!)}
+                      >
+                        <FileText className="size-4" />
+                      </Button>
+                    ) : null}
                     <Button variant="ghost" size="icon" aria-label="Eliminar cobro" onClick={() => borrar.mutate(c.id)}>
                       <Trash2 className="size-4" />
                     </Button>
