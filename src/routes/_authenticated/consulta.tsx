@@ -75,7 +75,8 @@ function useDictado(onTexto: (texto: string) => void) {
 
 function Consulta() {
   const qc = useQueryClient();
-  const [pacienteId, setPacienteId] = useState("");
+  const { paciente: pacienteDeUrl } = Route.useSearch();
+  const [pacienteId, setPacienteId] = useState(pacienteDeUrl ?? "");
   const [transcripcion, setTranscripcion] = useState("");
   const [draft, setDraft] = useState<HistoriaDraft>(HISTORIA_VACIA);
   const [pedidoAbierto, setPedidoAbierto] = useState(false);
