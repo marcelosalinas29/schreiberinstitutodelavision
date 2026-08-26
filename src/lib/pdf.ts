@@ -54,16 +54,24 @@ async function cargarImagen(url: string): Promise<string | null> {
   return out;
 }
 
+/** Opciones de salida del PDF. Por defecto se descarga (comportamiento histórico). */
+export interface OpcionesSalidaPDF {
+  modo?: "descargar" | "imprimir";
+}
+
 /** Genera una receta / indicación en PDF usando la plantilla del profesional. */
-export async function generarRecetaPDF({
-  paciente,
-  contenido,
-  fecha,
-  plantilla,
-  medico,
-  titulo = "Receta",
-  formato = "a4",
-}: RecetaInput) {
+export async function generarRecetaPDF(
+  {
+    paciente,
+    contenido,
+    fecha,
+    plantilla,
+    medico,
+    titulo = "Receta",
+    formato = "a4",
+  }: RecetaInput,
+  opciones?: OpcionesSalidaPDF,
+) {
   const doc = new jsPDF({ unit: "mm", format: formato });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
