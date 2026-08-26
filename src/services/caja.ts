@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { CierreCaja, CobroConPaciente, CobroInsert, MedioPago } from "@/types/domain";
+import { BUCKET_MEDICAL } from "@/services/perfil";
+import type { CierreCaja, CobroConPaciente, CobroInsert, MedioPago, Tables } from "@/types/domain";
 
 const SELECT = "*, paciente:pacientes(id, nombre, apellido)";
 
