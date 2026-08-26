@@ -47,6 +47,7 @@ export async function deleteDocumento(id: string): Promise<void> {
 export const TIPOS_DOCUMENTO: { value: DocumentoTipo; label: string }[] = [
   { value: "consentimiento", label: "Consentimientos" },
   { value: "protocolo_quirurgico", label: "Protocolos quirúrgicos" },
+  { value: "tratamiento_preoperatorio", label: "Tratamientos preoperatorios" },
 ];
 
 /** Completa los marcadores del documento con los datos del paciente y del profesional. */

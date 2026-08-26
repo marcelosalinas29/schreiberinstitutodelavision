@@ -37,7 +37,7 @@ export type MedicamentoInsert = Tables["medicamentos"]["Insert"];
 
 export type DocumentoClinico = Tables["documentos_clinicos"]["Row"];
 export type DocumentoClinicoInsert = Tables["documentos_clinicos"]["Insert"];
-export type DocumentoTipo = "consentimiento" | "protocolo_quirurgico";
+export type DocumentoTipo = "consentimiento" | "protocolo_quirurgico" | "tratamiento_preoperatorio";
 
 export type Profile = Tables["profiles"]["Row"];
 
