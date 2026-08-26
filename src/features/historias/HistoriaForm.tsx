@@ -238,7 +238,7 @@ export function HistoriaForm({ value, onChange, historiaId }: Props) {
               placeholder="OI"
               aria-label="PIO ojo izquierdo"
               value={value.pio_oi ?? ""}
-              onChange={(e) => onChange({ pio_oi: e.target.value === "" ? null : Number(e.target.value) })}
+              onChange={(e) => onChange(patchPio("pio_oi", e.target.value, value))}
             />
             <Input
               type="time"
