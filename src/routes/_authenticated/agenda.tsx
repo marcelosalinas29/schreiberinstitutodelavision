@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { MessageCircle, Plus, Search, UserPlus } from "lucide-react";
+import { FileText, MessageCircle, Plus, Search, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -281,6 +281,13 @@ function Agenda() {
               >
                 <MessageCircle className="size-4" /> WhatsApp
               </Button>
+              {turno.paciente_id ? (
+                <Button variant="outline" size="sm" asChild title="Abrir historia clínica de este paciente">
+                  <Link to="/consulta" search={{ paciente: turno.paciente_id }}>
+                    <FileText className="size-4" /> Historia clínica
+                  </Link>
+                </Button>
+              ) : null}
               <Select value={turno.estado} onValueChange={(v) => cambiarEstado.mutate({ id: turno.id, estado: v as TurnoEstado })}>
                 <SelectTrigger className="w-40">
                   <SelectValue />

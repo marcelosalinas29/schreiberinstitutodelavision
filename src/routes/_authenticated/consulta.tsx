@@ -24,6 +24,9 @@ import { TIPOS_DOCUMENTO, completarDocumento, listDocumentos } from "@/services/
 import type { DocumentoTipo } from "@/types/domain";
 
 export const Route = createFileRoute("/_authenticated/consulta")({
+  validateSearch: (search: Record<string, unknown>): { paciente?: string | undefined } => ({
+    paciente: typeof search["paciente"] === "string" ? search["paciente"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Consulta y dictado — Schreiber Instituto de la Visión" },
@@ -72,7 +75,8 @@ function useDictado(onTexto: (texto: string) => void) {
 
 function Consulta() {
   const qc = useQueryClient();
-  const [pacienteId, setPacienteId] = useState("");
+  const { paciente: pacienteDeUrl } = Route.useSearch();
+  const [pacienteId, setPacienteId] = useState(pacienteDeUrl ?? "");
   const [transcripcion, setTranscripcion] = useState("");
   const [draft, setDraft] = useState<HistoriaDraft>(HISTORIA_VACIA);
   const [pedidoAbierto, setPedidoAbierto] = useState(false);
