@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 
-import firmaSelloAsset from "@/assets/firma-sello-schreiber.png.asset.json";
+
 import { LOGO_HORIZONTAL_TRANSPARENTE_URL } from "@/components/layout/Logo";
 import type { MedicoReceta } from "@/services/perfil";
 import type { Paciente, Plantilla } from "@/types/domain";
