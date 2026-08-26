@@ -163,6 +163,8 @@ function Pacientes() {
                 <Dato label="Notas" value={seleccionado.notas} />
               </dl>
 
+              <HistoricoPIO pacienteId={seleccionado.id} className="mt-6" />
+
               <h3 className="mb-2 mt-6 text-sm font-semibold">Consultas</h3>
               {historias.isLoading ? (
                 <p className="text-sm text-muted-foreground">Cargando…</p>
