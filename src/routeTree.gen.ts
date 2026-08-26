@@ -18,6 +18,7 @@ import { Route as AuthenticatedConfiguracionRouteImport } from './routes/_authen
 import { Route as AuthenticatedConsultaRouteImport } from './routes/_authenticated/consulta'
 import { Route as AuthenticatedDocumentosRouteImport } from './routes/_authenticated/documentos'
 import { Route as AuthenticatedImportarRouteImport } from './routes/_authenticated/importar'
+import { Route as AuthenticatedLinksObrasSocialesRouteImport } from './routes/_authenticated/links-obras-sociales'
 import { Route as AuthenticatedMedicamentosRouteImport } from './routes/_authenticated/medicamentos'
 import { Route as AuthenticatedPacientesRouteImport } from './routes/_authenticated/pacientes'
 import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/panel'
@@ -69,6 +70,12 @@ const AuthenticatedImportarRoute = AuthenticatedImportarRouteImport.update({
   path: '/importar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLinksObrasSocialesRoute =
+  AuthenticatedLinksObrasSocialesRouteImport.update({
+    id: '/links-obras-sociales',
+    path: '/links-obras-sociales',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMedicamentosRoute =
   AuthenticatedMedicamentosRouteImport.update({
     id: '/medicamentos',
@@ -105,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/consulta': typeof AuthenticatedConsultaRoute
   '/documentos': typeof AuthenticatedDocumentosRoute
   '/importar': typeof AuthenticatedImportarRoute
+  '/links-obras-sociales': typeof AuthenticatedLinksObrasSocialesRoute
   '/medicamentos': typeof AuthenticatedMedicamentosRoute
   '/pacientes': typeof AuthenticatedPacientesRoute
   '/panel': typeof AuthenticatedPanelRoute
@@ -120,6 +128,7 @@ export interface FileRoutesByTo {
   '/consulta': typeof AuthenticatedConsultaRoute
   '/documentos': typeof AuthenticatedDocumentosRoute
   '/importar': typeof AuthenticatedImportarRoute
+  '/links-obras-sociales': typeof AuthenticatedLinksObrasSocialesRoute
   '/medicamentos': typeof AuthenticatedMedicamentosRoute
   '/pacientes': typeof AuthenticatedPacientesRoute
   '/panel': typeof AuthenticatedPanelRoute
@@ -137,6 +146,7 @@ export interface FileRoutesById {
   '/_authenticated/consulta': typeof AuthenticatedConsultaRoute
   '/_authenticated/documentos': typeof AuthenticatedDocumentosRoute
   '/_authenticated/importar': typeof AuthenticatedImportarRoute
+  '/_authenticated/links-obras-sociales': typeof AuthenticatedLinksObrasSocialesRoute
   '/_authenticated/medicamentos': typeof AuthenticatedMedicamentosRoute
   '/_authenticated/pacientes': typeof AuthenticatedPacientesRoute
   '/_authenticated/panel': typeof AuthenticatedPanelRoute
@@ -154,6 +164,7 @@ export interface FileRouteTypes {
     | '/consulta'
     | '/documentos'
     | '/importar'
+    | '/links-obras-sociales'
     | '/medicamentos'
     | '/pacientes'
     | '/panel'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/consulta'
     | '/documentos'
     | '/importar'
+    | '/links-obras-sociales'
     | '/medicamentos'
     | '/pacientes'
     | '/panel'
@@ -185,6 +197,7 @@ export interface FileRouteTypes {
     | '/_authenticated/consulta'
     | '/_authenticated/documentos'
     | '/_authenticated/importar'
+    | '/_authenticated/links-obras-sociales'
     | '/_authenticated/medicamentos'
     | '/_authenticated/pacientes'
     | '/_authenticated/panel'
@@ -263,6 +276,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedImportarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/links-obras-sociales': {
+      id: '/_authenticated/links-obras-sociales'
+      path: '/links-obras-sociales'
+      fullPath: '/links-obras-sociales'
+      preLoaderRoute: typeof AuthenticatedLinksObrasSocialesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/medicamentos': {
       id: '/_authenticated/medicamentos'
       path: '/medicamentos'
@@ -308,6 +328,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedConsultaRoute: typeof AuthenticatedConsultaRoute
   AuthenticatedDocumentosRoute: typeof AuthenticatedDocumentosRoute
   AuthenticatedImportarRoute: typeof AuthenticatedImportarRoute
+  AuthenticatedLinksObrasSocialesRoute: typeof AuthenticatedLinksObrasSocialesRoute
   AuthenticatedMedicamentosRoute: typeof AuthenticatedMedicamentosRoute
   AuthenticatedPacientesRoute: typeof AuthenticatedPacientesRoute
   AuthenticatedPanelRoute: typeof AuthenticatedPanelRoute
@@ -322,6 +343,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConsultaRoute: AuthenticatedConsultaRoute,
   AuthenticatedDocumentosRoute: AuthenticatedDocumentosRoute,
   AuthenticatedImportarRoute: AuthenticatedImportarRoute,
+  AuthenticatedLinksObrasSocialesRoute: AuthenticatedLinksObrasSocialesRoute,
   AuthenticatedMedicamentosRoute: AuthenticatedMedicamentosRoute,
   AuthenticatedPacientesRoute: AuthenticatedPacientesRoute,
   AuthenticatedPanelRoute: AuthenticatedPanelRoute,
