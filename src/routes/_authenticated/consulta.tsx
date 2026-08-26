@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature } from "lucide-react";
 import { toast } from "sonner";
 
@@ -16,7 +16,7 @@ import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/his
 import { parseDictado } from "@/lib/ai.functions";
 import { generarRecetaPDF } from "@/lib/pdf";
 import { datosMedicoReceta } from "@/services/perfil";
-import { createHistoria } from "@/services/historias";
+import { createHistoria, getHistoria, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
 import { listPracticas, practicasParaObraSocial } from "@/services/practicas";
@@ -24,8 +24,9 @@ import { TIPOS_DOCUMENTO, completarDocumento, listDocumentos } from "@/services/
 import type { DocumentoTipo } from "@/types/domain";
 
 export const Route = createFileRoute("/_authenticated/consulta")({
-  validateSearch: (search: Record<string, unknown>): { paciente?: string | undefined } => ({
+  validateSearch: (search: Record<string, unknown>): { paciente?: string | undefined; historia?: string | undefined } => ({
     paciente: typeof search["paciente"] === "string" ? search["paciente"] : undefined,
+    historia: typeof search["historia"] === "string" ? search["historia"] : undefined,
   }),
   head: () => ({
     meta: [
