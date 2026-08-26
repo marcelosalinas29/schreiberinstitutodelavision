@@ -210,6 +210,7 @@ export function MedicoProfileForm() {
           preview={firmaPreview}
           subiendo={subiendo === "firma"}
           onFile={(f) => void subir(f, "firma")}
+          onEliminar={() => void eliminarFirma()}
         />
 
         <div className="sm:col-span-2">
