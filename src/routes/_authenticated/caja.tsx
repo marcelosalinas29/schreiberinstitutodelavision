@@ -41,10 +41,14 @@ export const Route = createFileRoute("/_authenticated/caja")({
 const money = (n: number) => n.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
 
 const cobroSchema = z.object({
-  monto: z.coerce.number().positive("El monto debe ser mayor a cero").max(100_000_000),
   concepto: z.string().trim().max(200).optional(),
   obra_social: z.string().trim().max(120).optional(),
 });
+
+interface LineaPagoForm {
+  medio: MedioPago;
+  monto: string;
+}
 
 function Caja() {
   const qc = useQueryClient();
@@ -53,11 +57,11 @@ function Caja() {
   const [form, setForm] = useState({
     paciente_id: "",
     tipo: "consulta_particular" as TipoCobro,
-    medio: "efectivo" as MedioPago,
-    monto: "",
     concepto: "",
     obra_social: "",
   });
+  const [lineas, setLineas] = useState<LineaPagoForm[]>([{ medio: "efectivo", monto: "" }]);
+  const [comprobante, setComprobante] = useState<File | null>(null);
   const [turnoLabel, setTurnoLabel] = useState("Mañana");
   const [observaciones, setObservaciones] = useState("");
 
@@ -66,29 +70,50 @@ function Caja() {
   const cierres = useQuery({ queryKey: ["cierres"], queryFn: listCierres });
 
   const totales = calcularTotales(cobros.data ?? []);
+  const totalFormulario = lineas.reduce((acc, l) => acc + (Number(l.monto) || 0), 0);
 
   const registrar = useMutation({
     mutationFn: async () => {
       const parsed = cobroSchema.parse(form);
-      await createCobro({
-        fecha,
+      const pagos: PagoLinea[] = lineas
+        .map((l) => ({ medio: l.medio, monto: Number(l.monto) || 0 }))
+        .filter((p) => p.monto > 0);
+      if (pagos.length === 0) throw new Error("Agregá al menos una forma de pago con monto");
+      await crearCobroConMultiplesPagos(form.paciente_id || null, fecha, pagos, comprobante, {
         tipo: form.tipo,
-        medio: form.medio,
-        monto: parsed.monto,
         concepto: parsed.concepto || null,
         obra_social: parsed.obra_social || null,
-        paciente_id: form.paciente_id || null,
       });
     },
     onSuccess: () => {
       toast.success("Cobro registrado");
       setOpen(false);
-      setForm({ ...form, monto: "", concepto: "" });
+      setForm({ ...form, concepto: "" });
+      setLineas([{ medio: "efectivo", monto: "" }]);
+      setComprobante(null);
       void qc.invalidateQueries({ queryKey: ["cobros"] });
     },
     onError: (error: unknown) =>
-      toast.error(error instanceof z.ZodError ? (error.issues[0]?.message ?? "Datos inválidos") : "No se pudo registrar"),
+      toast.error(
+        error instanceof z.ZodError
+          ? (error.issues[0]?.message ?? "Datos inválidos")
+          : error instanceof Error
+            ? error.message
+            : "No se pudo registrar",
+      ),
   });
+
+  const exportar = useMutation({
+    mutationFn: () => exportarCobrosCSV(cobros.data ?? []),
+    onError: () => toast.error("No se pudo exportar"),
+  });
+
+  async function verComprobante(path: string) {
+    const url = await urlFirmadaComprobante(path);
+    if (url) window.open(url, "_blank", "noopener");
+    else toast.error("No se pudo abrir el comprobante");
+  }
+
 
   const borrar = useMutation({
     mutationFn: (id: string) => deleteCobro(id),
