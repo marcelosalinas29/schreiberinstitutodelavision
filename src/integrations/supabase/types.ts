@@ -162,6 +162,10 @@ export type Database = {
           bmc_oi: string | null
           cie10: string | null
           created_at: string
+          curva_pio_ayunas_od: number | null
+          curva_pio_ayunas_oi: number | null
+          curva_pio_sobrecarga_od: number | null
+          curva_pio_sobrecarga_oi: number | null
           cv_od_imagen_url: string | null
           cv_oi_imagen_url: string | null
           diagnostico: string | null
@@ -200,6 +204,10 @@ export type Database = {
           bmc_oi?: string | null
           cie10?: string | null
           created_at?: string
+          curva_pio_ayunas_od?: number | null
+          curva_pio_ayunas_oi?: number | null
+          curva_pio_sobrecarga_od?: number | null
+          curva_pio_sobrecarga_oi?: number | null
           cv_od_imagen_url?: string | null
           cv_oi_imagen_url?: string | null
           diagnostico?: string | null
@@ -238,6 +246,10 @@ export type Database = {
           bmc_oi?: string | null
           cie10?: string | null
           created_at?: string
+          curva_pio_ayunas_od?: number | null
+          curva_pio_ayunas_oi?: number | null
+          curva_pio_sobrecarga_od?: number | null
+          curva_pio_sobrecarga_oi?: number | null
           cv_od_imagen_url?: string | null
           cv_oi_imagen_url?: string | null
           diagnostico?: string | null
