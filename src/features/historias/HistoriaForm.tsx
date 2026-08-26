@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { buscarCie10, listCie10 } from "@/services/cie10";
 import { ExternalLink, FileText, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
