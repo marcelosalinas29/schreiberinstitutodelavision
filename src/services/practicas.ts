@@ -86,3 +86,14 @@ export async function practicasOrdenadasPorUso(
   const resto = practicas.filter((p) => !conteo.has(p.id));
   return [...usadas, ...resto];
 }
+
+/** Ids de prácticas que ya se pidieron alguna vez para ese paciente. */
+export async function idsPracticasUsadas(pacienteId: string): Promise<string[]> {
+  if (!pacienteId) return [];
+  const { data, error } = await supabase
+    .from("practicas_uso")
+    .select("practica_id")
+    .eq("paciente_id", pacienteId);
+  if (error || !data) return [];
+  return [...new Set(data.map((f) => f.practica_id))];
+}
