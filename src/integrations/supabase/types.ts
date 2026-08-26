@@ -166,6 +166,7 @@ export type Database = {
           cv_oi_imagen_url: string | null
           diagnostico: string | null
           dictado_crudo: string | null
+          examen_ocular_obs: string | null
           fecha: string
           fo_od: string | null
           fo_od_imagen_url: string | null
@@ -203,6 +204,7 @@ export type Database = {
           cv_oi_imagen_url?: string | null
           diagnostico?: string | null
           dictado_crudo?: string | null
+          examen_ocular_obs?: string | null
           fecha?: string
           fo_od?: string | null
           fo_od_imagen_url?: string | null
@@ -240,6 +242,7 @@ export type Database = {
           cv_oi_imagen_url?: string | null
           diagnostico?: string | null
           dictado_crudo?: string | null
+          examen_ocular_obs?: string | null
           fecha?: string
           fo_od?: string | null
           fo_od_imagen_url?: string | null

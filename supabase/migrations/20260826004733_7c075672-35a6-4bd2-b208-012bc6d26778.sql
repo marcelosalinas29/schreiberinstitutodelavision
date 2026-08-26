@@ -1,0 +1,1 @@
+ALTER TABLE public.historias_clinicas ADD COLUMN IF NOT EXISTS examen_ocular_obs text;

@@ -37,6 +37,7 @@ export const HISTORIA_VACIA: HistoriaDraft = {
   pio_hora: "",
   fo_od: "",
   fo_oi: "",
+  examen_ocular_obs: "",
   fo_od_imagen_url: null,
   fo_oi_imagen_url: null,
   cv_od_imagen_url: null,
@@ -165,6 +166,45 @@ function Bilateral({
   );
 }
 
+/** Muestra, sólo lectura, datos históricos de campos que ya no se editan. */
+function DatosPrevios({
+  value,
+  campos,
+}: {
+  value: HistoriaDraft;
+  campos: [label: string, key: keyof HistoriaDraft][];
+}) {
+  const cargados = campos.filter(([, key]) => {
+    const v = value[key];
+    return typeof v === "string" && v.trim() !== "";
+  });
+  if (cargados.length === 0) return null;
+  return (
+    <div className="rounded-lg border border-dashed border-border bg-muted/40 p-3">
+      <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        Datos previos (formato anterior)
+      </p>
+      <ul className="space-y-0.5 text-sm">
+        {cargados.map(([label, key]) => (
+          <li key={String(key)}>
+            <span className="text-muted-foreground">{label}:</span> {value[key] as string}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** Al cargar la primera PIO, completa la hora actual si aún está vacía. */
+function patchPio(campo: "pio_od" | "pio_oi", raw: string, value: HistoriaDraft): Partial<HistoriaDraft> {
+  const numero = raw === "" ? null : Number(raw);
+  const patch: Partial<HistoriaDraft> = { [campo]: numero } as Partial<HistoriaDraft>;
+  if (numero !== null && !(value.pio_hora ?? "").trim()) {
+    patch.pio_hora = new Date().toTimeString().slice(0, 5);
+  }
+  return patch;
+}
+
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="panel p-4">
@@ -211,9 +251,15 @@ export function HistoriaForm({ value, onChange, historiaId }: Props) {
       <Section title="Examen oftalmológico">
         <Bilateral {...props} label="Autorrefractómetro (ARM)" odKey="arm_od" oiKey="arm_oi" placeholder="esf / cil x eje" />
         <Bilateral {...props} label="Refracción subjetiva" odKey="refraccion_od" oiKey="refraccion_oi" placeholder="esf / cil x eje" />
-        <Bilateral {...props} label="AV sin corrección" odKey="av_sc_od" oiKey="av_sc_oi" placeholder="20/…" />
-        <Bilateral {...props} label="AV con corrección" odKey="av_cc_od" oiKey="av_cc_oi" placeholder="20/…" />
-        <Bilateral {...props} label="Biomicroscopía" odKey="bmc_od" oiKey="bmc_oi" />
+        <DatosPrevios
+          value={value}
+          campos={[
+            ["AV sin corrección OD", "av_sc_od"],
+            ["AV sin corrección OI", "av_sc_oi"],
+            ["AV con corrección OD", "av_cc_od"],
+            ["AV con corrección OI", "av_cc_oi"],
+          ]}
+        />
         <div className="space-y-1.5">
           <Label className="text-xs uppercase tracking-wide text-muted-foreground">PIO (mmHg)</Label>
           <div className="grid grid-cols-3 gap-2">
@@ -223,7 +269,7 @@ export function HistoriaForm({ value, onChange, historiaId }: Props) {
               placeholder="OD"
               aria-label="PIO ojo derecho"
               value={value.pio_od ?? ""}
-              onChange={(e) => onChange({ pio_od: e.target.value === "" ? null : Number(e.target.value) })}
+              onChange={(e) => onChange(patchPio("pio_od", e.target.value, value))}
             />
             <Input
               type="number"
@@ -231,7 +277,7 @@ export function HistoriaForm({ value, onChange, historiaId }: Props) {
               placeholder="OI"
               aria-label="PIO ojo izquierdo"
               value={value.pio_oi ?? ""}
-              onChange={(e) => onChange({ pio_oi: e.target.value === "" ? null : Number(e.target.value) })}
+              onChange={(e) => onChange(patchPio("pio_oi", e.target.value, value))}
             />
             <Input
               type="time"
@@ -241,7 +287,25 @@ export function HistoriaForm({ value, onChange, historiaId }: Props) {
             />
           </div>
         </div>
-        <Bilateral {...props} label="Fondo de ojo" odKey="fo_od" oiKey="fo_oi" />
+        <DatosPrevios
+          value={value}
+          campos={[
+            ["Biomicroscopía OD", "bmc_od"],
+            ["Biomicroscopía OI", "bmc_oi"],
+            ["Fondo de ojo OD", "fo_od"],
+            ["Fondo de ojo OI", "fo_oi"],
+          ]}
+        />
+        <div className="space-y-1.5">
+          <Label htmlFor="examen-obs">Biomicroscopía, fondo de ojo y otras observaciones</Label>
+          <Textarea
+            id="examen-obs"
+            rows={8}
+            placeholder="Biomicroscopía, fondo de ojo y cualquier otra observación del examen…"
+            value={value.examen_ocular_obs ?? ""}
+            onChange={(e) => onChange({ examen_ocular_obs: e.target.value })}
+          />
+        </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <AdjuntoEstudio {...props} label="retinografía OD" tipo="fo_od" />
           <AdjuntoEstudio {...props} label="retinografía OI" tipo="fo_oi" />
