@@ -247,7 +247,23 @@ export function PatientForm({ paciente, defaults, onSaved, onAbrirExistente, onC
           {campo("obra_social", "Obra social / Prepaga")}
           {campo("nro_afiliado", "N° de afiliado")}
           {campo("plan", "Plan")}
-          {campo("sexo", "Sexo")}
+          <div className="space-y-1.5">
+            <Label>Sexo</Label>
+            <div className="flex gap-2">
+              {["Masculino", "Femenino", "Otro"].map((opcion) => (
+                <Button
+                  key={opcion}
+                  type="button"
+                  size="sm"
+                  variant={form.sexo === opcion ? "default" : "outline"}
+                  className="flex-1"
+                  onClick={() => set("sexo", form.sexo === opcion ? "" : opcion)}
+                >
+                  {opcion}
+                </Button>
+              ))}
+            </div>
+          </div>
           {campo("direccion", "Dirección")}
           {campo("localidad", "Localidad")}
         </div>
