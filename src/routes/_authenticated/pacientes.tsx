@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { PatientForm, calcularEdad } from "@/features/patients/PatientForm";
+import { HistoricoPIO } from "@/features/historias/HistoricoPIO";
 import { listPacientes } from "@/services/pacientes";
 import { listHistoriasPaciente } from "@/services/historias";
 import type { Paciente } from "@/types/domain";
