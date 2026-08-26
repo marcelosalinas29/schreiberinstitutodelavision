@@ -54,16 +54,24 @@ async function cargarImagen(url: string): Promise<string | null> {
   return out;
 }
 
+/** Opciones de salida del PDF. Por defecto se descarga (comportamiento histórico). */
+export interface OpcionesSalidaPDF {
+  modo?: "descargar" | "imprimir";
+}
+
 /** Genera una receta / indicación en PDF usando la plantilla del profesional. */
-export async function generarRecetaPDF({
-  paciente,
-  contenido,
-  fecha,
-  plantilla,
-  medico,
-  titulo = "Receta",
-  formato = "a4",
-}: RecetaInput) {
+export async function generarRecetaPDF(
+  {
+    paciente,
+    contenido,
+    fecha,
+    plantilla,
+    medico,
+    titulo = "Receta",
+    formato = "a4",
+  }: RecetaInput,
+  opciones?: OpcionesSalidaPDF,
+) {
   const doc = new jsPDF({ unit: "mm", format: formato });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -213,6 +221,18 @@ export async function generarRecetaPDF({
   if (firma && !usaSelloInstitucional) wrap(doc, firma, margin, firmaY + 5, esA5 ? 70 : 90, esA5 ? 4 : 4.5);
 
   dibujarPie();
+
+  if (opciones?.modo === "imprimir") {
+    // Abre el PDF en una pestaña nueva y dispara el diálogo de impresión del navegador.
+    try {
+      (doc as unknown as { autoPrint?: () => void }).autoPrint?.();
+    } catch {
+      /* versión de jsPDF sin autoPrint: se abre igual, sin diálogo automático */
+    }
+    const url = doc.output("bloburl") as unknown as string;
+    window.open(String(url), "_blank", "noopener,noreferrer");
+    return;
+  }
 
   doc.save(`${titulo.toLowerCase()}-${paciente.apellido}-${fecha.toISOString().slice(0, 10)}.pdf`);
 }

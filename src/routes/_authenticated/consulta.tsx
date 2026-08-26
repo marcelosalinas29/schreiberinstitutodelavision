@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature } from "lucide-react";
+import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -17,6 +17,7 @@ import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/his
 import { HistoricoPIO } from "@/features/historias/HistoricoPIO";
 import { parseDictado } from "@/lib/ai.functions";
 import { generarRecetaPDF } from "@/lib/pdf";
+import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
 import { datosMedicoReceta } from "@/services/perfil";
 import { createHistoria, getHistoria, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
@@ -176,6 +177,7 @@ function Consulta() {
 
   const basePracticas = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
   const [ordenPedido, setOrdenPedido] = useState<PracticaEstudio[] | null>(null);
+  const [pedidoListo, setPedidoListo] = useState<{ contenido: string; fecha: Date } | null>(null);
   const [usadasAntes, setUsadasAntes] = useState<string[]>([]);
   const disponibles = ordenPedido ?? basePracticas;
 
@@ -209,12 +211,14 @@ function Consulta() {
       .map((p) => `• ${p.nombre}${p.codigo ? ` (${p.codigo})` : ""}\n${p.contenido}`)
       .join("\n\n");
     setPedidoAbierto(false);
+    const fecha = new Date();
+    setPedidoListo({ contenido, fecha });
     void (async () => {
       const medico = await datosMedicoReceta();
       await generarRecetaPDF({
         paciente,
         contenido,
-        fecha: new Date(),
+        fecha,
         plantilla: plantillas.data?.[0] ?? null,
         medico,
         titulo: "Pedido de estudios",
@@ -405,6 +409,85 @@ function Consulta() {
             </Button>
             <Button size="sm" onClick={generarPedido} disabled={seleccionadas.length === 0}>
               <FileDown className="size-4" /> Generar PDF
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={pedidoListo !== null} onOpenChange={(v) => (v ? null : setPedidoListo(null))}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Pedido de estudios generado</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            El PDF ya se descargó. También podés imprimirlo o avisarle al paciente por WhatsApp (el aviso es solo texto:
+            el PDF no se adjunta automáticamente).
+          </p>
+          <DialogFooter className="flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (!paciente || !pedidoListo) return;
+                void (async () => {
+                  const medico = await datosMedicoReceta();
+                  await generarRecetaPDF(
+                    {
+                      paciente,
+                      contenido: pedidoListo.contenido,
+                      fecha: pedidoListo.fecha,
+                      plantilla: plantillas.data?.[0] ?? null,
+                      medico,
+                      titulo: "Pedido de estudios",
+                      formato: "a5",
+                    },
+                    { modo: "imprimir" },
+                  );
+                })();
+              }}
+            >
+              <Printer className="size-4" /> Imprimir
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (!paciente || !pedidoListo) return;
+                void (async () => {
+                  const medico = await datosMedicoReceta();
+                  await generarRecetaPDF({
+                    paciente,
+                    contenido: pedidoListo.contenido,
+                    fecha: pedidoListo.fecha,
+                    plantilla: plantillas.data?.[0] ?? null,
+                    medico,
+                    titulo: "Pedido de estudios",
+                    formato: "a5",
+                  });
+                })();
+              }}
+            >
+              <FileDown className="size-4" /> Descargar
+            </Button>
+            {paciente?.telefono ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (!paciente?.telefono || !pedidoListo) return;
+                  const mensaje = `Hola ${paciente.nombre}, tiene listo su pedido de estudios de ${pedidoListo.fecha.toLocaleDateString("es-AR")}. Puede pasar a buscarlo o coordinar el envío por este medio.`;
+                  window.open(
+                    armarLinkWhatsAppTexto(paciente.telefono, mensaje),
+                    "_blank",
+                    "noopener,noreferrer",
+                  );
+                }}
+              >
+                <MessageCircle className="size-4" /> Enviar por WhatsApp
+              </Button>
+            ) : null}
+            <Button size="sm" onClick={() => setPedidoListo(null)}>
+              Listo
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -8,6 +8,11 @@ export function normalizarTelefonoAR(telefono: string): string {
   return `54${n}`;
 }
 
+/** Link de WhatsApp con un mensaje ya redactado por quien llama. */
+export function armarLinkWhatsAppTexto(telefono: string, mensaje: string): string {
+  return `https://wa.me/${normalizarTelefonoAR(telefono)}?text=${encodeURIComponent(mensaje)}`;
+}
+
 export function armarLinkRecordatorioTurno(
   telefono: string,
   nombrePaciente: string,
