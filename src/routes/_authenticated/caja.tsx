@@ -293,6 +293,16 @@ function Caja() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold tabular-nums">{money(Number(c.monto))}</span>
+                    {c.comprobante_url ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Ver comprobante"
+                        onClick={() => void verComprobante(c.comprobante_url!)}
+                      >
+                        <FileText className="size-4" />
+                      </Button>
+                    ) : null}
                     <Button variant="ghost" size="icon" aria-label="Eliminar cobro" onClick={() => borrar.mutate(c.id)}>
                       <Trash2 className="size-4" />
                     </Button>
