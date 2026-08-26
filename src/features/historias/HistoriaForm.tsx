@@ -455,8 +455,21 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props 
           <Textarea id="dx" rows={3} value={value.diagnostico ?? ""} onChange={(e) => onChange({ diagnostico: e.target.value })} />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="cie10">CIE-10</Label>
-          <Input id="cie10" placeholder="H52.1" value={value.cie10 ?? ""} onChange={(e) => onChange({ cie10: e.target.value })} />
+          <Label htmlFor="cie10" className="flex items-center gap-2">
+            CIE-10
+            {cie10Sugerido && cie10Actual === cie10Sugerido ? (
+              <span className="text-xs font-normal text-muted-foreground">(sugerido automáticamente)</span>
+            ) : null}
+          </Label>
+          <Input
+            id="cie10"
+            placeholder="H52.1"
+            value={value.cie10 ?? ""}
+            onChange={(e) => {
+              setCie10Sugerido(null);
+              onChange({ cie10: e.target.value });
+            }}
+          />
         </div>
       </Section>
 
