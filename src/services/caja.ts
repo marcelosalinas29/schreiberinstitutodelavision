@@ -94,7 +94,6 @@ export async function cerrarCaja(input: {
  * No modifica ninguna función ni columna existente.
  * -------------------------------------------------------------------------- */
 
-import { BUCKET_MEDICAL } from "@/services/perfil";
 
 export interface PagoLinea {
   medio: MedioPago;
