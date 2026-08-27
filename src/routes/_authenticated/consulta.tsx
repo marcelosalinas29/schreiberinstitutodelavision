@@ -175,6 +175,46 @@ function Consulta() {
     })();
   };
 
+  /** Receta óptica: graduación de lejos y de cerca por ojo, en A5. */
+  const recetaOptica = () => {
+    if (!paciente) {
+      toast.error("Elegí un paciente");
+      return;
+    }
+    const lejosOd = (draft.refraccion_od ?? "").trim();
+    const lejosOi = (draft.refraccion_oi ?? "").trim();
+    const cercaOd = (draft.refraccion_cerca_od ?? "").trim();
+    const cercaOi = (draft.refraccion_cerca_oi ?? "").trim();
+    if (!lejosOd && !lejosOi && !cercaOd && !cercaOi) {
+      toast.error("Cargá la refracción de lejos o de cerca antes de generar la receta óptica");
+      return;
+    }
+    const vacio = "Esf: ___ Cil: ___ Eje: ___";
+    const contenido = [
+      "Lejos",
+      `O.D. ${lejosOd || vacio}`,
+      `O.I. ${lejosOi || vacio}`,
+      "",
+      "Cerca",
+      `O.D. ${cercaOd || vacio}`,
+      `O.I. ${cercaOi || vacio}`,
+      "",
+      `Diagnóstico: ${(draft.diagnostico ?? "").trim() || "—"}`,
+    ].join("\n");
+    void (async () => {
+      const medico = await datosMedicoReceta();
+      await generarRecetaPDF({
+        paciente,
+        contenido,
+        fecha: new Date(),
+        plantilla: plantillas.data?.[0] ?? null,
+        medico,
+        titulo: "Receta óptica",
+        formato: "a5",
+      });
+    })();
+  };
+
   const basePracticas = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
   const [ordenPedido, setOrdenPedido] = useState<PracticaEstudio[] | null>(null);
   const [pedidoListo, setPedidoListo] = useState<{ contenido: string; fecha: Date } | null>(null);
