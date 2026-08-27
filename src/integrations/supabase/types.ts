@@ -248,6 +248,8 @@ export type Database = {
           pio_od: number | null
           pio_oi: number | null
           proxima_cita: string | null
+          refraccion_cerca_od: string | null
+          refraccion_cerca_oi: string | null
           refraccion_od: string | null
           refraccion_oi: string | null
           tratamiento: string | null
@@ -290,6 +292,8 @@ export type Database = {
           pio_od?: number | null
           pio_oi?: number | null
           proxima_cita?: string | null
+          refraccion_cerca_od?: string | null
+          refraccion_cerca_oi?: string | null
           refraccion_od?: string | null
           refraccion_oi?: string | null
           tratamiento?: string | null
@@ -332,6 +336,8 @@ export type Database = {
           pio_od?: number | null
           pio_oi?: number | null
           proxima_cita?: string | null
+          refraccion_cerca_od?: string | null
+          refraccion_cerca_oi?: string | null
           refraccion_od?: string | null
           refraccion_oi?: string | null
           tratamiento?: string | null

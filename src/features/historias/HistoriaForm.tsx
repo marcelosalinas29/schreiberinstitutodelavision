@@ -30,6 +30,8 @@ export const HISTORIA_VACIA: HistoriaDraft = {
   arm_oi: "",
   refraccion_od: "",
   refraccion_oi: "",
+  refraccion_cerca_od: "",
+  refraccion_cerca_oi: "",
   av_sc_od: "",
   av_sc_oi: "",
   av_cc_od: "",
@@ -325,6 +327,7 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props 
       <Section title="Examen oftalmológico">
         <Bilateral {...props} label="Autorrefractómetro (ARM)" odKey="arm_od" oiKey="arm_oi" placeholder="esf / cil x eje" />
         <Bilateral {...props} label="Refracción subjetiva" odKey="refraccion_od" oiKey="refraccion_oi" placeholder="esf / cil x eje" />
+        <Bilateral {...props} label="Refracción de cerca" odKey="refraccion_cerca_od" oiKey="refraccion_cerca_oi" placeholder="esf / cil x eje" />
         <DatosPrevios
           value={value}
           campos={[
