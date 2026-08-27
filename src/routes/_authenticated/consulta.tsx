@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, MessageCircle } from "lucide-react";
+import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, MessageCircle, Glasses } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -341,6 +341,9 @@ function Consulta() {
           <>
             <Button variant="outline" size="sm" onClick={receta}>
               <FileDown className="size-4" /> Receta PDF
+            </Button>
+            <Button variant="outline" size="sm" onClick={recetaOptica}>
+              <Glasses className="size-4" /> Receta óptica
             </Button>
             <Button variant="outline" size="sm" onClick={abrirPedido}>
               <ClipboardList className="size-4" /> Pedido de estudios
