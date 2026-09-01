@@ -39,7 +39,25 @@ const turnoSchema = z.object({
   notas: z.string().trim().max(1000).optional(),
 });
 
-const TURNO_VACIO = { hora: "09:00", duracion_min: "20", motivo: "", notas: "" };
+const HORARIOS = [
+  "07:45",
+  "08:00",
+  "08:20",
+  "08:40",
+  "09:00",
+  "09:20",
+  "09:40",
+  "10:00",
+  "10:20",
+  "10:40",
+  "11:00",
+  "11:20",
+  "11:40",
+  "12:00",
+  "12:20",
+];
+
+const TURNO_VACIO = { hora: "07:45", duracion_min: "20", motivo: "", notas: "" };
 
 type Vista = "dia" | "semana" | "mes";
 
@@ -192,7 +210,18 @@ function Agenda() {
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label htmlFor="hora">Hora</Label>
-          <Input id="hora" type="time" value={form.hora} onChange={(e) => setForm({ ...form, hora: e.target.value })} />
+          <Select value={form.hora} onValueChange={(v) => setForm({ ...form, hora: v })}>
+            <SelectTrigger id="hora">
+              <SelectValue placeholder="Elegí un horario" />
+            </SelectTrigger>
+            <SelectContent>
+              {HORARIOS.map((h) => (
+                <SelectItem key={h} value={h}>
+                  {h}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="dur">Duración (min)</Label>
