@@ -8,6 +8,7 @@ import { z } from "zod";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,7 +40,7 @@ const turnoSchema = z.object({
   notas: z.string().trim().max(1000).optional(),
 });
 
-const HORARIOS = [
+const HORARIOS_MANANA = [
   "07:45",
   "08:00",
   "08:20",
@@ -56,6 +57,17 @@ const HORARIOS = [
   "12:00",
   "12:20",
 ];
+const TARDE_LUN_MIE = ["16:15", "16:35", "16:55", "17:15", "17:35", "17:55", "18:15"];
+const TARDE_JUE = ["16:00", "16:20", "16:40", "17:00", "17:20", "17:40", "18:00", "18:20", "18:40", "19:00", "19:20"];
+
+function horariosDisponibles(fechaISO: string): string[] {
+  if (!fechaISO) return [];
+  const dia = desdeISO(fechaISO).getDay(); // 0 dom … 6 sáb
+  if (dia === 0 || dia === 6) return [];
+  const tarde = dia === 1 || dia === 3 ? TARDE_LUN_MIE : dia === 4 ? TARDE_JUE : [];
+  return [...HORARIOS_MANANA, ...tarde];
+}
+
 
 const TURNO_VACIO = { hora: "07:45", duracion_min: "20", motivo: "", notas: "" };
 
@@ -107,6 +119,7 @@ function Agenda() {
   const [paciente, setPaciente] = useState<Paciente | null>(null);
   const [creandoPaciente, setCreandoPaciente] = useState(false);
   const [vista, setVista] = useState<Vista>("dia");
+  const [guardia, setGuardia] = useState(false);
 
   const turnos = useQuery({
     queryKey: ["turnos", fecha],
@@ -165,6 +178,7 @@ function Agenda() {
     setBusqueda("");
     setPaciente(null);
     setCreandoPaciente(false);
+    setGuardia(false);
   };
 
   const agendar = async (pacienteId: string) => {
@@ -205,23 +219,33 @@ function Agenda() {
     },
   });
 
+  const horarios = horariosDisponibles(fecha);
+
   const camposTurno = (
     <>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label htmlFor="hora">Hora</Label>
-          <Select value={form.hora} onValueChange={(v) => setForm({ ...form, hora: v })}>
-            <SelectTrigger id="hora">
-              <SelectValue placeholder="Elegí un horario" />
-            </SelectTrigger>
-            <SelectContent>
-              {HORARIOS.map((h) => (
-                <SelectItem key={h} value={h}>
-                  {h}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {guardia || horarios.length === 0 ? (
+            <Input id="hora" type="time" value={form.hora} onChange={(e) => setForm({ ...form, hora: e.target.value })} />
+          ) : (
+            <Select value={form.hora} onValueChange={(v) => setForm({ ...form, hora: v })}>
+              <SelectTrigger id="hora">
+                <SelectValue placeholder="Elegí un horario" />
+              </SelectTrigger>
+              <SelectContent>
+                {horarios.map((h) => (
+                  <SelectItem key={h} value={h}>
+                    {h}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          <label className="flex items-center gap-2 pt-1 text-xs text-muted-foreground">
+            <Checkbox checked={guardia} onCheckedChange={(v) => setGuardia(v === true)} />
+            Turno de guardia (horario libre)
+          </label>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="dur">Duración (min)</Label>
