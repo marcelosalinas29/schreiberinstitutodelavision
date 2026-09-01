@@ -211,6 +211,33 @@ export type Database = {
         }
         Relationships: []
       }
+      formatos_historia: {
+        Row: {
+          contenido: string
+          created_at: string
+          id: string
+          nombre: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          contenido: string
+          created_at?: string
+          id?: string
+          nombre: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          contenido?: string
+          created_at?: string
+          id?: string
+          nombre?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       historias_clinicas: {
         Row: {
           antecedentes_familiares: string | null
@@ -235,6 +262,7 @@ export type Database = {
           cv_oi_imagen_url: string | null
           diagnostico: string | null
           dictado_crudo: string | null
+          evolucion_clinica: string | null
           examen_ocular_obs: string | null
           fecha: string
           fo_od: string | null
@@ -279,6 +307,7 @@ export type Database = {
           cv_oi_imagen_url?: string | null
           diagnostico?: string | null
           dictado_crudo?: string | null
+          evolucion_clinica?: string | null
           examen_ocular_obs?: string | null
           fecha?: string
           fo_od?: string | null
@@ -323,6 +352,7 @@ export type Database = {
           cv_oi_imagen_url?: string | null
           diagnostico?: string | null
           dictado_crudo?: string | null
+          evolucion_clinica?: string | null
           examen_ocular_obs?: string | null
           fecha?: string
           fo_od?: string | null
