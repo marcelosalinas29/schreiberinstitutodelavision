@@ -210,7 +210,18 @@ function Agenda() {
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label htmlFor="hora">Hora</Label>
-          <Input id="hora" type="time" value={form.hora} onChange={(e) => setForm({ ...form, hora: e.target.value })} />
+          <Select value={form.hora} onValueChange={(v) => setForm({ ...form, hora: v })}>
+            <SelectTrigger id="hora">
+              <SelectValue placeholder="Elegí un horario" />
+            </SelectTrigger>
+            <SelectContent>
+              {HORARIOS.map((h) => (
+                <SelectItem key={h} value={h}>
+                  {h}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="dur">Duración (min)</Label>
