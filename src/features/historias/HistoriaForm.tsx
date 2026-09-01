@@ -44,6 +44,8 @@ export const HISTORIA_VACIA: HistoriaDraft = {
   fo_od: "",
   fo_oi: "",
   examen_ocular_obs: "",
+  evolucion_clinica: "",
+
   fo_od_imagen_url: null,
   fo_oi_imagen_url: null,
   cv_od_imagen_url: null,
