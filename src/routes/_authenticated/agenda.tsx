@@ -216,23 +216,33 @@ function Agenda() {
     },
   });
 
+  const horarios = horariosDisponibles(fecha);
+
   const camposTurno = (
     <>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label htmlFor="hora">Hora</Label>
-          <Select value={form.hora} onValueChange={(v) => setForm({ ...form, hora: v })}>
-            <SelectTrigger id="hora">
-              <SelectValue placeholder="Elegí un horario" />
-            </SelectTrigger>
-            <SelectContent>
-              {HORARIOS.map((h) => (
-                <SelectItem key={h} value={h}>
-                  {h}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {guardia || horarios.length === 0 ? (
+            <Input id="hora" type="time" value={form.hora} onChange={(e) => setForm({ ...form, hora: e.target.value })} />
+          ) : (
+            <Select value={form.hora} onValueChange={(v) => setForm({ ...form, hora: v })}>
+              <SelectTrigger id="hora">
+                <SelectValue placeholder="Elegí un horario" />
+              </SelectTrigger>
+              <SelectContent>
+                {horarios.map((h) => (
+                  <SelectItem key={h} value={h}>
+                    {h}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          <label className="flex items-center gap-2 pt-1 text-xs text-muted-foreground">
+            <Checkbox checked={guardia} onCheckedChange={(v) => setGuardia(v === true)} />
+            Turno de guardia (horario libre)
+          </label>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="dur">Duración (min)</Label>
