@@ -88,11 +88,55 @@ function Agenda() {
   const [busqueda, setBusqueda] = useState("");
   const [paciente, setPaciente] = useState<Paciente | null>(null);
   const [creandoPaciente, setCreandoPaciente] = useState(false);
+  const [vista, setVista] = useState<Vista>("dia");
 
   const turnos = useQuery({
     queryKey: ["turnos", fecha],
     queryFn: () => listTurnosPorRango(`${fecha}T00:00:00`, `${fecha}T23:59:59`),
   });
+
+  const lunes = lunesDe(fecha);
+  const domingo = sumarDias(lunes, 6);
+  const turnosSemana = useQuery({
+    queryKey: ["turnos", "semana", lunes],
+    queryFn: () => listTurnosPorRango(`${lunes}T00:00:00`, `${sumarDias(domingo, 1)}T00:00:00`),
+    enabled: vista === "semana",
+  });
+
+  const primerDiaMes = inicioMes(fecha);
+  const ultimoDiaMes = finMes(fecha);
+  const turnosMes = useQuery({
+    queryKey: ["turnos", "mes", primerDiaMes],
+    queryFn: () => listTurnosPorRango(`${primerDiaMes}T00:00:00`, `${sumarDias(ultimoDiaMes, 1)}T00:00:00`),
+    enabled: vista === "mes",
+  });
+
+  const porDiaSemana = useMemo(() => {
+    const mapa: Record<string, typeof turnosSemana.data> = {};
+    for (let i = 0; i < 7; i++) mapa[sumarDias(lunes, i)] = [];
+    for (const t of turnosSemana.data ?? []) {
+      const k = aISO(new Date(t.inicio));
+      (mapa[k] ??= []).push(t);
+    }
+    return mapa;
+  }, [turnosSemana.data, lunes]);
+
+  const conteoMes = useMemo(() => {
+    const mapa: Record<string, number> = {};
+    for (const t of turnosMes.data ?? []) {
+      const k = aISO(new Date(t.inicio));
+      mapa[k] = (mapa[k] ?? 0) + 1;
+    }
+    return mapa;
+  }, [turnosMes.data]);
+
+  const celdasMes = useMemo(() => {
+    const inicio = lunesDe(primerDiaMes);
+    const celdas: string[] = [];
+    for (let i = 0; i < 42; i++) celdas.push(sumarDias(inicio, i));
+    while (celdas.length > 35 && desdeISO(celdas[35]!).getMonth() !== desdeISO(primerDiaMes).getMonth()) celdas.pop();
+    return celdas.slice(0, celdas.length > 35 ? 42 : 35);
+  }, [primerDiaMes]);
   const pacientes = useQuery({ queryKey: ["pacientes", busqueda], queryFn: () => listPacientes(busqueda) });
 
   const resultados = useMemo(() => (pacientes.data ?? []).slice(0, 8), [pacientes.data]);
