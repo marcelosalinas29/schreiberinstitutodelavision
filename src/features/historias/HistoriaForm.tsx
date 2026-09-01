@@ -217,7 +217,28 @@ function patchPio(campo: "pio_od" | "pio_oi", raw: string, value: HistoriaDraft)
   return patch;
 }
 
+function FormatosChips({ onInsertar }: { onInsertar: (texto: string) => void }) {
+  const formatos = useQuery({ queryKey: ["formatos-historia"], queryFn: listFormatosHistoria });
+  const items = formatos.data ?? [];
+  if (items.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-2 pb-1">
+      {items.map((f) => (
+        <button
+          key={f.id}
+          type="button"
+          onClick={() => onInsertar(f.contenido)}
+          className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:bg-muted"
+        >
+          {f.nombre}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+
   return (
     <section className="panel p-4">
       <h3 className="mb-4 text-sm font-semibold">{title}</h3>
