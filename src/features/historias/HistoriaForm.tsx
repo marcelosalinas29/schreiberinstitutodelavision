@@ -310,18 +310,31 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props 
           <Label htmlFor="motivo">Motivo de consulta</Label>
           <Textarea id="motivo" rows={3} value={value.motivo_consulta ?? ""} onChange={(e) => onChange({ motivo_consulta: e.target.value })} />
         </div>
+        <DatosPrevios
+          value={value}
+          campos={[
+            ["Antecedentes personales", "antecedentes_personales"],
+            ["Antecedentes familiares", "antecedentes_familiares"],
+            ["Antecedentes oftalmológicos", "antecedentes_oftalmologicos"],
+          ]}
+        />
         <div className="space-y-1.5">
-          <Label htmlFor="ap">Antecedentes personales</Label>
-          <Textarea id="ap" rows={2} value={value.antecedentes_personales ?? ""} onChange={(e) => onChange({ antecedentes_personales: e.target.value })} />
+          <Label htmlFor="evolucion">Antecedentes y examen</Label>
+          <FormatosChips
+            onInsertar={(texto) => {
+              const actual = (value.evolucion_clinica ?? "").replace(/\s+$/, "");
+              onChange({ evolucion_clinica: actual ? `${actual}\n\n${texto}` : texto });
+            }}
+          />
+          <Textarea
+            id="evolucion"
+            rows={16}
+            placeholder="Antecedentes, biomicroscopía, fondo de ojo y observaciones…"
+            value={value.evolucion_clinica ?? ""}
+            onChange={(e) => onChange({ evolucion_clinica: e.target.value })}
+          />
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="af">Antecedentes familiares</Label>
-          <Textarea id="af" rows={2} value={value.antecedentes_familiares ?? ""} onChange={(e) => onChange({ antecedentes_familiares: e.target.value })} />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="ao">Antecedentes oftalmológicos</Label>
-          <Textarea id="ao" rows={2} value={value.antecedentes_oftalmologicos ?? ""} onChange={(e) => onChange({ antecedentes_oftalmologicos: e.target.value })} />
-        </div>
+
       </Section>
 
       <Section title="Examen oftalmológico">
