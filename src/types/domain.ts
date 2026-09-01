@@ -32,6 +32,9 @@ export type PlantillaInsert = Tables["plantillas"]["Insert"];
 export type PracticaEstudio = Tables["practicas_estudios"]["Row"];
 export type PracticaEstudioInsert = Tables["practicas_estudios"]["Insert"];
 
+export type FormatoHistoria = Tables["formatos_historia"]["Row"];
+export type FormatoHistoriaInsert = Tables["formatos_historia"]["Insert"];
+
 export type LinkObraSocial = Tables["links_obras_sociales"]["Row"];
 export type LinkObraSocialInsert = Tables["links_obras_sociales"]["Insert"];
 
