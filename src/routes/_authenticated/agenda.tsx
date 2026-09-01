@@ -39,7 +39,7 @@ const turnoSchema = z.object({
   notas: z.string().trim().max(1000).optional(),
 });
 
-const HORARIOS = [
+const HORARIOS_MANANA = [
   "07:45",
   "08:00",
   "08:20",
@@ -56,6 +56,17 @@ const HORARIOS = [
   "12:00",
   "12:20",
 ];
+const TARDE_LUN_MIE = ["16:15", "16:35", "16:55", "17:15", "17:35", "17:55", "18:15"];
+const TARDE_JUE = ["16:00", "16:20", "16:40", "17:00", "17:20", "17:40", "18:00", "18:20", "18:40", "19:00", "19:20"];
+
+function horariosDisponibles(fechaISO: string): string[] {
+  if (!fechaISO) return [];
+  const dia = desdeISO(fechaISO).getDay(); // 0 dom … 6 sáb
+  if (dia === 0 || dia === 6) return [];
+  const tarde = dia === 1 || dia === 3 ? TARDE_LUN_MIE : dia === 4 ? TARDE_JUE : [];
+  return [...HORARIOS_MANANA, ...tarde];
+}
+
 
 const TURNO_VACIO = { hora: "07:45", duracion_min: "20", motivo: "", notas: "" };
 
