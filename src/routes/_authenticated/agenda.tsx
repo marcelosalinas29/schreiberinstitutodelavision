@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { FileText, MessageCircle, Plus, Search, UserPlus } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText, MessageCircle, Plus, Search, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PatientForm } from "@/features/patients/PatientForm";
 import { listPacientes } from "@/services/pacientes";
 import { armarLinkRecordatorioTurno } from "@/lib/whatsapp";
@@ -40,6 +41,45 @@ const turnoSchema = z.object({
 
 const TURNO_VACIO = { hora: "09:00", duracion_min: "20", motivo: "", notas: "" };
 
+type Vista = "dia" | "semana" | "mes";
+
+const aISO = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const desdeISO = (s: string) => {
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(y!, (m ?? 1) - 1, d ?? 1);
+};
+const sumarDias = (s: string, n: number) => {
+  const d = desdeISO(s);
+  d.setDate(d.getDate() + n);
+  return aISO(d);
+};
+const sumarMeses = (s: string, n: number) => {
+  const d = desdeISO(s);
+  d.setDate(1);
+  d.setMonth(d.getMonth() + n);
+  return aISO(d);
+};
+const lunesDe = (s: string) => {
+  const d = desdeISO(s);
+  const diff = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - diff);
+  return aISO(d);
+};
+const inicioMes = (s: string) => {
+  const d = desdeISO(s);
+  d.setDate(1);
+  return aISO(d);
+};
+const finMes = (s: string) => {
+  const d = desdeISO(s);
+  d.setMonth(d.getMonth() + 1, 0);
+  return aISO(d);
+};
+const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+const hhmm = (iso: string) => new Date(iso).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+
+
 function Agenda() {
   const qc = useQueryClient();
   const [fecha, setFecha] = useState(() => new Date().toISOString().slice(0, 10));
@@ -48,11 +88,55 @@ function Agenda() {
   const [busqueda, setBusqueda] = useState("");
   const [paciente, setPaciente] = useState<Paciente | null>(null);
   const [creandoPaciente, setCreandoPaciente] = useState(false);
+  const [vista, setVista] = useState<Vista>("dia");
 
   const turnos = useQuery({
     queryKey: ["turnos", fecha],
     queryFn: () => listTurnosPorRango(`${fecha}T00:00:00`, `${fecha}T23:59:59`),
   });
+
+  const lunes = lunesDe(fecha);
+  const domingo = sumarDias(lunes, 6);
+  const turnosSemana = useQuery({
+    queryKey: ["turnos", "semana", lunes],
+    queryFn: () => listTurnosPorRango(`${lunes}T00:00:00`, `${sumarDias(domingo, 1)}T00:00:00`),
+    enabled: vista === "semana",
+  });
+
+  const primerDiaMes = inicioMes(fecha);
+  const ultimoDiaMes = finMes(fecha);
+  const turnosMes = useQuery({
+    queryKey: ["turnos", "mes", primerDiaMes],
+    queryFn: () => listTurnosPorRango(`${primerDiaMes}T00:00:00`, `${sumarDias(ultimoDiaMes, 1)}T00:00:00`),
+    enabled: vista === "mes",
+  });
+
+  const porDiaSemana = useMemo(() => {
+    const mapa: Record<string, typeof turnosSemana.data> = {};
+    for (let i = 0; i < 7; i++) mapa[sumarDias(lunes, i)] = [];
+    for (const t of turnosSemana.data ?? []) {
+      const k = aISO(new Date(t.inicio));
+      (mapa[k] ??= []).push(t);
+    }
+    return mapa;
+  }, [turnosSemana.data, lunes]);
+
+  const conteoMes = useMemo(() => {
+    const mapa: Record<string, number> = {};
+    for (const t of turnosMes.data ?? []) {
+      const k = aISO(new Date(t.inicio));
+      mapa[k] = (mapa[k] ?? 0) + 1;
+    }
+    return mapa;
+  }, [turnosMes.data]);
+
+  const celdasMes = useMemo(() => {
+    const inicio = lunesDe(primerDiaMes);
+    const celdas: string[] = [];
+    for (let i = 0; i < 42; i++) celdas.push(sumarDias(inicio, i));
+    while (celdas.length > 35 && desdeISO(celdas[35]!).getMonth() !== desdeISO(primerDiaMes).getMonth()) celdas.pop();
+    return celdas.slice(0, celdas.length > 35 ? 42 : 35);
+  }, [primerDiaMes]);
   const pacientes = useQuery({ queryKey: ["pacientes", busqueda], queryFn: () => listPacientes(busqueda) });
 
   const resultados = useMemo(() => (pacientes.data ?? []).slice(0, 8), [pacientes.data]);
@@ -236,7 +320,120 @@ function Agenda() {
         }
       />
 
-      {turnos.isLoading ? (
+      <Tabs value={vista} onValueChange={(v) => setVista(v as Vista)} className="mb-4">
+        <TabsList>
+          <TabsTrigger value="dia">Día</TabsTrigger>
+          <TabsTrigger value="semana">Semana</TabsTrigger>
+          <TabsTrigger value="mes">Mes</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      {vista === "semana" ? (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Button variant="outline" size="sm" onClick={() => setFecha(sumarDias(fecha, -7))}>
+              <ChevronLeft className="size-4" /> Semana anterior
+            </Button>
+            <p className="text-sm font-medium">
+              {desdeISO(lunes).toLocaleDateString("es-AR", { day: "numeric", month: "short" })} —{" "}
+              {desdeISO(domingo).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })}
+            </p>
+            <Button variant="outline" size="sm" onClick={() => setFecha(sumarDias(fecha, 7))}>
+              Semana siguiente <ChevronRight className="size-4" />
+            </Button>
+          </div>
+          {turnosSemana.isLoading ? (
+            <p className="py-10 text-center text-sm text-muted-foreground">Cargando turnos…</p>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
+              {Array.from({ length: 7 }, (_, i) => sumarDias(lunes, i)).map((dia, i) => (
+                <div key={dia} className="panel p-3">
+                  <button
+                    className="mb-2 w-full text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground"
+                    onClick={() => {
+                      setFecha(dia);
+                      setVista("dia");
+                    }}
+                  >
+                    {DIAS[i]} {desdeISO(dia).getDate()}
+                  </button>
+                  {(porDiaSemana[dia] ?? []).length === 0 ? (
+                    <p className="text-xs text-muted-foreground">—</p>
+                  ) : (
+                    <ul className="space-y-1.5">
+                      {(porDiaSemana[dia] ?? []).map((t) => (
+                        <li key={t.id}>
+                          <button
+                            onClick={() => {
+                              setFecha(dia);
+                              setVista("dia");
+                            }}
+                            className="w-full rounded-md border border-border px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent/60"
+                          >
+                            <span className="font-semibold tabular-nums">{hhmm(t.inicio)}</span>{" "}
+                            {t.paciente ? `${t.paciente.apellido}, ${t.paciente.nombre}` : "Sin paciente"}
+                            {t.motivo ? <span className="block text-muted-foreground">{t.motivo}</span> : null}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : vista === "mes" ? (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Button variant="outline" size="sm" onClick={() => setFecha(sumarMeses(fecha, -1))}>
+              <ChevronLeft className="size-4" /> Mes anterior
+            </Button>
+            <p className="text-sm font-medium capitalize">
+              {desdeISO(primerDiaMes).toLocaleDateString("es-AR", { month: "long", year: "numeric" })}
+            </p>
+            <Button variant="outline" size="sm" onClick={() => setFecha(sumarMeses(fecha, 1))}>
+              Mes siguiente <ChevronRight className="size-4" />
+            </Button>
+          </div>
+          {turnosMes.isLoading ? (
+            <p className="py-10 text-center text-sm text-muted-foreground">Cargando turnos…</p>
+          ) : (
+            <div className="panel p-3">
+              <div className="mb-2 grid grid-cols-7 gap-1 text-center text-xs font-semibold uppercase text-muted-foreground">
+                {DIAS.map((d) => (
+                  <span key={d}>{d}</span>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-1">
+                {celdasMes.map((dia) => {
+                  const delMes = desdeISO(dia).getMonth() === desdeISO(primerDiaMes).getMonth();
+                  const cant = conteoMes[dia] ?? 0;
+                  return (
+                    <button
+                      key={dia}
+                      onClick={() => {
+                        setFecha(dia);
+                        setVista("dia");
+                      }}
+                      className={`flex h-16 flex-col items-center justify-center gap-1 rounded-md border border-border text-sm transition-colors hover:bg-accent/60 ${
+                        delMes ? "" : "opacity-40"
+                      } ${dia === fecha ? "ring-2 ring-primary" : ""}`}
+                    >
+                      <span className="tabular-nums">{desdeISO(dia).getDate()}</span>
+                      {cant > 0 ? (
+                        <span className="rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
+                          {cant}
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : turnos.isLoading ? (
         <p className="py-10 text-center text-sm text-muted-foreground">Cargando turnos…</p>
       ) : (turnos.data?.length ?? 0) === 0 ? (
         <div className="panel p-10 text-center text-sm text-muted-foreground">No hay turnos para esta fecha.</div>
