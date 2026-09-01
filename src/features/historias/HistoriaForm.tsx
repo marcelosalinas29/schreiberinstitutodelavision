@@ -373,16 +373,8 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props 
             ["Fondo de ojo OI", "fo_oi"],
           ]}
         />
-        <div className="space-y-1.5">
-          <Label htmlFor="examen-obs">Biomicroscopía, fondo de ojo y otras observaciones</Label>
-          <Textarea
-            id="examen-obs"
-            rows={8}
-            placeholder="Biomicroscopía, fondo de ojo y cualquier otra observación del examen…"
-            value={value.examen_ocular_obs ?? ""}
-            onChange={(e) => onChange({ examen_ocular_obs: e.target.value })}
-          />
-        </div>
+        <DatosPrevios value={value} campos={[["Examen (formato anterior)", "examen_ocular_obs"]]} />
+
         <div className="grid gap-3 sm:grid-cols-2">
           <AdjuntoEstudio {...props} label="retinografía OD" tipo="fo_od" />
           <AdjuntoEstudio {...props} label="retinografía OI" tipo="fo_oi" />
