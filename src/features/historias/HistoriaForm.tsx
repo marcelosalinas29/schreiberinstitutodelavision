@@ -5,6 +5,7 @@ import { ExternalLink, FileText, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { listLinksObrasSociales } from "@/services/linksObrasSociales";
+import { listFormatosHistoria } from "@/services/formatosHistoria";
 
 import type { HistoriaClinicaInsert } from "@/types/domain";
 import { MedicamentoPicker } from "@/features/historias/MedicamentoPicker";
