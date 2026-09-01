@@ -320,7 +320,120 @@ function Agenda() {
         }
       />
 
-      {turnos.isLoading ? (
+      <Tabs value={vista} onValueChange={(v) => setVista(v as Vista)} className="mb-4">
+        <TabsList>
+          <TabsTrigger value="dia">Día</TabsTrigger>
+          <TabsTrigger value="semana">Semana</TabsTrigger>
+          <TabsTrigger value="mes">Mes</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      {vista === "semana" ? (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Button variant="outline" size="sm" onClick={() => setFecha(sumarDias(fecha, -7))}>
+              <ChevronLeft className="size-4" /> Semana anterior
+            </Button>
+            <p className="text-sm font-medium">
+              {desdeISO(lunes).toLocaleDateString("es-AR", { day: "numeric", month: "short" })} —{" "}
+              {desdeISO(domingo).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })}
+            </p>
+            <Button variant="outline" size="sm" onClick={() => setFecha(sumarDias(fecha, 7))}>
+              Semana siguiente <ChevronRight className="size-4" />
+            </Button>
+          </div>
+          {turnosSemana.isLoading ? (
+            <p className="py-10 text-center text-sm text-muted-foreground">Cargando turnos…</p>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
+              {Array.from({ length: 7 }, (_, i) => sumarDias(lunes, i)).map((dia, i) => (
+                <div key={dia} className="panel p-3">
+                  <button
+                    className="mb-2 w-full text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-foreground"
+                    onClick={() => {
+                      setFecha(dia);
+                      setVista("dia");
+                    }}
+                  >
+                    {DIAS[i]} {desdeISO(dia).getDate()}
+                  </button>
+                  {(porDiaSemana[dia] ?? []).length === 0 ? (
+                    <p className="text-xs text-muted-foreground">—</p>
+                  ) : (
+                    <ul className="space-y-1.5">
+                      {(porDiaSemana[dia] ?? []).map((t) => (
+                        <li key={t.id}>
+                          <button
+                            onClick={() => {
+                              setFecha(dia);
+                              setVista("dia");
+                            }}
+                            className="w-full rounded-md border border-border px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent/60"
+                          >
+                            <span className="font-semibold tabular-nums">{hhmm(t.inicio)}</span>{" "}
+                            {t.paciente ? `${t.paciente.apellido}, ${t.paciente.nombre}` : "Sin paciente"}
+                            {t.motivo ? <span className="block text-muted-foreground">{t.motivo}</span> : null}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : vista === "mes" ? (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Button variant="outline" size="sm" onClick={() => setFecha(sumarMeses(fecha, -1))}>
+              <ChevronLeft className="size-4" /> Mes anterior
+            </Button>
+            <p className="text-sm font-medium capitalize">
+              {desdeISO(primerDiaMes).toLocaleDateString("es-AR", { month: "long", year: "numeric" })}
+            </p>
+            <Button variant="outline" size="sm" onClick={() => setFecha(sumarMeses(fecha, 1))}>
+              Mes siguiente <ChevronRight className="size-4" />
+            </Button>
+          </div>
+          {turnosMes.isLoading ? (
+            <p className="py-10 text-center text-sm text-muted-foreground">Cargando turnos…</p>
+          ) : (
+            <div className="panel p-3">
+              <div className="mb-2 grid grid-cols-7 gap-1 text-center text-xs font-semibold uppercase text-muted-foreground">
+                {DIAS.map((d) => (
+                  <span key={d}>{d}</span>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-1">
+                {celdasMes.map((dia) => {
+                  const delMes = desdeISO(dia).getMonth() === desdeISO(primerDiaMes).getMonth();
+                  const cant = conteoMes[dia] ?? 0;
+                  return (
+                    <button
+                      key={dia}
+                      onClick={() => {
+                        setFecha(dia);
+                        setVista("dia");
+                      }}
+                      className={`flex h-16 flex-col items-center justify-center gap-1 rounded-md border border-border text-sm transition-colors hover:bg-accent/60 ${
+                        delMes ? "" : "opacity-40"
+                      } ${dia === fecha ? "ring-2 ring-primary" : ""}`}
+                    >
+                      <span className="tabular-nums">{desdeISO(dia).getDate()}</span>
+                      {cant > 0 ? (
+                        <span className="rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
+                          {cant}
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : turnos.isLoading ? (
         <p className="py-10 text-center text-sm text-muted-foreground">Cargando turnos…</p>
       ) : (turnos.data?.length ?? 0) === 0 ? (
         <div className="panel p-10 text-center text-sm text-muted-foreground">No hay turnos para esta fecha.</div>
