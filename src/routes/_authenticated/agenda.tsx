@@ -41,6 +41,45 @@ const turnoSchema = z.object({
 
 const TURNO_VACIO = { hora: "09:00", duracion_min: "20", motivo: "", notas: "" };
 
+type Vista = "dia" | "semana" | "mes";
+
+const aISO = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const desdeISO = (s: string) => {
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(y!, (m ?? 1) - 1, d ?? 1);
+};
+const sumarDias = (s: string, n: number) => {
+  const d = desdeISO(s);
+  d.setDate(d.getDate() + n);
+  return aISO(d);
+};
+const sumarMeses = (s: string, n: number) => {
+  const d = desdeISO(s);
+  d.setDate(1);
+  d.setMonth(d.getMonth() + n);
+  return aISO(d);
+};
+const lunesDe = (s: string) => {
+  const d = desdeISO(s);
+  const diff = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - diff);
+  return aISO(d);
+};
+const inicioMes = (s: string) => {
+  const d = desdeISO(s);
+  d.setDate(1);
+  return aISO(d);
+};
+const finMes = (s: string) => {
+  const d = desdeISO(s);
+  d.setMonth(d.getMonth() + 1, 0);
+  return aISO(d);
+};
+const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+const hhmm = (iso: string) => new Date(iso).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+
+
 function Agenda() {
   const qc = useQueryClient();
   const [fecha, setFecha] = useState(() => new Date().toISOString().slice(0, 10));
