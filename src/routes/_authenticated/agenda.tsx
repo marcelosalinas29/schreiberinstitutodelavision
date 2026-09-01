@@ -8,6 +8,7 @@ import { z } from "zod";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -118,6 +119,7 @@ function Agenda() {
   const [paciente, setPaciente] = useState<Paciente | null>(null);
   const [creandoPaciente, setCreandoPaciente] = useState(false);
   const [vista, setVista] = useState<Vista>("dia");
+  const [guardia, setGuardia] = useState(false);
 
   const turnos = useQuery({
     queryKey: ["turnos", fecha],
@@ -176,6 +178,7 @@ function Agenda() {
     setBusqueda("");
     setPaciente(null);
     setCreandoPaciente(false);
+    setGuardia(false);
   };
 
   const agendar = async (pacienteId: string) => {
