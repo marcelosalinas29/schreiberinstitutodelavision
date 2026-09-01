@@ -5,6 +5,7 @@ import { ExternalLink, FileText, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { listLinksObrasSociales } from "@/services/linksObrasSociales";
+import { listFormatosHistoria } from "@/services/formatosHistoria";
 
 import type { HistoriaClinicaInsert } from "@/types/domain";
 import { MedicamentoPicker } from "@/features/historias/MedicamentoPicker";
@@ -44,6 +45,8 @@ export const HISTORIA_VACIA: HistoriaDraft = {
   fo_od: "",
   fo_oi: "",
   examen_ocular_obs: "",
+  evolucion_clinica: "",
+
   fo_od_imagen_url: null,
   fo_oi_imagen_url: null,
   cv_od_imagen_url: null,
@@ -215,7 +218,28 @@ function patchPio(campo: "pio_od" | "pio_oi", raw: string, value: HistoriaDraft)
   return patch;
 }
 
+function FormatosChips({ onInsertar }: { onInsertar: (texto: string) => void }) {
+  const formatos = useQuery({ queryKey: ["formatos-historia"], queryFn: listFormatosHistoria });
+  const items = formatos.data ?? [];
+  if (items.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-2 pb-1">
+      {items.map((f) => (
+        <button
+          key={f.id}
+          type="button"
+          onClick={() => onInsertar(f.contenido)}
+          className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:bg-muted"
+        >
+          {f.nombre}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+
   return (
     <section className="panel p-4">
       <h3 className="mb-4 text-sm font-semibold">{title}</h3>
@@ -310,18 +334,31 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props 
           <Label htmlFor="motivo">Motivo de consulta</Label>
           <Textarea id="motivo" rows={3} value={value.motivo_consulta ?? ""} onChange={(e) => onChange({ motivo_consulta: e.target.value })} />
         </div>
+        <DatosPrevios
+          value={value}
+          campos={[
+            ["Antecedentes personales", "antecedentes_personales"],
+            ["Antecedentes familiares", "antecedentes_familiares"],
+            ["Antecedentes oftalmológicos", "antecedentes_oftalmologicos"],
+          ]}
+        />
         <div className="space-y-1.5">
-          <Label htmlFor="ap">Antecedentes personales</Label>
-          <Textarea id="ap" rows={2} value={value.antecedentes_personales ?? ""} onChange={(e) => onChange({ antecedentes_personales: e.target.value })} />
+          <Label htmlFor="evolucion">Antecedentes y examen</Label>
+          <FormatosChips
+            onInsertar={(texto) => {
+              const actual = (value.evolucion_clinica ?? "").replace(/\s+$/, "");
+              onChange({ evolucion_clinica: actual ? `${actual}\n\n${texto}` : texto });
+            }}
+          />
+          <Textarea
+            id="evolucion"
+            rows={16}
+            placeholder="Antecedentes, biomicroscopía, fondo de ojo y observaciones…"
+            value={value.evolucion_clinica ?? ""}
+            onChange={(e) => onChange({ evolucion_clinica: e.target.value })}
+          />
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="af">Antecedentes familiares</Label>
-          <Textarea id="af" rows={2} value={value.antecedentes_familiares ?? ""} onChange={(e) => onChange({ antecedentes_familiares: e.target.value })} />
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="ao">Antecedentes oftalmológicos</Label>
-          <Textarea id="ao" rows={2} value={value.antecedentes_oftalmologicos ?? ""} onChange={(e) => onChange({ antecedentes_oftalmologicos: e.target.value })} />
-        </div>
+
       </Section>
 
       <Section title="Examen oftalmológico">
@@ -373,16 +410,8 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props 
             ["Fondo de ojo OI", "fo_oi"],
           ]}
         />
-        <div className="space-y-1.5">
-          <Label htmlFor="examen-obs">Biomicroscopía, fondo de ojo y otras observaciones</Label>
-          <Textarea
-            id="examen-obs"
-            rows={8}
-            placeholder="Biomicroscopía, fondo de ojo y cualquier otra observación del examen…"
-            value={value.examen_ocular_obs ?? ""}
-            onChange={(e) => onChange({ examen_ocular_obs: e.target.value })}
-          />
-        </div>
+        <DatosPrevios value={value} campos={[["Examen (formato anterior)", "examen_ocular_obs"]]} />
+
         <div className="grid gap-3 sm:grid-cols-2">
           <AdjuntoEstudio {...props} label="retinografía OD" tipo="fo_od" />
           <AdjuntoEstudio {...props} label="retinografía OI" tipo="fo_oi" />

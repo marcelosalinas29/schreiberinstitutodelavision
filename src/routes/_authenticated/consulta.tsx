@@ -335,7 +335,7 @@ function Consulta() {
   return (
     <div>
       <PageHeader
-        title="Consulta"
+        title="Historias Clínicas"
         description="Dictá desordenado; la IA distribuye cada dato en el campo correcto."
         actions={
           <>
