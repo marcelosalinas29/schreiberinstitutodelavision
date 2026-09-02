@@ -605,11 +605,22 @@ function Agenda() {
                               setFecha(dia);
                               setVista("dia");
                             }}
-                            className="w-full rounded-md border border-border px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent/60"
+                            className={`w-full rounded-md border px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent/60 ${
+                              esEspecial(t) ? claseEspecial(t) : "border-border"
+                            }`}
                           >
                             <span className="font-semibold tabular-nums">{hhmm(t.inicio)}</span>{" "}
-                            {t.paciente ? `${t.paciente.apellido}, ${t.paciente.nombre}` : "Sin paciente"}
-                            {t.motivo ? <span className="block text-muted-foreground">{t.motivo}</span> : null}
+                            {esEspecial(t) ? (
+                              <span className="inline-flex items-center gap-1">
+                                {tipoDe(t) === "bloqueo" ? <Lock className="size-3" /> : <CalendarHeart className="size-3" />}
+                                {etiquetaEspecial(t)}
+                              </span>
+                            ) : (
+                              <>
+                                {t.paciente ? `${t.paciente.apellido}, ${t.paciente.nombre}` : "Sin paciente"}
+                                {t.motivo ? <span className="block text-muted-foreground">{t.motivo}</span> : null}
+                              </>
+                            )}
                           </button>
                         </li>
                       ))}
