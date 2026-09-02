@@ -98,7 +98,15 @@ function Plantillas() {
                 void (async () => {
                   const medico = await datosMedicoReceta();
                   await generarRecetaPDF({
-                    paciente: { nombre: "Ejemplo", apellido: "Paciente", dni: "00000000", obra_social: null, nro_afiliado: null },
+                    paciente: {
+                      nombre: "Ejemplo",
+                      apellido: "Paciente",
+                      dni: "00000000",
+                      obra_social: null,
+                      nro_afiliado: null,
+                      plan_obra_social: null,
+                      condicion_iva: null,
+                    },
                     contenido: "Lágrimas artificiales 1 gota cada 6 hs por 15 días.",
                     fecha: new Date(),
                     plantilla: actual,
