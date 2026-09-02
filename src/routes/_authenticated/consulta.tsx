@@ -230,6 +230,8 @@ function Consulta() {
   const pedidoEcg = () => pedidoDesdeFormato("Prequirúrgico - ECG", "ECG");
   const pedidoLaboratorioPrequirurgico = () =>
     pedidoDesdeFormato("Prequirúrgico - Laboratorio", "Laboratorio prequirúrgico");
+  const pedidoVasculitisUveitis = () =>
+    pedidoDesdeFormato("Complementarios Vasculitis/Uveítis", "Vasculitis/Uveítis");
 
   /** Receta óptica: graduación de lejos y de cerca por ojo, en A5. */
   const recetaOptica = () => {
