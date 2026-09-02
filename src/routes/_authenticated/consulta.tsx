@@ -26,6 +26,7 @@ import type { PracticaEstudio } from "@/types/domain";
 import {
   idsPracticasUsadas,
   listPracticas,
+  agruparPracticas,
   practicasOrdenadasPorUso,
   practicasParaObraSocial,
   registrarUsoPractica,
