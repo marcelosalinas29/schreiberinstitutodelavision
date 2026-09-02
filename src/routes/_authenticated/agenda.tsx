@@ -667,6 +667,7 @@ function Agenda() {
                 {celdasMes.map((dia) => {
                   const delMes = desdeISO(dia).getMonth() === desdeISO(primerDiaMes).getMonth();
                   const cant = conteoMes[dia] ?? 0;
+                  const especial = especialesMes[dia];
                   return (
                     <button
                       key={dia}
@@ -674,11 +675,18 @@ function Agenda() {
                         setFecha(dia);
                         setVista("dia");
                       }}
-                      className={`flex h-16 flex-col items-center justify-center gap-1 rounded-md border border-border text-sm transition-colors hover:bg-accent/60 ${
-                        delMes ? "" : "opacity-40"
-                      } ${dia === fecha ? "ring-2 ring-primary" : ""}`}
+                      className={`flex h-16 flex-col items-center justify-center gap-1 rounded-md border text-sm transition-colors hover:bg-accent/60 ${
+                        especial === "bloqueo"
+                          ? "border-destructive/40 bg-destructive/10"
+                          : especial === "evento_personal"
+                            ? "border-primary/40 bg-primary/10"
+                            : "border-border"
+                      } ${delMes ? "" : "opacity-40"} ${dia === fecha ? "ring-2 ring-primary" : ""}`}
                     >
-                      <span className="tabular-nums">{desdeISO(dia).getDate()}</span>
+                      <span className="flex items-center gap-1 tabular-nums">
+                        {desdeISO(dia).getDate()}
+                        {especial === "bloqueo" ? <Lock className="size-3" /> : especial ? <CalendarHeart className="size-3" /> : null}
+                      </span>
                       {cant > 0 ? (
                         <span className="rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
                           {cant}
