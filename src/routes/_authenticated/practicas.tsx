@@ -120,42 +120,49 @@ function Practicas() {
         {grupos.length === 0 ? (
           <p className="text-sm text-muted-foreground">Todavía no cargaste prácticas.</p>
         ) : null}
-        {grupos.map(([grupo, items]) => (
-          <section key={grupo} className="panel p-5">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{grupo}</h2>
-            <ul className="divide-y divide-border">
-              {items.map((p) => (
-                <li key={p.id} className="flex items-start gap-3 py-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium">
-                      {p.nombre}
-                      {p.codigo ? <span className="ml-2 text-xs text-muted-foreground">{p.codigo}</span> : null}
-                    </p>
-                    <p className="whitespace-pre-wrap text-xs text-muted-foreground">{p.contenido}</p>
-                  </div>
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        setForm({
-                          id: p.id,
-                          nombre: p.nombre,
-                          codigo: p.codigo ?? "",
-                          obra_social: p.obra_social ?? "",
-                          contenido: p.contenido,
-                        })
-                      }
-                    >
-                      Editar
-                    </Button>
-                    <Button variant="ghost" size="icon" aria-label="Eliminar" onClick={() => borrar.mutate(p.id)}>
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </div>
-                </li>
+        {grupos.map(([seccion, subgrupos]) => (
+          <section key={seccion} className="panel p-5">
+            <h2 className="mb-4 text-base font-semibold">{seccion}</h2>
+            <div className="space-y-4">
+              {subgrupos.map(([sub, items]) => (
+                <div key={sub}>
+                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{sub}</h3>
+                  <ul className="divide-y divide-border">
+                    {items.map((p) => (
+                      <li key={p.id} className="flex items-start gap-3 py-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium">
+                            {p.nombre}
+                            {p.codigo ? <span className="ml-2 text-xs text-muted-foreground">{p.codigo}</span> : null}
+                          </p>
+                          <p className="whitespace-pre-wrap text-xs text-muted-foreground">{p.contenido}</p>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              setForm({
+                                id: p.id,
+                                nombre: p.nombre,
+                                codigo: p.codigo ?? "",
+                                obra_social: p.obra_social ?? "",
+                                contenido: p.contenido,
+                              })
+                            }
+                          >
+                            Editar
+                          </Button>
+                          <Button variant="ghost" size="icon" aria-label="Eliminar" onClick={() => borrar.mutate(p.id)}>
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </ul>
+            </div>
           </section>
         ))}
       </div>
