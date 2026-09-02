@@ -112,3 +112,43 @@ export function agruparPracticas(practicas: PracticaEstudio[]): [string, Practic
   }
   return [...grupos.entries()];
 }
+
+const ORDEN_SECCIONES = [
+  "Estudios y Prácticas",
+  "Laboratorio",
+  "Otros estudios complementarios",
+  "Cirugías",
+];
+
+/** Sección de nivel superior; "General" si la fila todavía no tiene una. */
+export function seccionDePractica(p: PracticaEstudio): string {
+  return p.seccion?.trim() || "General";
+}
+
+/** Agrupa en 2 niveles: sección → subdivisión (categoría u obra social), preservando el orden recibido. */
+export function agruparPorSeccion(
+  practicas: PracticaEstudio[],
+): [string, [string, PracticaEstudio[]][]][] {
+  const secciones = new Map<string, PracticaEstudio[]>();
+  for (const p of practicas) {
+    const key = seccionDePractica(p);
+    secciones.set(key, [...(secciones.get(key) ?? []), p]);
+  }
+  return [...secciones.entries()]
+    .sort((a, b) => {
+      const ia = ORDEN_SECCIONES.indexOf(a[0]);
+      const ib = ORDEN_SECCIONES.indexOf(b[0]);
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+    })
+    .map(([seccion, items]) => {
+      const subs = new Map<string, PracticaEstudio[]>();
+      for (const p of items) {
+        const sub =
+          seccion === "Estudios y Prácticas"
+            ? p.obra_social?.trim() || p.categoria?.trim() || "General"
+            : p.categoria?.trim() || p.obra_social?.trim() || "General";
+        subs.set(sub, [...(subs.get(sub) ?? []), p]);
+      }
+      return [seccion, [...subs.entries()]] as [string, [string, PracticaEstudio[]][]];
+    });
+}
