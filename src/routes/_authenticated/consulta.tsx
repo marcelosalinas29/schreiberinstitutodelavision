@@ -257,15 +257,18 @@ function Consulta() {
 
   const basePracticas = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
   const [ordenPedido, setOrdenPedido] = useState<PracticaEstudio[] | null>(null);
-  const [pedidoListo, setPedidoListo] = useState<{ contenido: string; fecha: Date } | null>(null);
+  const [pedidoListo, setPedidoListo] = useState<{ contenido: string; fecha: Date; titulo: string } | null>(null);
   const [usadasAntes, setUsadasAntes] = useState<string[]>([]);
-  const disponibles = ordenPedido ?? basePracticas;
+  const [seccionPedido, setSeccionPedido] = useState<string>("Estudios y Prácticas");
+  const tituloPedido = TITULOS_PEDIDO[seccionPedido] ?? "Pedido de estudios";
+  const disponibles = (ordenPedido ?? basePracticas).filter((p) => p.seccion === seccionPedido);
 
-  const abrirPedido = () => {
+  const abrirPedido = (seccion: string) => {
     if (!paciente) {
       toast.error("Elegí un paciente");
       return;
     }
+    setSeccionPedido(seccion);
     setSeleccionadas([]);
     setOrdenPedido(null);
     setUsadasAntes([]);
