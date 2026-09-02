@@ -471,6 +471,7 @@ function Consulta() {
             </Select>
           </div>
 
+          {isMedico && (
           <div className="space-y-1.5">
             <Label htmlFor="dictado">Dictado libre</Label>
             <Textarea
@@ -490,6 +491,7 @@ function Consulta() {
               </Button>
             </div>
           </div>
+          )}
         </div>
       </div>
 
