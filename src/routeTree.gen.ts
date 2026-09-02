@@ -18,6 +18,7 @@ import { Route as AuthenticatedCie10RouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedConfiguracionRouteImport } from './routes/_authenticated/configuracion'
 import { Route as AuthenticatedConsultaRouteImport } from './routes/_authenticated/consulta'
 import { Route as AuthenticatedDocumentosRouteImport } from './routes/_authenticated/documentos'
+import { Route as AuthenticatedEstudiosComplementariosRouteImport } from './routes/_authenticated/estudios-complementarios'
 import { Route as AuthenticatedFormatosRouteImport } from './routes/_authenticated/formatos'
 import { Route as AuthenticatedImportarRouteImport } from './routes/_authenticated/importar'
 import { Route as AuthenticatedLaboratorioRouteImport } from './routes/_authenticated/laboratorio'
@@ -73,6 +74,12 @@ const AuthenticatedDocumentosRoute = AuthenticatedDocumentosRouteImport.update({
   path: '/documentos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEstudiosComplementariosRoute =
+  AuthenticatedEstudiosComplementariosRouteImport.update({
+    id: '/estudios-complementarios',
+    path: '/estudios-complementarios',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedFormatosRoute = AuthenticatedFormatosRouteImport.update({
   id: '/formatos',
   path: '/formatos',
@@ -131,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/configuracion': typeof AuthenticatedConfiguracionRoute
   '/consulta': typeof AuthenticatedConsultaRoute
   '/documentos': typeof AuthenticatedDocumentosRoute
+  '/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/formatos': typeof AuthenticatedFormatosRoute
   '/importar': typeof AuthenticatedImportarRoute
   '/laboratorio': typeof AuthenticatedLaboratorioRoute
@@ -150,6 +158,7 @@ export interface FileRoutesByTo {
   '/configuracion': typeof AuthenticatedConfiguracionRoute
   '/consulta': typeof AuthenticatedConsultaRoute
   '/documentos': typeof AuthenticatedDocumentosRoute
+  '/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/formatos': typeof AuthenticatedFormatosRoute
   '/importar': typeof AuthenticatedImportarRoute
   '/laboratorio': typeof AuthenticatedLaboratorioRoute
@@ -171,6 +180,7 @@ export interface FileRoutesById {
   '/_authenticated/configuracion': typeof AuthenticatedConfiguracionRoute
   '/_authenticated/consulta': typeof AuthenticatedConsultaRoute
   '/_authenticated/documentos': typeof AuthenticatedDocumentosRoute
+  '/_authenticated/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/_authenticated/formatos': typeof AuthenticatedFormatosRoute
   '/_authenticated/importar': typeof AuthenticatedImportarRoute
   '/_authenticated/laboratorio': typeof AuthenticatedLaboratorioRoute
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/configuracion'
     | '/consulta'
     | '/documentos'
+    | '/estudios-complementarios'
     | '/formatos'
     | '/importar'
     | '/laboratorio'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/configuracion'
     | '/consulta'
     | '/documentos'
+    | '/estudios-complementarios'
     | '/formatos'
     | '/importar'
     | '/laboratorio'
@@ -231,6 +243,7 @@ export interface FileRouteTypes {
     | '/_authenticated/configuracion'
     | '/_authenticated/consulta'
     | '/_authenticated/documentos'
+    | '/_authenticated/estudios-complementarios'
     | '/_authenticated/formatos'
     | '/_authenticated/importar'
     | '/_authenticated/laboratorio'
@@ -313,6 +326,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDocumentosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/estudios-complementarios': {
+      id: '/_authenticated/estudios-complementarios'
+      path: '/estudios-complementarios'
+      fullPath: '/estudios-complementarios'
+      preLoaderRoute: typeof AuthenticatedEstudiosComplementariosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/formatos': {
       id: '/_authenticated/formatos'
       path: '/formatos'
@@ -386,6 +406,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedConfiguracionRoute: typeof AuthenticatedConfiguracionRoute
   AuthenticatedConsultaRoute: typeof AuthenticatedConsultaRoute
   AuthenticatedDocumentosRoute: typeof AuthenticatedDocumentosRoute
+  AuthenticatedEstudiosComplementariosRoute: typeof AuthenticatedEstudiosComplementariosRoute
   AuthenticatedFormatosRoute: typeof AuthenticatedFormatosRoute
   AuthenticatedImportarRoute: typeof AuthenticatedImportarRoute
   AuthenticatedLaboratorioRoute: typeof AuthenticatedLaboratorioRoute
@@ -404,6 +425,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConfiguracionRoute: AuthenticatedConfiguracionRoute,
   AuthenticatedConsultaRoute: AuthenticatedConsultaRoute,
   AuthenticatedDocumentosRoute: AuthenticatedDocumentosRoute,
+  AuthenticatedEstudiosComplementariosRoute:
+    AuthenticatedEstudiosComplementariosRoute,
   AuthenticatedFormatosRoute: AuthenticatedFormatosRoute,
   AuthenticatedImportarRoute: AuthenticatedImportarRoute,
   AuthenticatedLaboratorioRoute: AuthenticatedLaboratorioRoute,
