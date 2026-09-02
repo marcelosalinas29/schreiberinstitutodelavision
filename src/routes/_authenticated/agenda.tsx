@@ -241,7 +241,51 @@ function Agenda() {
     },
   });
 
-  const horarios = horariosDisponibles(fecha);
+  const crearEvento = useMutation({
+    mutationFn: async () => {
+      const f = formEvento.fecha || fecha;
+      if (!formEvento.titulo.trim()) throw new Error("Poné un título");
+      return crearEventoPersonal(f, formEvento.hora, Number(formEvento.duracion_min) || 60, formEvento.titulo.trim());
+    },
+    onSuccess: () => {
+      toast.success("Cita personal agendada");
+      setOpenEvento(false);
+      setFormEvento(EVENTO_VACIO);
+      void qc.invalidateQueries({ queryKey: ["turnos"] });
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "No se pudo agendar la cita"),
+  });
+
+  const crearBloqueoM = useMutation({
+    mutationFn: async () =>
+      crearBloqueo(formBloqueo.fecha || fecha, formBloqueo.hora_inicio, formBloqueo.hora_fin, formBloqueo.motivo),
+    onSuccess: () => {
+      toast.success("Horario bloqueado");
+      setOpenBloqueo(false);
+      setFormBloqueo(BLOQUEO_VACIO);
+      void qc.invalidateQueries({ queryKey: ["turnos"] });
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "No se pudo bloquear el horario"),
+  });
+
+  const bloqueosDelDia = useMemo(
+    () => (turnos.data ?? []).filter((t) => tipoDe(t) === "bloqueo"),
+    [turnos.data],
+  );
+
+  const horarios = useMemo(() => {
+    const base = horariosDisponibles(fecha);
+    if (bloqueosDelDia.length === 0) return base;
+    const rangos = bloqueosDelDia.map((b) => {
+      const d = new Date(b.inicio);
+      const desde = d.getHours() * 60 + d.getMinutes();
+      return [desde, desde + (b.duracion_min ?? 0)] as const;
+    });
+    return base.filter((h) => {
+      const m = aMinutos(h);
+      return !rangos.some(([desde, hasta]) => m >= desde && m < hasta);
+    });
+  }, [fecha, bloqueosDelDia]);
 
   const camposTurno = (
     <>
