@@ -65,6 +65,7 @@ interface Props {
   value: HistoriaDraft;
   onChange: (patch: Partial<HistoriaDraft>) => void;
   historiaId?: string | undefined;
+  pacienteId?: string | null | undefined;
 }
 
 const COLUMNA_IMAGEN = {
