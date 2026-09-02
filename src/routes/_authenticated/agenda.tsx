@@ -435,6 +435,124 @@ function Agenda() {
                 ) : null}
               </DialogContent>
             </Dialog>
+
+            <Dialog open={openEvento} onOpenChange={setOpenEvento}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline">
+                  <CalendarHeart className="size-4" /> Cita personal
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Nueva cita personal</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="ev-fecha">Fecha</Label>
+                      <Input
+                        id="ev-fecha"
+                        type="date"
+                        value={formEvento.fecha || fecha}
+                        onChange={(e) => setFormEvento({ ...formEvento, fecha: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="ev-hora">Hora</Label>
+                      <Input
+                        id="ev-hora"
+                        type="time"
+                        value={formEvento.hora}
+                        onChange={(e) => setFormEvento({ ...formEvento, hora: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="ev-dur">Duración (min)</Label>
+                    <Input
+                      id="ev-dur"
+                      type="number"
+                      min={5}
+                      step={5}
+                      value={formEvento.duracion_min}
+                      onChange={(e) => setFormEvento({ ...formEvento, duracion_min: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="ev-titulo">Título</Label>
+                    <Input
+                      id="ev-titulo"
+                      placeholder="Curso, reunión, evento…"
+                      value={formEvento.titulo}
+                      onChange={(e) => setFormEvento({ ...formEvento, titulo: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button onClick={() => crearEvento.mutate()} disabled={crearEvento.isPending}>
+                    Guardar
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={openBloqueo} onOpenChange={setOpenBloqueo}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline">
+                  <Lock className="size-4" /> Bloquear día u horas
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Bloquear horarios</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="bl-fecha">Fecha</Label>
+                    <Input
+                      id="bl-fecha"
+                      type="date"
+                      value={formBloqueo.fecha || fecha}
+                      onChange={(e) => setFormBloqueo({ ...formBloqueo, fecha: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="bl-desde">Desde</Label>
+                      <Input
+                        id="bl-desde"
+                        type="time"
+                        value={formBloqueo.hora_inicio}
+                        onChange={(e) => setFormBloqueo({ ...formBloqueo, hora_inicio: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="bl-hasta">Hasta</Label>
+                      <Input
+                        id="bl-hasta"
+                        type="time"
+                        value={formBloqueo.hora_fin}
+                        onChange={(e) => setFormBloqueo({ ...formBloqueo, hora_fin: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="bl-motivo">Motivo (opcional)</Label>
+                    <Input
+                      id="bl-motivo"
+                      placeholder="Guardia, congreso, licencia…"
+                      value={formBloqueo.motivo}
+                      onChange={(e) => setFormBloqueo({ ...formBloqueo, motivo: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button onClick={() => crearBloqueoM.mutate()} disabled={crearBloqueoM.isPending}>
+                    Bloquear
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </>
         }
       />
