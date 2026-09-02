@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { calcularEdad } from "@/features/patients/PatientForm";
 import type { DocumentoClinico, DocumentoClinicoInsert, DocumentoTipo } from "@/types/domain";
 
 export async function listDocumentos(): Promise<DocumentoClinico[]> {
@@ -48,6 +49,7 @@ export const TIPOS_DOCUMENTO: { value: DocumentoTipo; label: string }[] = [
   { value: "consentimiento", label: "Consentimientos" },
   { value: "protocolo_quirurgico", label: "Protocolos quirúrgicos" },
   { value: "tratamiento_preoperatorio", label: "Tratamientos preoperatorios" },
+  { value: "certificado", label: "Certificados" },
 ];
 
 /** Completa los marcadores del documento con los datos del paciente y del profesional. */
@@ -56,14 +58,18 @@ export function completarDocumento(
   datos: {
     nombrePaciente: string;
     dniPaciente?: string | null;
+    fechaNacimiento?: string | null;
     matriculaMedico?: string | null;
     fecha: Date;
   },
 ): string {
   const fecha = datos.fecha.toLocaleDateString("es-AR");
+  const edad = datos.fechaNacimiento ? calcularEdad(datos.fechaNacimiento) : null;
   return contenido
     .replaceAll("[NOMBRE_PACIENTE]", datos.nombrePaciente)
     .replaceAll("[DNI_PACIENTE]", datos.dniPaciente?.trim() || "—")
+    .replaceAll("[EDAD_PACIENTE]", edad ?? "___")
     .replaceAll("[MATRICULA_MEDICO]", datos.matriculaMedico?.trim() || "__________")
     .replaceAll("[FECHA]", fecha);
 }
+

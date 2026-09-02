@@ -305,6 +305,7 @@ function Consulta() {
         contenido: completarDocumento(manualContenido, {
           nombrePaciente: `${paciente.apellido}, ${paciente.nombre}`,
           dniPaciente: paciente.dni,
+          fechaNacimiento: paciente.fecha_nacimiento,
           matriculaMedico: medico?.matricula ?? null,
           fecha,
         }),
@@ -328,6 +329,7 @@ function Consulta() {
         contenido: completarDocumento(doc.contenido, {
           nombrePaciente: `${paciente.apellido}, ${paciente.nombre}`,
           dniPaciente: paciente.dni,
+          fechaNacimiento: paciente.fecha_nacimiento,
           matriculaMedico: medico?.matricula ?? null,
           fecha,
         }),
