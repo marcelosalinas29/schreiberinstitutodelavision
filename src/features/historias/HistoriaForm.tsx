@@ -517,20 +517,18 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial, paciente
         />
         <DatosPrevios value={value} campos={[["Examen (formato anterior)", "examen_ocular_obs"]]} />
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <AdjuntoEstudio {...props} label="retinografía OD" tipo="fo_od" />
-          <AdjuntoEstudio {...props} label="retinografía OI" tipo="fo_oi" />
-        </div>
+        <AdjuntosPrevios value={value} />
+      </Section>
+
+      <Section title="Estudios adjuntos">
+        <p className="text-xs text-muted-foreground">
+          Adjuntá cualquier estudio (imagen o PDF): retinografía, campo visual, OCT, ecografía, etc.
+        </p>
+        <AdjuntosEstudio historiaId={historiaId} soloLectura={soloLectura} />
       </Section>
 
       <Section title="Campo visual">
-        <p className="text-xs text-muted-foreground">
-          Adjuntá el estudio de campo visual de cada ojo (imagen o PDF exportado del equipo).
-        </p>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <AdjuntoEstudio {...props} label="campo visual OD" tipo="cv_od" />
-          <AdjuntoEstudio {...props} label="campo visual OI" tipo="cv_oi" />
-        </div>
+
 
         <div className="space-y-3 border-t border-border pt-3">
           <h4 className="text-sm font-semibold">Curva de presión ocular</h4>
