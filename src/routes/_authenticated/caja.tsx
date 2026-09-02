@@ -12,7 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCurrentUser } from "@/features/auth/useAuth";
 import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
+
 import {
   calcularTotales,
   cerrarCaja,
@@ -59,7 +61,11 @@ interface LineaPagoForm {
 
 function Caja() {
   const qc = useQueryClient();
-  const [fecha, setFecha] = useState(() => new Date().toISOString().slice(0, 10));
+  const { isMedico } = useCurrentUser();
+  const hoy = new Date().toISOString().slice(0, 10);
+  const [fechaSel, setFecha] = useState(() => hoy);
+  const fecha = isMedico ? fechaSel : hoy;
+
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
     paciente_id: "",
@@ -74,7 +80,7 @@ function Caja() {
 
   const cobros = useQuery({ queryKey: ["cobros", fecha], queryFn: () => listCobrosPorFecha(fecha) });
   const pacientes = useQuery({ queryKey: ["pacientes", ""], queryFn: () => listPacientes("") });
-  const cierres = useQuery({ queryKey: ["cierres"], queryFn: listCierres });
+  const cierres = useQuery({ queryKey: ["cierres"], queryFn: listCierres, enabled: isMedico });
 
   const totales = calcularTotales(cobros.data ?? []);
   const totalFormulario = lineas.reduce((acc, l) => acc + (Number(l.monto) || 0), 0);
@@ -145,7 +151,10 @@ function Caja() {
         description="Ingresos del día por medio de pago y cierre administrativo."
         actions={
           <>
-            <Input type="date" className="w-40" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+            {isMedico && (
+              <Input type="date" className="w-40" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+            )}
+
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button size="sm">
@@ -267,21 +276,27 @@ function Caja() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-            <Button size="sm" variant="outline" onClick={() => exportar.mutate()} disabled={exportar.isPending}>
-              <Download className="size-4" /> Exportar CSV
-            </Button>
+            {isMedico && (
+              <Button size="sm" variant="outline" onClick={() => exportar.mutate()} disabled={exportar.isPending}>
+                <Download className="size-4" /> Exportar CSV
+              </Button>
+            )}
+
           </>
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        {MEDIOS_PAGO.map((m) => (
-          <StatCard key={m.value} label={m.label} value={money(totales.porMedio[m.value])} />
-        ))}
-        <StatCard label="Total del día" value={money(totales.total)} hint={`${totales.cantidad} movimientos`} />
-      </div>
+      {isMedico && (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {MEDIOS_PAGO.map((m) => (
+            <StatCard key={m.value} label={m.label} value={money(totales.porMedio[m.value])} />
+          ))}
+          <StatCard label="Total del día" value={money(totales.total)} hint={`${totales.cantidad} movimientos`} />
+        </div>
+      )}
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+
+      <div className={`mt-6 grid gap-4 ${isMedico ? "lg:grid-cols-[1.4fr_1fr]" : ""}`}>
         <section className="panel p-4">
           <h2 className="mb-3 text-sm font-semibold">Movimientos</h2>
           {cobros.isLoading ? (
@@ -323,7 +338,9 @@ function Caja() {
           )}
         </section>
 
+        {isMedico && (
         <section className="panel h-fit p-4">
+
           <h2 className="mb-3 text-sm font-semibold">Cierre de caja</h2>
           <div className="space-y-3">
             <div className="space-y-1.5">
@@ -360,6 +377,8 @@ function Caja() {
             ))}
           </ul>
         </section>
+        )}
+
       </div>
 
       <PendientesPanel />
