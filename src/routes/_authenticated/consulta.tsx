@@ -125,6 +125,7 @@ function Consulta() {
   const [manualTitulo, setManualTitulo] = useState("");
   const [manualContenido, setManualContenido] = useState("");
 
+  const { isMedico } = useCurrentUser();
   const pacientes = useQuery({ queryKey: ["pacientes", ""], queryFn: () => listPacientes("") });
   const plantillas = useQuery({ queryKey: ["plantillas"], queryFn: listPlantillas });
   const practicas = useQuery({ queryKey: ["practicas"], queryFn: listPracticas });
