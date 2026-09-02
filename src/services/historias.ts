@@ -90,3 +90,53 @@ export async function urlFirmadaImagenHistoria(path: string | null | undefined):
   if (error) return null;
   return data?.signedUrl ?? null;
 }
+
+/* ----------------------------------------------------------------------------
+ * Adjuntos libres de estudios (cualquier cantidad, imagen o PDF).
+ * -------------------------------------------------------------------------- */
+
+export type HistoriaAdjunto = {
+  id: string;
+  historia_id: string;
+  path: string;
+  nombre_archivo: string | null;
+  owner_id: string | null;
+  created_at: string;
+};
+
+/** Sube un archivo de estudio y lo registra como adjunto de la historia. */
+export async function subirAdjuntoEstudio(file: File, historiaId: string): Promise<HistoriaAdjunto> {
+  const { data: auth } = await supabase.auth.getUser();
+  const uid = auth.user?.id;
+  if (!uid) throw new Error("Sesión no válida");
+  const ext = (file.name.split(".").pop() || "png").toLowerCase();
+  const path = `${uid}/historia-${historiaId}-adjunto-${Date.now()}.${ext}`;
+  const { error: upErr } = await supabase.storage.from(BUCKET_MEDICAL).upload(path, file, {
+    upsert: true,
+    contentType: file.type || "application/octet-stream",
+  });
+  if (upErr) throw upErr;
+
+  const { data, error } = await supabase
+    .from("historia_adjuntos")
+    .insert({ historia_id: historiaId, path, nombre_archivo: file.name, owner_id: uid })
+    .select("*")
+    .single();
+  if (error) throw error;
+  return data as HistoriaAdjunto;
+}
+
+export async function listAdjuntosEstudio(historiaId: string): Promise<HistoriaAdjunto[]> {
+  const { data, error } = await supabase
+    .from("historia_adjuntos")
+    .select("*")
+    .eq("historia_id", historiaId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as HistoriaAdjunto[];
+}
+
+export async function eliminarAdjuntoEstudio(id: string): Promise<void> {
+  const { error } = await supabase.from("historia_adjuntos").delete().eq("id", id);
+  if (error) throw error;
+}

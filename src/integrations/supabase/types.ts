@@ -285,6 +285,41 @@ export type Database = {
         }
         Relationships: []
       }
+      historia_adjuntos: {
+        Row: {
+          created_at: string
+          historia_id: string
+          id: string
+          nombre_archivo: string | null
+          owner_id: string | null
+          path: string
+        }
+        Insert: {
+          created_at?: string
+          historia_id: string
+          id?: string
+          nombre_archivo?: string | null
+          owner_id?: string | null
+          path: string
+        }
+        Update: {
+          created_at?: string
+          historia_id?: string
+          id?: string
+          nombre_archivo?: string | null
+          owner_id?: string | null
+          path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "historia_adjuntos_historia_id_fkey"
+            columns: ["historia_id"]
+            isOneToOne: false
+            referencedRelation: "historias_clinicas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       historias_clinicas: {
         Row: {
           antecedentes_familiares: string | null

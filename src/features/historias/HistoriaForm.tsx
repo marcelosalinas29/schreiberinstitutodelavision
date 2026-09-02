@@ -16,9 +16,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  subirImagenHistoria,
   urlFirmadaImagenHistoria,
-  type ImagenHistoriaTipo,
+  subirAdjuntoEstudio,
+  listAdjuntosEstudio,
+  eliminarAdjuntoEstudio,
+  type HistoriaAdjunto,
 } from "@/services/historias";
 
 export type HistoriaDraft = Omit<HistoriaClinicaInsert, "paciente_id">;
@@ -77,21 +79,12 @@ const COLUMNA_IMAGEN = {
   fo_oi: "fo_oi_imagen_url",
   cv_od: "cv_od_imagen_url",
   cv_oi: "cv_oi_imagen_url",
-} as const satisfies Record<ImagenHistoriaTipo, keyof HistoriaDraft>;
+} as const;
 
-function AdjuntoEstudio({
-  label,
-  tipo,
-  value,
-  onChange,
-  historiaId,
-}: Props & { label: string; tipo: ImagenHistoriaTipo }) {
-  const input = useRef<HTMLInputElement>(null);
-  const [subiendo, setSubiendo] = useState(false);
+/** Miniatura de solo lectura de los adjuntos cargados con el formato anterior. */
+function AdjuntoPrevio({ label, path }: { label: string; path: string }) {
   const [preview, setPreview] = useState<string | null>(null);
-  const path = (value[COLUMNA_IMAGEN[tipo]] as string | null) ?? null;
-  const esPdf = !!path && path.toLowerCase().endsWith(".pdf");
-
+  const esPdf = path.toLowerCase().endsWith(".pdf");
   useEffect(() => {
     let vigente = true;
     void urlFirmadaImagenHistoria(path).then((url) => {
@@ -101,13 +94,82 @@ function AdjuntoEstudio({
       vigente = false;
     };
   }, [path]);
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted">
+        {preview && !esPdf ? (
+          <img src={preview} alt={label} className="size-full object-cover" />
+        ) : (
+          <FileText className="size-6 text-muted-foreground" />
+        )}
+      </div>
+      <div className="space-y-0.5">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Adjunto anterior</p>
+        <p className="text-sm">{label}</p>
+        {preview ? (
+          <a href={preview} target="_blank" rel="noreferrer" className="block text-xs text-primary underline">
+            Ver archivo
+          </a>
+        ) : null}
+      </div>
+    </div>
+  );
+}
 
-  const subir = async (file: File) => {
+function AdjuntosPrevios({ value }: { value: HistoriaDraft }) {
+  const items: [string, string][] = (
+    [
+      ["Retinografía OD", COLUMNA_IMAGEN.fo_od],
+      ["Retinografía OI", COLUMNA_IMAGEN.fo_oi],
+      ["Campo visual OD", COLUMNA_IMAGEN.cv_od],
+      ["Campo visual OI", COLUMNA_IMAGEN.cv_oi],
+    ] as const
+  )
+    .map(([label, key]) => [label, (value[key] as string | null) ?? ""] as [string, string])
+    .filter(([, path]) => path !== "");
+  if (items.length === 0) return null;
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      {items.map(([label, path]) => (
+        <AdjuntoPrevio key={path} label={label} path={path} />
+      ))}
+    </div>
+  );
+}
+
+/** Control único: adjuntar cualquier cantidad de estudios (imagen o PDF). */
+function AdjuntosEstudio({ historiaId, soloLectura }: { historiaId?: string | undefined; soloLectura?: boolean }) {
+  const input = useRef<HTMLInputElement>(null);
+  const [subiendo, setSubiendo] = useState(false);
+  const [items, setItems] = useState<HistoriaAdjunto[]>([]);
+  const [urls, setUrls] = useState<Record<string, string>>({});
+
+  const recargar = async (id: string) => {
+    const filas = await listAdjuntosEstudio(id);
+    setItems(filas);
+    const pares = await Promise.all(
+      filas.map(async (f) => [f.id, (await urlFirmadaImagenHistoria(f.path)) ?? ""] as const),
+    );
+    setUrls(Object.fromEntries(pares));
+  };
+
+  useEffect(() => {
+    if (!historiaId) {
+      setItems([]);
+      return;
+    }
+    void recargar(historiaId);
+  }, [historiaId]);
+
+  const subir = async (files: FileList) => {
+    if (!historiaId) return;
     setSubiendo(true);
     try {
-      const nuevaRuta = await subirImagenHistoria(file, historiaId ?? "nueva", tipo);
-      onChange({ [COLUMNA_IMAGEN[tipo]]: nuevaRuta } as Partial<HistoriaDraft>);
-      toast.success(`${label}: archivo adjuntado`);
+      for (const file of Array.from(files)) {
+        await subirAdjuntoEstudio(file, historiaId);
+      }
+      await recargar(historiaId);
+      toast.success("Estudio adjuntado");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "No se pudo subir el archivo");
     } finally {
@@ -115,38 +177,68 @@ function AdjuntoEstudio({
     }
   };
 
+  const borrar = async (id: string) => {
+    try {
+      await eliminarAdjuntoEstudio(id);
+      if (historiaId) await recargar(historiaId);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "No se pudo eliminar el adjunto");
+    }
+  };
+
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted">
-        {preview && !esPdf ? (
-          <img src={preview} alt={label} className="size-full object-cover" />
-        ) : preview && esPdf ? (
-          <FileText className="size-6 text-muted-foreground" />
-        ) : (
-          <ImagePlus className="size-5 text-muted-foreground" />
-        )}
-      </div>
-      <div className="space-y-1">
-        <Button type="button" variant="outline" size="sm" disabled={subiendo} onClick={() => input.current?.click()}>
+    <div className="space-y-3">
+      <div className="flex items-center gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={subiendo || !historiaId || soloLectura}
+          onClick={() => input.current?.click()}
+        >
           {subiendo ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}
-          {path ? "Reemplazar" : "Adjuntar"} {label}
+          Adjuntar estudio
         </Button>
-        {preview ? (
-          <a href={preview} target="_blank" rel="noreferrer" className="block text-xs text-primary underline">
-            Ver archivo adjunto
-          </a>
-        ) : (
-          <p className="text-xs text-muted-foreground">JPG, PNG o PDF</p>
-        )}
+        <p className="text-xs text-muted-foreground">
+          {historiaId ? "Imágenes o PDF, podés subir varios." : "Guardá la historia clínica antes de adjuntar."}
+        </p>
       </div>
+      {items.length > 0 ? (
+        <ul className="space-y-2">
+          {items.map((a) => (
+            <li key={a.id} className="flex items-center gap-3 rounded-lg border border-border p-2">
+              <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted">
+                {urls[a.id] && !a.path.toLowerCase().endsWith(".pdf") ? (
+                  <img src={urls[a.id]} alt={a.nombre_archivo ?? "Adjunto"} className="size-full object-cover" />
+                ) : (
+                  <FileText className="size-5 text-muted-foreground" />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm">{a.nombre_archivo ?? "Archivo adjunto"}</p>
+                {urls[a.id] ? (
+                  <a href={urls[a.id]} target="_blank" rel="noreferrer" className="text-xs text-primary underline">
+                    Ver archivo
+                  </a>
+                ) : null}
+              </div>
+              {!soloLectura ? (
+                <Button type="button" variant="ghost" size="sm" onClick={() => void borrar(a.id)}>
+                  Eliminar
+                </Button>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      ) : null}
       <input
         ref={input}
         type="file"
+        multiple
         accept="image/png,image/jpeg,image/webp,application/pdf"
         className="hidden"
         onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) void subir(file);
+          if (e.target.files?.length) void subir(e.target.files);
           e.target.value = "";
         }}
       />
@@ -425,20 +517,18 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial, paciente
         />
         <DatosPrevios value={value} campos={[["Examen (formato anterior)", "examen_ocular_obs"]]} />
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <AdjuntoEstudio {...props} label="retinografía OD" tipo="fo_od" />
-          <AdjuntoEstudio {...props} label="retinografía OI" tipo="fo_oi" />
-        </div>
+        <AdjuntosPrevios value={value} />
+      </Section>
+
+      <Section title="Estudios adjuntos">
+        <p className="text-xs text-muted-foreground">
+          Adjuntá cualquier estudio (imagen o PDF): retinografía, campo visual, OCT, ecografía, etc.
+        </p>
+        <AdjuntosEstudio historiaId={historiaId} soloLectura={soloLectura} />
       </Section>
 
       <Section title="Campo visual">
-        <p className="text-xs text-muted-foreground">
-          Adjuntá el estudio de campo visual de cada ojo (imagen o PDF exportado del equipo).
-        </p>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <AdjuntoEstudio {...props} label="campo visual OD" tipo="cv_od" />
-          <AdjuntoEstudio {...props} label="campo visual OI" tipo="cv_oi" />
-        </div>
+
 
         <div className="space-y-3 border-t border-border pt-3">
           <h4 className="text-sm font-semibold">Curva de presión ocular</h4>
