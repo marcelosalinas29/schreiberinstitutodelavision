@@ -528,6 +528,18 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial, paciente
       </Section>
 
       <Section title="Campo visual">
+        <div className="space-y-1.5">
+          <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+            Descripción del campo visual
+          </Label>
+          <Textarea
+            rows={6}
+            placeholder="Describí el campo visual libremente…"
+            value={value.campo_visual_obs ?? ""}
+            onChange={(e) => onChange({ campo_visual_obs: e.target.value })}
+          />
+        </div>
+
 
 
         <div className="space-y-3 border-t border-border pt-3">
