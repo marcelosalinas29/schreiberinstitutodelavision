@@ -193,7 +193,10 @@ function Consulta() {
     }
     void (async () => {
       const medico = await datosMedicoReceta();
-      const base = draft.tratamiento || draft.diagnostico || "";
+      const dx = (draft.diagnostico ?? "").trim();
+      const tto = (draft.tratamiento ?? "").trim();
+      const cuerpo = tto ? `Colirio oftálmico:\n${tto}` : dx;
+      const base = [dx ? `Diagnóstico: ${dx}` : "", cuerpo].filter(Boolean).join("\n\n");
       await generarRecetaPDF({
         paciente,
         contenido: soloMedicamentos ? recetaSoloMedicamentos(base) : base,
