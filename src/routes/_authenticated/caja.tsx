@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Download, FileText, Lock, Plus, Trash2, X } from "lucide-react";
+import { Check, Download, FileText, Lock, MessageCircle, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -12,19 +12,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
 import {
   calcularTotales,
   cerrarCaja,
   crearCobroConMultiplesPagos,
+  crearPendiente,
   deleteCobro,
+  eliminarPendiente,
   exportarCobrosCSV,
   listCierres,
   listCobrosPorFecha,
+  listPendientes,
+  marcarPendienteResuelto,
   urlFirmadaComprobante,
   type PagoLinea,
+  type TipoPendiente,
 } from "@/services/caja";
 import { listPacientes } from "@/services/pacientes";
 import { MEDIOS_PAGO, TIPOS_COBRO, type MedioPago, type TipoCobro } from "@/types/domain";
+
 
 export const Route = createFileRoute("/_authenticated/caja")({
   head: () => ({
