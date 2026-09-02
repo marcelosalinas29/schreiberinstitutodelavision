@@ -70,6 +70,24 @@ function horariosDisponibles(fechaISO: string): string[] {
 
 
 const TURNO_VACIO = { hora: "07:45", duracion_min: "20", motivo: "", notas: "" };
+const EVENTO_VACIO = { fecha: "", hora: "09:00", duracion_min: "60", titulo: "" };
+const BLOQUEO_VACIO = { fecha: "", hora_inicio: "08:00", hora_fin: "12:30", motivo: "" };
+
+type TipoTurno = "turno" | "evento_personal" | "bloqueo";
+const tipoDe = (t: { tipo?: string | null }): TipoTurno => ((t.tipo ?? "turno") as TipoTurno);
+const esEspecial = (t: { tipo?: string | null }) => tipoDe(t) !== "turno";
+const etiquetaEspecial = (t: { tipo?: string | null; motivo?: string | null }) =>
+  t.motivo || (tipoDe(t) === "bloqueo" ? "Bloqueado" : "Cita personal");
+const claseEspecial = (t: { tipo?: string | null }) =>
+  tipoDe(t) === "bloqueo"
+    ? "border-destructive/40 bg-destructive/10"
+    : tipoDe(t) === "evento_personal"
+      ? "border-primary/40 bg-primary/10"
+      : "";
+const aMinutos = (hhmmStr: string) => {
+  const [h, m] = hhmmStr.split(":").map(Number);
+  return (h ?? 0) * 60 + (m ?? 0);
+};
 
 type Vista = "dia" | "semana" | "mes";
 
