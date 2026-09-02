@@ -145,7 +145,10 @@ function Caja() {
         description="Ingresos del día por medio de pago y cierre administrativo."
         actions={
           <>
-            <Input type="date" className="w-40" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+            {isMedico && (
+              <Input type="date" className="w-40" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+            )}
+
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button size="sm">
