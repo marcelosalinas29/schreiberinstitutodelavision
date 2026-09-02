@@ -41,7 +41,7 @@ function Medicamentos() {
   const guardar = useMutation({
     mutationFn: async () => {
       if (!form) return;
-      if (!form.nombre.trim() || !form.posologia.trim()) throw new Error("Completá nombre y posología");
+      if (!form.nombre.trim() || !form.posologia.trim()) throw new Error("Completá nombre e indicaciones");
       await upsertMedicamento({
         ...(form.id ? { id: form.id } : {}),
         nombre: form.nombre.trim(),
@@ -72,7 +72,7 @@ function Medicamentos() {
     <div>
       <PageHeader
         title="Medicamentos"
-        description="Vademécum con dosis y posología listas para insertar en el tratamiento y la receta."
+        description="Vademécum con dosis e indicaciones listas para insertar en el tratamiento y la receta."
         actions={
           <Button size="sm" onClick={() => setForm({ ...VACIO })}>
             <Plus className="size-4" /> Nuevo medicamento
@@ -107,7 +107,7 @@ function Medicamentos() {
             />
           </div>
           <div className="space-y-1.5 sm:col-span-2">
-            <Label htmlFor="posologia">Posología</Label>
+            <Label htmlFor="posologia">Indicaciones</Label>
             <Textarea
               id="posologia"
               rows={3}

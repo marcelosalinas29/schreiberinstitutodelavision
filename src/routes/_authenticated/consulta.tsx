@@ -16,6 +16,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/historias/HistoriaForm";
 import { HistoricoPIO } from "@/features/historias/HistoricoPIO";
 import { parseDictado } from "@/lib/ai.functions";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { recetaSoloMedicamentos } from "@/lib/utils";
 import { generarRecetaPDF } from "@/lib/pdf";
 import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
 import { datosMedicoReceta } from "@/services/perfil";
@@ -158,16 +165,17 @@ function Consulta() {
     onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo guardar"),
   });
 
-  const receta = () => {
+  const receta = (soloMedicamentos = false) => {
     if (!paciente) {
       toast.error("Elegí un paciente");
       return;
     }
     void (async () => {
       const medico = await datosMedicoReceta();
+      const base = draft.tratamiento || draft.diagnostico || "";
       await generarRecetaPDF({
         paciente,
-        contenido: draft.tratamiento || draft.diagnostico || "",
+        contenido: soloMedicamentos ? recetaSoloMedicamentos(base) : base,
         fecha: new Date(),
         plantilla: plantillas.data?.[0] ?? null,
         medico,
@@ -340,9 +348,17 @@ function Consulta() {
         description="Dictá desordenado; la IA distribuye cada dato en el campo correcto."
         actions={
           <>
-            <Button variant="outline" size="sm" onClick={receta}>
-              <FileDown className="size-4" /> Receta PDF
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <FileDown className="size-4" /> Receta PDF
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem onSelect={() => receta(false)}>Con indicaciones (paciente)</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => receta(true)}>Solo medicamentos, sin indicaciones (farmacia)</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="outline" size="sm" onClick={recetaOptica}>
               <Glasses className="size-4" /> Receta óptica
             </Button>
