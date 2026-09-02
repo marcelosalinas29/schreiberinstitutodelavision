@@ -17,7 +17,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PatientForm } from "@/features/patients/PatientForm";
 import { listPacientes } from "@/services/pacientes";
 import { armarLinkRecordatorioTurno } from "@/lib/whatsapp";
-import { createTurno, deleteTurno, listTurnosPorRango, setEstadoTurno } from "@/services/turnos";
+import { crearBloqueo, crearEventoPersonal, createTurno, deleteTurno, listTurnosPorRango, setEstadoTurno } from "@/services/turnos";
 import { ESTADOS_TURNO, type Paciente, type TurnoEstado } from "@/types/domain";
 
 export const Route = createFileRoute("/_authenticated/agenda")({
