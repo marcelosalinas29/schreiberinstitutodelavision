@@ -270,9 +270,12 @@ function Caja() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-            <Button size="sm" variant="outline" onClick={() => exportar.mutate()} disabled={exportar.isPending}>
-              <Download className="size-4" /> Exportar CSV
-            </Button>
+            {isMedico && (
+              <Button size="sm" variant="outline" onClick={() => exportar.mutate()} disabled={exportar.isPending}>
+                <Download className="size-4" /> Exportar CSV
+              </Button>
+            )}
+
           </>
         }
       />
