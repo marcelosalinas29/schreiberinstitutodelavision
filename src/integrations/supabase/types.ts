@@ -652,6 +652,7 @@ export type Database = {
           nombre: string
           obra_social: string | null
           owner_id: string
+          seccion: string | null
           updated_at: string
         }
         Insert: {
@@ -663,6 +664,7 @@ export type Database = {
           nombre: string
           obra_social?: string | null
           owner_id: string
+          seccion?: string | null
           updated_at?: string
         }
         Update: {
@@ -674,6 +676,7 @@ export type Database = {
           nombre?: string
           obra_social?: string | null
           owner_id?: string
+          seccion?: string | null
           updated_at?: string
         }
         Relationships: []

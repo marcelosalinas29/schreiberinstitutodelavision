@@ -1,0 +1,1 @@
+UPDATE public.practicas_estudios SET seccion = 'Estudios y Prácticas' WHERE seccion IS NULL;
