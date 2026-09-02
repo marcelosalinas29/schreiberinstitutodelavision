@@ -98,7 +98,7 @@ export async function generarRecetaPDF(
     let yy = yInicial;
     if (logo) {
       const props = doc.getImageProperties(logo);
-      const w = esA5 ? 46 : 62;
+      const w = esA5 ? 58 : 78;
       const h = (props.height / props.width) * w;
       doc.addImage(logo, "PNG", (pageW - w) / 2, yy, w, h, undefined, "FAST");
       yy += h + 4;
