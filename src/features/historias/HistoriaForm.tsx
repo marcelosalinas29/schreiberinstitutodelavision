@@ -9,6 +9,8 @@ import { listFormatosHistoria } from "@/services/formatosHistoria";
 
 import type { HistoriaClinicaInsert } from "@/types/domain";
 import { MedicamentoPicker } from "@/features/historias/MedicamentoPicker";
+import { HistoricoPIO } from "@/features/historias/HistoricoPIO";
+import { HistoricoRefraccion } from "@/features/historias/HistoricoRefraccion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -65,6 +67,7 @@ interface Props {
   value: HistoriaDraft;
   onChange: (patch: Partial<HistoriaDraft>) => void;
   historiaId?: string | undefined;
+  pacienteId?: string | null | undefined;
 }
 
 const COLUMNA_IMAGEN = {
@@ -289,7 +292,7 @@ function LinksObrasSocialesChips({ obraSocial }: { obraSocial?: string | null | 
   );
 }
 
-export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props & { obraSocial?: string | null | undefined }) {
+export function HistoriaForm({ value, onChange, historiaId, obraSocial, pacienteId }: Props & { obraSocial?: string | null | undefined }) {
   const props = { value, onChange, historiaId };
 
   const diccionarioCie10 = useQuery({ queryKey: ["cie10"], queryFn: listCie10 });
@@ -363,8 +366,13 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props 
 
       <Section title="Examen oftalmológico">
         <Bilateral {...props} label="Autorrefractómetro (ARM)" odKey="arm_od" oiKey="arm_oi" placeholder="esf / cil x eje" />
-        <Bilateral {...props} label="Refracción subjetiva" odKey="refraccion_od" oiKey="refraccion_oi" placeholder="esf / cil x eje" />
-        <Bilateral {...props} label="Refracción de cerca" odKey="refraccion_cerca_od" oiKey="refraccion_cerca_oi" placeholder="esf / cil x eje" />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="space-y-4">
+            <Bilateral {...props} label="Refracción subjetiva" odKey="refraccion_od" oiKey="refraccion_oi" placeholder="esf / cil x eje" />
+            <Bilateral {...props} label="Refracción de cerca" odKey="refraccion_cerca_od" oiKey="refraccion_cerca_oi" placeholder="esf / cil x eje" />
+          </div>
+          {pacienteId ? <HistoricoRefraccion pacienteId={pacienteId} /> : null}
+        </div>
         <DatosPrevios
           value={value}
           campos={[
@@ -374,32 +382,35 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props 
             ["AV con corrección OI", "av_cc_oi"],
           ]}
         />
-        <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wide text-muted-foreground">PIO (mmHg)</Label>
-          <div className="grid grid-cols-3 gap-2">
-            <Input
-              type="number"
-              step="0.1"
-              placeholder="OD"
-              aria-label="PIO ojo derecho"
-              value={value.pio_od ?? ""}
-              onChange={(e) => onChange(patchPio("pio_od", e.target.value, value))}
-            />
-            <Input
-              type="number"
-              step="0.1"
-              placeholder="OI"
-              aria-label="PIO ojo izquierdo"
-              value={value.pio_oi ?? ""}
-              onChange={(e) => onChange(patchPio("pio_oi", e.target.value, value))}
-            />
-            <Input
-              type="time"
-              aria-label="Hora de la toma de PIO"
-              value={value.pio_hora ?? ""}
-              onChange={(e) => onChange({ pio_hora: e.target.value })}
-            />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground">PIO (mmHg)</Label>
+            <div className="grid grid-cols-3 gap-2">
+              <Input
+                type="number"
+                step="0.1"
+                placeholder="OD"
+                aria-label="PIO ojo derecho"
+                value={value.pio_od ?? ""}
+                onChange={(e) => onChange(patchPio("pio_od", e.target.value, value))}
+              />
+              <Input
+                type="number"
+                step="0.1"
+                placeholder="OI"
+                aria-label="PIO ojo izquierdo"
+                value={value.pio_oi ?? ""}
+                onChange={(e) => onChange(patchPio("pio_oi", e.target.value, value))}
+              />
+              <Input
+                type="time"
+                aria-label="Hora de la toma de PIO"
+                value={value.pio_hora ?? ""}
+                onChange={(e) => onChange({ pio_hora: e.target.value })}
+              />
+            </div>
           </div>
+          {pacienteId ? <HistoricoPIO pacienteId={pacienteId} /> : null}
         </div>
         <DatosPrevios
           value={value}

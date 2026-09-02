@@ -14,7 +14,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/historias/HistoriaForm";
-import { HistoricoPIO } from "@/features/historias/HistoricoPIO";
 import { parseDictado } from "@/lib/ai.functions";
 import {
   DropdownMenu,
@@ -424,12 +423,11 @@ function Consulta() {
         </div>
       ) : null}
 
-      {pacienteId ? <HistoricoPIO pacienteId={pacienteId} className="panel mb-4 p-4" /> : null}
-
       <HistoriaForm
         value={draft}
         onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))}
         obraSocial={paciente?.obra_social ?? null}
+        pacienteId={pacienteId}
       />
 
       <Dialog open={pedidoAbierto} onOpenChange={setPedidoAbierto}>
