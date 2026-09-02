@@ -284,7 +284,7 @@ function Caja() {
       )}
 
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <div className={`mt-6 grid gap-4 ${isMedico ? "lg:grid-cols-[1.4fr_1fr]" : ""}`}>
         <section className="panel p-4">
           <h2 className="mb-3 text-sm font-semibold">Movimientos</h2>
           {cobros.isLoading ? (
