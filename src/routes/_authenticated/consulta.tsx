@@ -186,6 +186,35 @@ function Consulta() {
     })();
   };
 
+  /** Pedido rápido en A5 reutilizando el texto guardado en formatos_historia. */
+  const pedidoDesdeFormato = (nombreFormato: string, titulo: string) => {
+    if (!paciente) {
+      toast.error("Elegí un paciente");
+      return;
+    }
+    const formato = formatosHistoria.data?.find((f) => f.nombre === nombreFormato);
+    if (!formato?.contenido) {
+      toast.error(`No se encontró el formato "${nombreFormato}"`);
+      return;
+    }
+    void (async () => {
+      const medico = await datosMedicoReceta();
+      await generarRecetaPDF({
+        paciente,
+        contenido: formato.contenido,
+        fecha: new Date(),
+        plantilla: plantillas.data?.[0] ?? null,
+        medico,
+        formato: "a5",
+        titulo,
+      });
+    })();
+  };
+
+  const pedidoEcg = () => pedidoDesdeFormato("Prequirúrgico - ECG", "ECG");
+  const pedidoLaboratorioPrequirurgico = () =>
+    pedidoDesdeFormato("Prequirúrgico - Laboratorio", "Laboratorio prequirúrgico");
+
   /** Receta óptica: graduación de lejos y de cerca por ojo, en A5. */
   const recetaOptica = () => {
     if (!paciente) {
