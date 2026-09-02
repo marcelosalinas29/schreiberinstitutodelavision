@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
 import { Route as AuthenticatedCajaRouteImport } from './routes/_authenticated/caja'
 import { Route as AuthenticatedCie10RouteImport } from './routes/_authenticated/cie10'
+import { Route as AuthenticatedCirugiasRouteImport } from './routes/_authenticated/cirugias'
 import { Route as AuthenticatedConfiguracionRouteImport } from './routes/_authenticated/configuracion'
 import { Route as AuthenticatedConsultaRouteImport } from './routes/_authenticated/consulta'
 import { Route as AuthenticatedDocumentosRouteImport } from './routes/_authenticated/documentos'
@@ -56,6 +57,11 @@ const AuthenticatedCajaRoute = AuthenticatedCajaRouteImport.update({
 const AuthenticatedCie10Route = AuthenticatedCie10RouteImport.update({
   id: '/cie10',
   path: '/cie10',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCirugiasRoute = AuthenticatedCirugiasRouteImport.update({
+  id: '/cirugias',
+  path: '/cirugias',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedConfiguracionRoute =
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/agenda': typeof AuthenticatedAgendaRoute
   '/caja': typeof AuthenticatedCajaRoute
   '/cie10': typeof AuthenticatedCie10Route
+  '/cirugias': typeof AuthenticatedCirugiasRoute
   '/configuracion': typeof AuthenticatedConfiguracionRoute
   '/consulta': typeof AuthenticatedConsultaRoute
   '/documentos': typeof AuthenticatedDocumentosRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/agenda': typeof AuthenticatedAgendaRoute
   '/caja': typeof AuthenticatedCajaRoute
   '/cie10': typeof AuthenticatedCie10Route
+  '/cirugias': typeof AuthenticatedCirugiasRoute
   '/configuracion': typeof AuthenticatedConfiguracionRoute
   '/consulta': typeof AuthenticatedConsultaRoute
   '/documentos': typeof AuthenticatedDocumentosRoute
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
   '/_authenticated/caja': typeof AuthenticatedCajaRoute
   '/_authenticated/cie10': typeof AuthenticatedCie10Route
+  '/_authenticated/cirugias': typeof AuthenticatedCirugiasRoute
   '/_authenticated/configuracion': typeof AuthenticatedConfiguracionRoute
   '/_authenticated/consulta': typeof AuthenticatedConsultaRoute
   '/_authenticated/documentos': typeof AuthenticatedDocumentosRoute
@@ -199,6 +208,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/caja'
     | '/cie10'
+    | '/cirugias'
     | '/configuracion'
     | '/consulta'
     | '/documentos'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/caja'
     | '/cie10'
+    | '/cirugias'
     | '/configuracion'
     | '/consulta'
     | '/documentos'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/_authenticated/agenda'
     | '/_authenticated/caja'
     | '/_authenticated/cie10'
+    | '/_authenticated/cirugias'
     | '/_authenticated/configuracion'
     | '/_authenticated/consulta'
     | '/_authenticated/documentos'
@@ -303,6 +315,13 @@ declare module '@tanstack/react-router' {
       path: '/cie10'
       fullPath: '/cie10'
       preLoaderRoute: typeof AuthenticatedCie10RouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/cirugias': {
+      id: '/_authenticated/cirugias'
+      path: '/cirugias'
+      fullPath: '/cirugias'
+      preLoaderRoute: typeof AuthenticatedCirugiasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/configuracion': {
@@ -403,6 +422,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
   AuthenticatedCajaRoute: typeof AuthenticatedCajaRoute
   AuthenticatedCie10Route: typeof AuthenticatedCie10Route
+  AuthenticatedCirugiasRoute: typeof AuthenticatedCirugiasRoute
   AuthenticatedConfiguracionRoute: typeof AuthenticatedConfiguracionRoute
   AuthenticatedConsultaRoute: typeof AuthenticatedConsultaRoute
   AuthenticatedDocumentosRoute: typeof AuthenticatedDocumentosRoute
@@ -422,6 +442,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgendaRoute: AuthenticatedAgendaRoute,
   AuthenticatedCajaRoute: AuthenticatedCajaRoute,
   AuthenticatedCie10Route: AuthenticatedCie10Route,
+  AuthenticatedCirugiasRoute: AuthenticatedCirugiasRoute,
   AuthenticatedConfiguracionRoute: AuthenticatedConfiguracionRoute,
   AuthenticatedConsultaRoute: AuthenticatedConsultaRoute,
   AuthenticatedDocumentosRoute: AuthenticatedDocumentosRoute,
