@@ -9,6 +9,8 @@ import { listFormatosHistoria } from "@/services/formatosHistoria";
 
 import type { HistoriaClinicaInsert } from "@/types/domain";
 import { MedicamentoPicker } from "@/features/historias/MedicamentoPicker";
+import { HistoricoPIO } from "@/features/historias/HistoricoPIO";
+import { HistoricoRefraccion } from "@/features/historias/HistoricoRefraccion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
