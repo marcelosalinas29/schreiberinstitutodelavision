@@ -375,32 +375,35 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial, paciente
             ["AV con corrección OI", "av_cc_oi"],
           ]}
         />
-        <div className="space-y-1.5">
-          <Label className="text-xs uppercase tracking-wide text-muted-foreground">PIO (mmHg)</Label>
-          <div className="grid grid-cols-3 gap-2">
-            <Input
-              type="number"
-              step="0.1"
-              placeholder="OD"
-              aria-label="PIO ojo derecho"
-              value={value.pio_od ?? ""}
-              onChange={(e) => onChange(patchPio("pio_od", e.target.value, value))}
-            />
-            <Input
-              type="number"
-              step="0.1"
-              placeholder="OI"
-              aria-label="PIO ojo izquierdo"
-              value={value.pio_oi ?? ""}
-              onChange={(e) => onChange(patchPio("pio_oi", e.target.value, value))}
-            />
-            <Input
-              type="time"
-              aria-label="Hora de la toma de PIO"
-              value={value.pio_hora ?? ""}
-              onChange={(e) => onChange({ pio_hora: e.target.value })}
-            />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label className="text-xs uppercase tracking-wide text-muted-foreground">PIO (mmHg)</Label>
+            <div className="grid grid-cols-3 gap-2">
+              <Input
+                type="number"
+                step="0.1"
+                placeholder="OD"
+                aria-label="PIO ojo derecho"
+                value={value.pio_od ?? ""}
+                onChange={(e) => onChange(patchPio("pio_od", e.target.value, value))}
+              />
+              <Input
+                type="number"
+                step="0.1"
+                placeholder="OI"
+                aria-label="PIO ojo izquierdo"
+                value={value.pio_oi ?? ""}
+                onChange={(e) => onChange(patchPio("pio_oi", e.target.value, value))}
+              />
+              <Input
+                type="time"
+                aria-label="Hora de la toma de PIO"
+                value={value.pio_hora ?? ""}
+                onChange={(e) => onChange({ pio_hora: e.target.value })}
+              />
+            </div>
           </div>
+          {pacienteId ? <HistoricoPIO pacienteId={pacienteId} /> : null}
         </div>
         <DatosPrevios
           value={value}
