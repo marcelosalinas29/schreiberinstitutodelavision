@@ -68,7 +68,7 @@ export function completarDocumento(
   return contenido
     .replaceAll("[NOMBRE_PACIENTE]", datos.nombrePaciente)
     .replaceAll("[DNI_PACIENTE]", datos.dniPaciente?.trim() || "—")
-    .replaceAll("[EDAD_PACIENTE]", edad != null ? `${edad} años` : "___")
+    .replaceAll("[EDAD_PACIENTE]", edad ?? "___")
     .replaceAll("[MATRICULA_MEDICO]", datos.matriculaMedico?.trim() || "__________")
     .replaceAll("[FECHA]", fecha);
 }
