@@ -23,7 +23,8 @@ export const pacienteSchema = z.object({
   email: z.union([z.literal(""), z.string().trim().email("Email inválido").max(255)]).optional(),
   obra_social: z.string().trim().max(120).optional(),
   nro_afiliado: z.string().trim().max(60).optional(),
-  plan: z.string().trim().max(80).optional(),
+  plan_obra_social: z.string().trim().max(80).optional(),
+  condicion_iva: z.string().trim().max(60).optional(),
   direccion: z.string().trim().max(200).optional(),
   localidad: z.string().trim().max(120).optional(),
   notas: z.string().trim().max(2000).optional(),
@@ -39,7 +40,8 @@ const VACIO = {
   email: "",
   obra_social: "",
   nro_afiliado: "",
-  plan: "",
+  plan_obra_social: "",
+  condicion_iva: "Consumidor Final",
   direccion: "",
   localidad: "",
   notas: "",
@@ -85,7 +87,8 @@ function desdePaciente(p?: Paciente | null): Campos {
     email: p.email ?? "",
     obra_social: p.obra_social ?? "",
     nro_afiliado: p.nro_afiliado ?? "",
-    plan: p.plan ?? "",
+    plan_obra_social: p.plan_obra_social ?? p.plan ?? "",
+    condicion_iva: p.condicion_iva ?? "Consumidor Final",
     direccion: p.direccion ?? "",
     localidad: p.localidad ?? "",
     notas: p.notas ?? "",
@@ -151,7 +154,8 @@ export function PatientForm({ paciente, defaults, onSaved, onAbrirExistente, onC
         email: parsed.email || null,
         obra_social: parsed.obra_social || null,
         nro_afiliado: parsed.nro_afiliado || null,
-        plan: parsed.plan || null,
+        plan_obra_social: parsed.plan_obra_social || null,
+        condicion_iva: parsed.condicion_iva || null,
         direccion: parsed.direccion || null,
         localidad: parsed.localidad || null,
         notas: parsed.notas || null,
@@ -246,7 +250,22 @@ export function PatientForm({ paciente, defaults, onSaved, onAbrirExistente, onC
         <div className="grid gap-3 sm:grid-cols-2">
           {campo("obra_social", "Obra social / Prepaga")}
           {campo("nro_afiliado", "N° de afiliado")}
-          {campo("plan", "Plan")}
+          {campo("plan_obra_social", "Plan")}
+          <div className="space-y-1.5">
+            <Label htmlFor="condicion_iva">Condición IVA</Label>
+            <select
+              id="condicion_iva"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              value={valores.condicion_iva}
+              onChange={(e) => setValores({ ...valores, condicion_iva: e.target.value })}
+            >
+              {["Consumidor Final", "Responsable Inscripto", "Monotributista", "Exento"].map((o) => (
+                <option key={o} value={o}>
+                  {o}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="space-y-1.5">
             <Label>Sexo</Label>
             <div className="flex gap-2">
