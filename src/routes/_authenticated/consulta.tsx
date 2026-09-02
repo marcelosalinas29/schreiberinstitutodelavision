@@ -447,28 +447,33 @@ function Consulta() {
                 No hay prácticas cargadas. Agregalas en la pantalla “Prácticas y estudios”.
               </p>
             ) : null}
-            {agruparPracticas(disponibles).map(([grupo, items]) => (
-              <div key={grupo} className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{grupo}</p>
-                {items.map((p) => (
-                  <label key={p.id} className="flex cursor-pointer items-start gap-3 text-sm">
-                    <Checkbox
-                      checked={seleccionadas.includes(p.id)}
-                      onCheckedChange={(v) =>
-                        setSeleccionadas((prev) => (v ? [...prev, p.id] : prev.filter((id) => id !== p.id)))
-                      }
-                    />
-                    <span className="min-w-0">
-                      <span className="font-medium">{p.nombre}</span>
-                      {p.codigo ? <span className="ml-2 text-xs text-muted-foreground">{p.codigo}</span> : null}
-                      {usadasAntes.includes(p.id) ? (
-                        <span className="ml-2 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground">
-                          Pedido antes
+            {agruparPorSeccion(disponibles).map(([seccion, subgrupos]) => (
+              <div key={seccion} className="space-y-3">
+                <p className="text-sm font-semibold">{seccion}</p>
+                {subgrupos.map(([sub, items]) => (
+                  <div key={sub} className="space-y-2 pl-1">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{sub}</p>
+                    {items.map((p) => (
+                      <label key={p.id} className="flex cursor-pointer items-start gap-3 text-sm">
+                        <Checkbox
+                          checked={seleccionadas.includes(p.id)}
+                          onCheckedChange={(v) =>
+                            setSeleccionadas((prev) => (v ? [...prev, p.id] : prev.filter((id) => id !== p.id)))
+                          }
+                        />
+                        <span className="min-w-0">
+                          <span className="font-medium">{p.nombre}</span>
+                          {p.codigo ? <span className="ml-2 text-xs text-muted-foreground">{p.codigo}</span> : null}
+                          {usadasAntes.includes(p.id) ? (
+                            <span className="ml-2 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground">
+                              Pedido antes
+                            </span>
+                          ) : null}
+                          <span className="block text-xs text-muted-foreground">{p.contenido}</span>
                         </span>
-                      ) : null}
-                      <span className="block text-xs text-muted-foreground">{p.contenido}</span>
-                    </span>
-                  </label>
+                      </label>
+                    ))}
+                  </div>
                 ))}
               </div>
             ))}
