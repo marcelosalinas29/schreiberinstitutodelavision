@@ -556,6 +556,24 @@ function Consulta() {
                 <MessageCircle className="size-4" /> Enviar por WhatsApp
               </Button>
             ) : null}
+            {paciente?.email ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (!paciente?.email || !pedidoListo) return;
+                  const asunto = `Pedido de estudios - ${paciente.apellido}, ${paciente.nombre}`;
+                  const cuerpo = `Hola ${paciente.nombre}, tiene listo su pedido de estudios de ${pedidoListo.fecha.toLocaleDateString("es-AR")}. Puede pasar a buscarlo o coordinar el envío por este medio.`;
+                  window.open(
+                    armarLinkYahooMail(paciente.email, asunto, cuerpo),
+                    "_blank",
+                    "noopener,noreferrer",
+                  );
+                }}
+              >
+                <Mail className="size-4" /> Enviar por email
+              </Button>
+            ) : null}
             <Button size="sm" onClick={() => setPedidoListo(null)}>
               Listo
             </Button>
