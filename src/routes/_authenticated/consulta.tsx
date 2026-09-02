@@ -111,6 +111,7 @@ function Consulta() {
   const plantillas = useQuery({ queryKey: ["plantillas"], queryFn: listPlantillas });
   const practicas = useQuery({ queryKey: ["practicas"], queryFn: listPracticas });
   const documentos = useQuery({ queryKey: ["documentos-clinicos"], queryFn: listDocumentos });
+  const formatosHistoria = useQuery({ queryKey: ["formatos-historia"], queryFn: listFormatosHistoria });
   const paciente = (pacientes.data ?? []).find((p) => p.id === pacienteId) ?? null;
 
   // Edición de una consulta existente (?historia=<id>)
