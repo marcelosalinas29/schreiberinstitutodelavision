@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/historias/HistoriaForm";
+import { useCurrentUser } from "@/features/auth/useAuth";
 import { parseDictado } from "@/lib/ai.functions";
 import {
   DropdownMenu,
@@ -442,9 +443,11 @@ function Consulta() {
             <Button variant="outline" size="sm" onClick={abrirDocumentos}>
               <FileSignature className="size-4" /> Consentimientos y protocolos
             </Button>
-            <Button size="sm" onClick={() => guardar.mutate()} disabled={guardar.isPending}>
-              {guardar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Guardar
-            </Button>
+            {isMedico && (
+              <Button size="sm" onClick={() => guardar.mutate()} disabled={guardar.isPending}>
+                {guardar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Guardar
+              </Button>
+            )}
           </>
         }
       />
@@ -502,6 +505,7 @@ function Consulta() {
         value={draft}
         onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))}
         obraSocial={paciente?.obra_social ?? null}
+        soloLectura={!isMedico}
         pacienteId={pacienteId}
       />
 
