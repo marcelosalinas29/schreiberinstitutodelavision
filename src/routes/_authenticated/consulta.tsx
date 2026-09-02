@@ -165,16 +165,17 @@ function Consulta() {
     onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo guardar"),
   });
 
-  const receta = () => {
+  const receta = (soloMedicamentos = false) => {
     if (!paciente) {
       toast.error("Elegí un paciente");
       return;
     }
     void (async () => {
       const medico = await datosMedicoReceta();
+      const base = draft.tratamiento || draft.diagnostico || "";
       await generarRecetaPDF({
         paciente,
-        contenido: draft.tratamiento || draft.diagnostico || "",
+        contenido: soloMedicamentos ? recetaSoloMedicamentos(base) : base,
         fecha: new Date(),
         plantilla: plantillas.data?.[0] ?? null,
         medico,
