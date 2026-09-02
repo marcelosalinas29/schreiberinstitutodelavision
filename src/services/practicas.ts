@@ -132,6 +132,9 @@ export const ORDEN_SUBGRUPOS_LABORATORIO = [
   "Vitaminas",
 ];
 
+/** Orden fijo de los subgrupos dentro de la sección Estudios y Prácticas. */
+export const ORDEN_SUBGRUPOS_ESTUDIOS = ["Avalian", "Prevención", "AMUR", "Glaucoma y otros"];
+
 /** Ordena los ítems por la columna `orden`; los null quedan al final, alfabéticos. */
 function ordenarItems(items: PracticaEstudio[]): PracticaEstudio[] {
   return [...items].sort((a, b) => {
@@ -178,6 +181,13 @@ export function agruparPorSeccion(
         entradas = entradas.sort((a, b) => {
           const ia = ORDEN_SUBGRUPOS_LABORATORIO.indexOf(a[0]);
           const ib = ORDEN_SUBGRUPOS_LABORATORIO.indexOf(b[0]);
+          return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+        });
+      }
+      if (seccion === "Estudios y Prácticas") {
+        entradas = entradas.sort((a, b) => {
+          const ia = ORDEN_SUBGRUPOS_ESTUDIOS.indexOf(a[0]);
+          const ib = ORDEN_SUBGRUPOS_ESTUDIOS.indexOf(b[0]);
           return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
         });
       }
