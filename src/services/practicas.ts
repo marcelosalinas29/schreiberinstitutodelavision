@@ -132,6 +132,9 @@ export const ORDEN_SUBGRUPOS_LABORATORIO = [
   "Vitaminas",
 ];
 
+/** Orden fijo de los subgrupos dentro de la sección Estudios y Prácticas. */
+export const ORDEN_SUBGRUPOS_ESTUDIOS = ["Avalian", "Prevención", "AMUR", "Glaucoma y otros"];
+
 /** Ordena los ítems por la columna `orden`; los null quedan al final, alfabéticos. */
 function ordenarItems(items: PracticaEstudio[]): PracticaEstudio[] {
   return [...items].sort((a, b) => {
