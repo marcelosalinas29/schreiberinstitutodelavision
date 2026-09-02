@@ -42,6 +42,14 @@ import {
 import { TIPOS_DOCUMENTO, completarDocumento, listDocumentos } from "@/services/documentosClinicos";
 import type { DocumentoTipo } from "@/types/domain";
 
+/** Textos usados por los botones directos de ECG y Laboratorio prequirúrgico. */
+const TEXTOS_PREQUIRURGICOS: Record<string, string> = {
+  "Prequirúrgico - ECG":
+    "Solicito Electrocardiograma y valoración de riesgo prequirúrgico. DIAG: prequirúrgico cirugía de cataratas.",
+  "Prequirúrgico - Laboratorio":
+    "Solicito laboratorio prequirúrgico: Hemograma completo, Glucemia, Coagulograma, VSG, Orina completa, HIV y VDRL.",
+};
+
 const TITULOS_PEDIDO: Record<string, string> = {
   "Estudios y Prácticas": "Pedido de estudios",
   Laboratorio: "Pedido de laboratorio",
@@ -200,7 +208,8 @@ function Consulta() {
       return;
     }
     const formato = formatosHistoria.data?.find((f) => f.nombre === nombreFormato);
-    if (!formato?.contenido) {
+    const contenido = formato?.contenido ?? TEXTOS_PREQUIRURGICOS[nombreFormato] ?? "";
+    if (!contenido) {
       toast.error(`No se encontró el formato "${nombreFormato}"`);
       return;
     }
@@ -208,7 +217,7 @@ function Consulta() {
       const medico = await datosMedicoReceta();
       await generarRecetaPDF({
         paciente,
-        contenido: formato.contenido,
+        contenido,
         fecha: new Date(),
         plantilla: plantillas.data?.[0] ?? null,
         medico,
