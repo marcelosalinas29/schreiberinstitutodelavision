@@ -78,7 +78,7 @@ function Caja() {
 
   const cobros = useQuery({ queryKey: ["cobros", fecha], queryFn: () => listCobrosPorFecha(fecha) });
   const pacientes = useQuery({ queryKey: ["pacientes", ""], queryFn: () => listPacientes("") });
-  const cierres = useQuery({ queryKey: ["cierres"], queryFn: listCierres });
+  const cierres = useQuery({ queryKey: ["cierres"], queryFn: listCierres, enabled: isMedico });
 
   const totales = calcularTotales(cobros.data ?? []);
   const totalFormulario = lineas.reduce((acc, l) => acc + (Number(l.monto) || 0), 0);
