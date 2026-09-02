@@ -365,6 +365,8 @@ function Caja() {
             ))}
           </ul>
         </section>
+        )}
+
       </div>
 
       <PendientesPanel />
