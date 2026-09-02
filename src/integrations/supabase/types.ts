@@ -597,6 +597,7 @@ export type Database = {
       }
       practicas_estudios: {
         Row: {
+          categoria: string | null
           codigo: string | null
           contenido: string
           created_at: string
@@ -607,6 +608,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          categoria?: string | null
           codigo?: string | null
           contenido: string
           created_at?: string
@@ -617,6 +619,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          categoria?: string | null
           codigo?: string | null
           contenido?: string
           created_at?: string
