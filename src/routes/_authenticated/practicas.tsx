@@ -64,11 +64,8 @@ function Practicas() {
     onError: () => toast.error("No se pudo eliminar"),
   });
 
-  const grupos = new Map<string, PracticaEstudio[]>();
-  for (const p of practicas.data ?? []) {
-    const key = p.obra_social?.trim() || "Generales / particular";
-    grupos.set(key, [...(grupos.get(key) ?? []), p]);
-  }
+  const grupos = agruparPracticas(practicas.data ?? []);
+
 
   return (
     <div>
