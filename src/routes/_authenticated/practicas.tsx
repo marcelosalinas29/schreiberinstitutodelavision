@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { agruparPracticas, deletePractica, listPracticas, upsertPractica } from "@/services/practicas";
+import { agruparPorSeccion, deletePractica, listPracticas, upsertPractica } from "@/services/practicas";
 
 export const Route = createFileRoute("/_authenticated/practicas")({
   head: () => ({
@@ -63,7 +63,7 @@ function Practicas() {
     onError: () => toast.error("No se pudo eliminar"),
   });
 
-  const grupos = agruparPracticas(practicas.data ?? []);
+  const grupos = agruparPorSeccion(practicas.data ?? []);
 
 
   return (
