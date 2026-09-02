@@ -1,0 +1,1 @@
+ALTER TABLE public.historias_clinicas ADD COLUMN IF NOT EXISTS campo_visual_obs text;

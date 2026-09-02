@@ -334,6 +334,7 @@ export type Database = {
           av_sc_oi: string | null
           bmc_od: string | null
           bmc_oi: string | null
+          campo_visual_obs: string | null
           cie10: string | null
           created_at: string
           curva_pio_ayunas_od: number | null
@@ -379,6 +380,7 @@ export type Database = {
           av_sc_oi?: string | null
           bmc_od?: string | null
           bmc_oi?: string | null
+          campo_visual_obs?: string | null
           cie10?: string | null
           created_at?: string
           curva_pio_ayunas_od?: number | null
@@ -424,6 +426,7 @@ export type Database = {
           av_sc_oi?: string | null
           bmc_od?: string | null
           bmc_oi?: string | null
+          campo_visual_obs?: string | null
           cie10?: string | null
           created_at?: string
           curva_pio_ayunas_od?: number | null
