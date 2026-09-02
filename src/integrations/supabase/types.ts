@@ -566,6 +566,7 @@ export type Database = {
       pacientes: {
         Row: {
           apellido: string
+          condicion_iva: string | null
           consiente_administrativo: boolean
           consiente_recetas: boolean
           consiente_recordatorios: boolean
@@ -582,12 +583,14 @@ export type Database = {
           nro_afiliado: string | null
           obra_social: string | null
           plan: string | null
+          plan_obra_social: string | null
           sexo: string | null
           telefono: string | null
           updated_at: string
         }
         Insert: {
           apellido: string
+          condicion_iva?: string | null
           consiente_administrativo?: boolean
           consiente_recetas?: boolean
           consiente_recordatorios?: boolean
@@ -604,12 +607,14 @@ export type Database = {
           nro_afiliado?: string | null
           obra_social?: string | null
           plan?: string | null
+          plan_obra_social?: string | null
           sexo?: string | null
           telefono?: string | null
           updated_at?: string
         }
         Update: {
           apellido?: string
+          condicion_iva?: string | null
           consiente_administrativo?: boolean
           consiente_recetas?: boolean
           consiente_recordatorios?: boolean
@@ -626,6 +631,7 @@ export type Database = {
           nro_afiliado?: string | null
           obra_social?: string | null
           plan?: string | null
+          plan_obra_social?: string | null
           sexo?: string | null
           telefono?: string | null
           updated_at?: string
