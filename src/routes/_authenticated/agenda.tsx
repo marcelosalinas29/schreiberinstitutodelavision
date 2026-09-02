@@ -734,12 +734,26 @@ function Agenda() {
         </div>
       ) : turnos.isLoading ? (
         <p className="py-10 text-center text-sm text-muted-foreground">Cargando turnos…</p>
-      ) : (turnos.data?.length ?? 0) === 0 ? (
+      ) : filasDia.length === 0 ? (
         <div className="panel p-10 text-center text-sm text-muted-foreground">No hay turnos para esta fecha.</div>
       ) : (
         <div className="space-y-2">
-          {turnos.data!.map((turno) =>
-            esEspecial(turno) ? (
+          {filasDia.map(({ hora, turno }, idx) =>
+            !turno ? (
+              <button
+                key={`libre-${hora}-${idx}`}
+                type="button"
+                onClick={() => {
+                  setForm({ ...TURNO_VACIO, hora });
+                  setGuardia(false);
+                  setOpen(true);
+                }}
+                className="panel flex w-full items-center gap-3 border border-dashed p-2 text-left opacity-70 transition hover:opacity-100"
+              >
+                <span className="w-14 shrink-0 text-sm font-semibold tabular-nums text-muted-foreground">{hora}</span>
+                <span className="text-xs text-muted-foreground">Libre · tocá para agendar</span>
+              </button>
+            ) : esEspecial(turno) ? (
               <article key={turno.id} className={`panel flex flex-wrap items-center gap-3 border p-4 ${claseEspecial(turno)}`}>
                 <span className="w-14 shrink-0 text-sm font-semibold tabular-nums">
                   {new Date(turno.inicio).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
