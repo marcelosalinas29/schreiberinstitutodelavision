@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, FileText, MessageCircle, Plus, Search, UserPlus } from "lucide-react";
+import { CalendarHeart, ChevronLeft, ChevronRight, FileText, Lock, MessageCircle, Plus, Search, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -17,7 +17,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PatientForm } from "@/features/patients/PatientForm";
 import { listPacientes } from "@/services/pacientes";
 import { armarLinkRecordatorioTurno } from "@/lib/whatsapp";
-import { createTurno, deleteTurno, listTurnosPorRango, setEstadoTurno } from "@/services/turnos";
+import { crearBloqueo, crearEventoPersonal, createTurno, deleteTurno, listTurnosPorRango, setEstadoTurno } from "@/services/turnos";
 import { ESTADOS_TURNO, type Paciente, type TurnoEstado } from "@/types/domain";
 
 export const Route = createFileRoute("/_authenticated/agenda")({
@@ -70,6 +70,24 @@ function horariosDisponibles(fechaISO: string): string[] {
 
 
 const TURNO_VACIO = { hora: "07:45", duracion_min: "20", motivo: "", notas: "" };
+const EVENTO_VACIO = { fecha: "", hora: "09:00", duracion_min: "60", titulo: "" };
+const BLOQUEO_VACIO = { fecha: "", hora_inicio: "08:00", hora_fin: "12:30", motivo: "" };
+
+type TipoTurno = "turno" | "evento_personal" | "bloqueo";
+const tipoDe = (t: { tipo?: string | null }): TipoTurno => ((t.tipo ?? "turno") as TipoTurno);
+const esEspecial = (t: { tipo?: string | null }) => tipoDe(t) !== "turno";
+const etiquetaEspecial = (t: { tipo?: string | null; motivo?: string | null }) =>
+  t.motivo || (tipoDe(t) === "bloqueo" ? "Bloqueado" : "Cita personal");
+const claseEspecial = (t: { tipo?: string | null }) =>
+  tipoDe(t) === "bloqueo"
+    ? "border-destructive/40 bg-destructive/10"
+    : tipoDe(t) === "evento_personal"
+      ? "border-primary/40 bg-primary/10"
+      : "";
+const aMinutos = (hhmmStr: string) => {
+  const [h, m] = hhmmStr.split(":").map(Number);
+  return (h ?? 0) * 60 + (m ?? 0);
+};
 
 type Vista = "dia" | "semana" | "mes";
 
@@ -120,6 +138,10 @@ function Agenda() {
   const [creandoPaciente, setCreandoPaciente] = useState(false);
   const [vista, setVista] = useState<Vista>("dia");
   const [guardia, setGuardia] = useState(false);
+  const [openEvento, setOpenEvento] = useState(false);
+  const [formEvento, setFormEvento] = useState(EVENTO_VACIO);
+  const [openBloqueo, setOpenBloqueo] = useState(false);
+  const [formBloqueo, setFormBloqueo] = useState(BLOQUEO_VACIO);
 
   const turnos = useQuery({
     queryKey: ["turnos", fecha],
@@ -157,6 +179,16 @@ function Agenda() {
     for (const t of turnosMes.data ?? []) {
       const k = aISO(new Date(t.inicio));
       mapa[k] = (mapa[k] ?? 0) + 1;
+    }
+    return mapa;
+  }, [turnosMes.data]);
+
+  const especialesMes = useMemo(() => {
+    const mapa: Record<string, TipoTurno> = {};
+    for (const t of turnosMes.data ?? []) {
+      if (!esEspecial(t)) continue;
+      const k = aISO(new Date(t.inicio));
+      if (mapa[k] !== "bloqueo") mapa[k] = tipoDe(t);
     }
     return mapa;
   }, [turnosMes.data]);
@@ -219,7 +251,51 @@ function Agenda() {
     },
   });
 
-  const horarios = horariosDisponibles(fecha);
+  const crearEvento = useMutation({
+    mutationFn: async () => {
+      const f = formEvento.fecha || fecha;
+      if (!formEvento.titulo.trim()) throw new Error("Poné un título");
+      return crearEventoPersonal(f, formEvento.hora, Number(formEvento.duracion_min) || 60, formEvento.titulo.trim());
+    },
+    onSuccess: () => {
+      toast.success("Cita personal agendada");
+      setOpenEvento(false);
+      setFormEvento(EVENTO_VACIO);
+      void qc.invalidateQueries({ queryKey: ["turnos"] });
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "No se pudo agendar la cita"),
+  });
+
+  const crearBloqueoM = useMutation({
+    mutationFn: async () =>
+      crearBloqueo(formBloqueo.fecha || fecha, formBloqueo.hora_inicio, formBloqueo.hora_fin, formBloqueo.motivo),
+    onSuccess: () => {
+      toast.success("Horario bloqueado");
+      setOpenBloqueo(false);
+      setFormBloqueo(BLOQUEO_VACIO);
+      void qc.invalidateQueries({ queryKey: ["turnos"] });
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "No se pudo bloquear el horario"),
+  });
+
+  const bloqueosDelDia = useMemo(
+    () => (turnos.data ?? []).filter((t) => tipoDe(t) === "bloqueo"),
+    [turnos.data],
+  );
+
+  const horarios = useMemo(() => {
+    const base = horariosDisponibles(fecha);
+    if (bloqueosDelDia.length === 0) return base;
+    const rangos = bloqueosDelDia.map((b) => {
+      const d = new Date(b.inicio);
+      const desde = d.getHours() * 60 + d.getMinutes();
+      return [desde, desde + (b.duracion_min ?? 0)] as const;
+    });
+    return base.filter((h) => {
+      const m = aMinutos(h);
+      return !rangos.some(([desde, hasta]) => m >= desde && m < hasta);
+    });
+  }, [fecha, bloqueosDelDia]);
 
   const camposTurno = (
     <>
@@ -369,6 +445,124 @@ function Agenda() {
                 ) : null}
               </DialogContent>
             </Dialog>
+
+            <Dialog open={openEvento} onOpenChange={setOpenEvento}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline">
+                  <CalendarHeart className="size-4" /> Cita personal
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Nueva cita personal</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="ev-fecha">Fecha</Label>
+                      <Input
+                        id="ev-fecha"
+                        type="date"
+                        value={formEvento.fecha || fecha}
+                        onChange={(e) => setFormEvento({ ...formEvento, fecha: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="ev-hora">Hora</Label>
+                      <Input
+                        id="ev-hora"
+                        type="time"
+                        value={formEvento.hora}
+                        onChange={(e) => setFormEvento({ ...formEvento, hora: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="ev-dur">Duración (min)</Label>
+                    <Input
+                      id="ev-dur"
+                      type="number"
+                      min={5}
+                      step={5}
+                      value={formEvento.duracion_min}
+                      onChange={(e) => setFormEvento({ ...formEvento, duracion_min: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="ev-titulo">Título</Label>
+                    <Input
+                      id="ev-titulo"
+                      placeholder="Curso, reunión, evento…"
+                      value={formEvento.titulo}
+                      onChange={(e) => setFormEvento({ ...formEvento, titulo: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button onClick={() => crearEvento.mutate()} disabled={crearEvento.isPending}>
+                    Guardar
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={openBloqueo} onOpenChange={setOpenBloqueo}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline">
+                  <Lock className="size-4" /> Bloquear día u horas
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Bloquear horarios</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="bl-fecha">Fecha</Label>
+                    <Input
+                      id="bl-fecha"
+                      type="date"
+                      value={formBloqueo.fecha || fecha}
+                      onChange={(e) => setFormBloqueo({ ...formBloqueo, fecha: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="bl-desde">Desde</Label>
+                      <Input
+                        id="bl-desde"
+                        type="time"
+                        value={formBloqueo.hora_inicio}
+                        onChange={(e) => setFormBloqueo({ ...formBloqueo, hora_inicio: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="bl-hasta">Hasta</Label>
+                      <Input
+                        id="bl-hasta"
+                        type="time"
+                        value={formBloqueo.hora_fin}
+                        onChange={(e) => setFormBloqueo({ ...formBloqueo, hora_fin: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="bl-motivo">Motivo (opcional)</Label>
+                    <Input
+                      id="bl-motivo"
+                      placeholder="Guardia, congreso, licencia…"
+                      value={formBloqueo.motivo}
+                      onChange={(e) => setFormBloqueo({ ...formBloqueo, motivo: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button onClick={() => crearBloqueoM.mutate()} disabled={crearBloqueoM.isPending}>
+                    Bloquear
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </>
         }
       />
@@ -421,11 +615,22 @@ function Agenda() {
                               setFecha(dia);
                               setVista("dia");
                             }}
-                            className="w-full rounded-md border border-border px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent/60"
+                            className={`w-full rounded-md border px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent/60 ${
+                              esEspecial(t) ? claseEspecial(t) : "border-border"
+                            }`}
                           >
                             <span className="font-semibold tabular-nums">{hhmm(t.inicio)}</span>{" "}
-                            {t.paciente ? `${t.paciente.apellido}, ${t.paciente.nombre}` : "Sin paciente"}
-                            {t.motivo ? <span className="block text-muted-foreground">{t.motivo}</span> : null}
+                            {esEspecial(t) ? (
+                              <span className="inline-flex items-center gap-1">
+                                {tipoDe(t) === "bloqueo" ? <Lock className="size-3" /> : <CalendarHeart className="size-3" />}
+                                {etiquetaEspecial(t)}
+                              </span>
+                            ) : (
+                              <>
+                                {t.paciente ? `${t.paciente.apellido}, ${t.paciente.nombre}` : "Sin paciente"}
+                                {t.motivo ? <span className="block text-muted-foreground">{t.motivo}</span> : null}
+                              </>
+                            )}
                           </button>
                         </li>
                       ))}
@@ -462,6 +667,7 @@ function Agenda() {
                 {celdasMes.map((dia) => {
                   const delMes = desdeISO(dia).getMonth() === desdeISO(primerDiaMes).getMonth();
                   const cant = conteoMes[dia] ?? 0;
+                  const especial = especialesMes[dia];
                   return (
                     <button
                       key={dia}
@@ -469,11 +675,18 @@ function Agenda() {
                         setFecha(dia);
                         setVista("dia");
                       }}
-                      className={`flex h-16 flex-col items-center justify-center gap-1 rounded-md border border-border text-sm transition-colors hover:bg-accent/60 ${
-                        delMes ? "" : "opacity-40"
-                      } ${dia === fecha ? "ring-2 ring-primary" : ""}`}
+                      className={`flex h-16 flex-col items-center justify-center gap-1 rounded-md border text-sm transition-colors hover:bg-accent/60 ${
+                        especial === "bloqueo"
+                          ? "border-destructive/40 bg-destructive/10"
+                          : especial === "evento_personal"
+                            ? "border-primary/40 bg-primary/10"
+                            : "border-border"
+                      } ${delMes ? "" : "opacity-40"} ${dia === fecha ? "ring-2 ring-primary" : ""}`}
                     >
-                      <span className="tabular-nums">{desdeISO(dia).getDate()}</span>
+                      <span className="flex items-center gap-1 tabular-nums">
+                        {desdeISO(dia).getDate()}
+                        {especial === "bloqueo" ? <Lock className="size-3" /> : especial ? <CalendarHeart className="size-3" /> : null}
+                      </span>
                       {cant > 0 ? (
                         <span className="rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
                           {cant}
@@ -492,7 +705,26 @@ function Agenda() {
         <div className="panel p-10 text-center text-sm text-muted-foreground">No hay turnos para esta fecha.</div>
       ) : (
         <div className="space-y-2">
-          {turnos.data!.map((turno) => (
+          {turnos.data!.map((turno) =>
+            esEspecial(turno) ? (
+              <article key={turno.id} className={`panel flex flex-wrap items-center gap-3 border p-4 ${claseEspecial(turno)}`}>
+                <span className="w-14 shrink-0 text-sm font-semibold tabular-nums">
+                  {new Date(turno.inicio).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
+                </span>
+                <div className="min-w-40 flex-1">
+                  <p className="flex items-center gap-2 text-sm font-medium">
+                    {tipoDe(turno) === "bloqueo" ? <Lock className="size-4" /> : <CalendarHeart className="size-4" />}
+                    {etiquetaEspecial(turno)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {turno.duracion_min} min · {tipoDe(turno) === "bloqueo" ? "Horario bloqueado" : "Cita personal"}
+                  </p>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => eliminar.mutate(turno.id)}>
+                  Eliminar
+                </Button>
+              </article>
+            ) : (
             <article key={turno.id} className="panel flex flex-wrap items-center gap-3 p-4">
               <span className="w-14 shrink-0 text-sm font-semibold tabular-nums">
                 {new Date(turno.inicio).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
@@ -554,7 +786,8 @@ function Agenda() {
                 Eliminar
               </Button>
             </article>
-          ))}
+            ),
+          )}
         </div>
       )}
     </div>

@@ -796,7 +796,8 @@ export type Database = {
           inicio: string
           motivo: string | null
           notas: string | null
-          paciente_id: string
+          paciente_id: string | null
+          tipo: string
           updated_at: string
         }
         Insert: {
@@ -808,7 +809,8 @@ export type Database = {
           inicio: string
           motivo?: string | null
           notas?: string | null
-          paciente_id: string
+          paciente_id?: string | null
+          tipo?: string
           updated_at?: string
         }
         Update: {
@@ -820,7 +822,8 @@ export type Database = {
           inicio?: string
           motivo?: string | null
           notas?: string | null
-          paciente_id?: string
+          paciente_id?: string | null
+          tipo?: string
           updated_at?: string
         }
         Relationships: [
