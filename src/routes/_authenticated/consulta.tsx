@@ -348,9 +348,17 @@ function Consulta() {
         description="Dictá desordenado; la IA distribuye cada dato en el campo correcto."
         actions={
           <>
-            <Button variant="outline" size="sm" onClick={receta}>
-              <FileDown className="size-4" /> Receta PDF
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <FileDown className="size-4" /> Receta PDF
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem onSelect={() => receta(false)}>Con indicaciones (paciente)</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => receta(true)}>Solo medicamentos, sin indicaciones (farmacia)</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="outline" size="sm" onClick={recetaOptica}>
               <Glasses className="size-4" /> Receta óptica
             </Button>
