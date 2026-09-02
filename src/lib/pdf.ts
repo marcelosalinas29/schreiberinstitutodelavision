@@ -8,7 +8,10 @@ import type { Paciente, Plantilla } from "@/types/domain";
 export type FormatoPDF = "a4" | "a5";
 
 interface RecetaInput {
-  paciente: Pick<Paciente, "nombre" | "apellido" | "dni" | "obra_social" | "nro_afiliado">;
+  paciente: Pick<
+    Paciente,
+    "nombre" | "apellido" | "dni" | "obra_social" | "nro_afiliado" | "plan_obra_social" | "condicion_iva"
+  >;
   contenido: string;
   fecha: Date;
   plantilla?: Plantilla | null;
