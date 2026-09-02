@@ -361,6 +361,197 @@ function Caja() {
           </ul>
         </section>
       </div>
+
+      <PendientesPanel />
     </div>
   );
 }
+
+const TIPOS_PENDIENTE: { value: TipoPendiente; label: string }[] = [
+  { value: "dinero", label: "Dinero" },
+  { value: "autorizacion", label: "Autorización" },
+];
+
+function PendientesPanel() {
+  const qc = useQueryClient();
+  const [verResueltos, setVerResueltos] = useState(false);
+  const [openNuevo, setOpenNuevo] = useState(false);
+  const [nuevo, setNuevo] = useState({ paciente_id: "", tipo: "dinero" as TipoPendiente, concepto: "", monto: "" });
+
+  const pendientes = useQuery({
+    queryKey: ["caja-pendientes", verResueltos],
+    queryFn: () => listPendientes(!verResueltos),
+  });
+  const pacientes = useQuery({ queryKey: ["pacientes", ""], queryFn: () => listPacientes("") });
+
+  const crear = useMutation({
+    mutationFn: async () => {
+      if (!nuevo.paciente_id) throw new Error("Elegí un paciente");
+      if (!nuevo.concepto.trim()) throw new Error("Escribí el concepto");
+      await crearPendiente(
+        nuevo.paciente_id,
+        nuevo.tipo,
+        nuevo.concepto.trim(),
+        nuevo.monto ? Number(nuevo.monto) : null,
+      );
+    },
+    onSuccess: () => {
+      toast.success("Pendiente registrado");
+      setOpenNuevo(false);
+      setNuevo({ paciente_id: "", tipo: "dinero", concepto: "", monto: "" });
+      void qc.invalidateQueries({ queryKey: ["caja-pendientes"] });
+    },
+    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "No se pudo registrar"),
+  });
+
+  const resolver = useMutation({
+    mutationFn: (id: string) => marcarPendienteResuelto(id),
+    onSuccess: () => {
+      toast.success("Marcado como resuelto");
+      void qc.invalidateQueries({ queryKey: ["caja-pendientes"] });
+    },
+    onError: () => toast.error("No se pudo actualizar"),
+  });
+
+  const borrar = useMutation({
+    mutationFn: (id: string) => eliminarPendiente(id),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["caja-pendientes"] }),
+    onError: () => toast.error("No se pudo eliminar"),
+  });
+
+  return (
+    <section className="panel mt-6 p-4">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 className="text-sm font-semibold">Pendientes</h2>
+          <p className="text-xs text-muted-foreground">Pacientes que quedan a deber o con autorización de obra social pendiente.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => setVerResueltos((v) => !v)}>
+            {verResueltos ? "Ver solo activos" : "Ver historial completo"}
+          </Button>
+          <Dialog open={openNuevo} onOpenChange={setOpenNuevo}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <Plus className="size-4" /> Nuevo pendiente
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Nuevo pendiente</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-1.5 sm:col-span-2">
+                  <Label>Paciente</Label>
+                  <Select value={nuevo.paciente_id} onValueChange={(v) => setNuevo({ ...nuevo, paciente_id: v })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Elegir paciente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(pacientes.data ?? []).map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.apellido}, {p.nombre}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Tipo</Label>
+                  <Select value={nuevo.tipo} onValueChange={(v) => setNuevo({ ...nuevo, tipo: v as TipoPendiente })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIPOS_PENDIENTE.map((t) => (
+                        <SelectItem key={t.value} value={t.value}>
+                          {t.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="pend-monto">Monto (opcional)</Label>
+                  <Input
+                    id="pend-monto"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={nuevo.monto}
+                    onChange={(e) => setNuevo({ ...nuevo, monto: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1.5 sm:col-span-2">
+                  <Label htmlFor="pend-concepto">Concepto</Label>
+                  <Input
+                    id="pend-concepto"
+                    value={nuevo.concepto}
+                    onChange={(e) => setNuevo({ ...nuevo, concepto: e.target.value })}
+                    placeholder="Ej.: saldo de consulta / autorización de cirugía"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={() => crear.mutate()} disabled={crear.isPending}>
+                  Guardar
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+
+      {pendientes.isLoading ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">Cargando…</p>
+      ) : (pendientes.data?.length ?? 0) === 0 ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">No hay pendientes registrados.</p>
+      ) : (
+        <ul className="divide-y divide-border">
+          {pendientes.data!.map((p) => {
+            const nombre = p.paciente ? `${p.paciente.apellido}, ${p.paciente.nombre}` : "Paciente";
+            const mensaje = `Hola ${p.paciente?.nombre ?? ""}, le recordamos que tiene pendiente ${p.concepto}${
+              p.tipo === "dinero" && p.monto != null ? ` por $${Number(p.monto)}` : ""
+            }. Por favor contáctenos para resolverlo.`;
+            return (
+              <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 py-2.5">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">
+                    {nombre}
+                    {p.resuelto ? <span className="ml-2 text-xs text-muted-foreground">(resuelto)</span> : null}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {p.tipo === "dinero" ? "Dinero" : "Autorización"} · {p.concepto}
+                    {p.monto != null ? ` · ${money(Number(p.monto))}` : ""}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {p.paciente?.telefono ? (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        window.open(armarLinkWhatsAppTexto(p.paciente!.telefono!, mensaje), "_blank", "noopener")
+                      }
+                    >
+                      <MessageCircle className="size-4" /> Recordar por WhatsApp
+                    </Button>
+                  ) : null}
+                  {!p.resuelto ? (
+                    <Button size="sm" variant="secondary" onClick={() => resolver.mutate(p.id)} disabled={resolver.isPending}>
+                      <Check className="size-4" /> Marcar resuelto
+                    </Button>
+                  ) : null}
+                  <Button variant="ghost" size="icon" aria-label="Eliminar pendiente" onClick={() => borrar.mutate(p.id)}>
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
