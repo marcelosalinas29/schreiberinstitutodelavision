@@ -687,7 +687,26 @@ function Agenda() {
         <div className="panel p-10 text-center text-sm text-muted-foreground">No hay turnos para esta fecha.</div>
       ) : (
         <div className="space-y-2">
-          {turnos.data!.map((turno) => (
+          {turnos.data!.map((turno) =>
+            esEspecial(turno) ? (
+              <article key={turno.id} className={`panel flex flex-wrap items-center gap-3 border p-4 ${claseEspecial(turno)}`}>
+                <span className="w-14 shrink-0 text-sm font-semibold tabular-nums">
+                  {new Date(turno.inicio).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
+                </span>
+                <div className="min-w-40 flex-1">
+                  <p className="flex items-center gap-2 text-sm font-medium">
+                    {tipoDe(turno) === "bloqueo" ? <Lock className="size-4" /> : <CalendarHeart className="size-4" />}
+                    {etiquetaEspecial(turno)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {turno.duracion_min} min · {tipoDe(turno) === "bloqueo" ? "Horario bloqueado" : "Cita personal"}
+                  </p>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => eliminar.mutate(turno.id)}>
+                  Eliminar
+                </Button>
+              </article>
+            ) : (
             <article key={turno.id} className="panel flex flex-wrap items-center gap-3 p-4">
               <span className="w-14 shrink-0 text-sm font-semibold tabular-nums">
                 {new Date(turno.inicio).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
