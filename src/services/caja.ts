@@ -249,3 +249,59 @@ export async function exportarCobrosCSV(cobros: CobroConPaciente[]): Promise<voi
   a.remove();
   URL.revokeObjectURL(url);
 }
+
+// ===== Pendientes (deudores y autorizaciones) — sección aparte de los cobros =====
+
+export type TipoPendiente = "dinero" | "autorizacion";
+
+export interface PendienteConPaciente {
+  id: string;
+  paciente_id: string;
+  tipo: TipoPendiente;
+  concepto: string;
+  monto: number | null;
+  resuelto: boolean;
+  resuelto_at: string | null;
+  created_at: string;
+  paciente: { id: string; nombre: string; apellido: string; telefono: string | null } | null;
+}
+
+const SELECT_PENDIENTE = "*, paciente:pacientes(id, nombre, apellido, telefono)";
+
+export async function listPendientes(soloActivos = true): Promise<PendienteConPaciente[]> {
+  let query = supabase.from("caja_pendientes").select(SELECT_PENDIENTE).order("created_at", { ascending: false });
+  if (soloActivos) query = query.eq("resuelto", false);
+  const { data, error } = await query;
+  if (error) throw error;
+  return (data ?? []) as unknown as PendienteConPaciente[];
+}
+
+export async function crearPendiente(
+  pacienteId: string,
+  tipo: TipoPendiente,
+  concepto: string,
+  monto?: number | null,
+): Promise<void> {
+  const { data: auth } = await supabase.auth.getUser();
+  const { error } = await supabase.from("caja_pendientes").insert({
+    paciente_id: pacienteId,
+    tipo,
+    concepto,
+    monto: monto ?? null,
+    owner_id: auth.user?.id ?? null,
+  });
+  if (error) throw error;
+}
+
+export async function marcarPendienteResuelto(id: string): Promise<void> {
+  const { error } = await supabase
+    .from("caja_pendientes")
+    .update({ resuelto: true, resuelto_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw error;
+}
+
+export async function eliminarPendiente(id: string): Promise<void> {
+  const { error } = await supabase.from("caja_pendientes").delete().eq("id", id);
+  if (error) throw error;
+}
