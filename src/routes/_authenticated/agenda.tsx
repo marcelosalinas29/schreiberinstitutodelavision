@@ -754,7 +754,7 @@ function Agenda() {
                 <span className="text-xs text-muted-foreground">Libre · tocá para agendar</span>
               </button>
             ) : esEspecial(turno) ? (
-              <article key={turno.id} className={`panel flex flex-wrap items-center gap-3 border p-4 ${claseEspecial(turno)}`}>
+              <article key={`${turno.id}-${hora}`} className={`panel flex flex-wrap items-center gap-3 border p-4 ${claseEspecial(turno)}`}>
                 <span className="w-14 shrink-0 text-sm font-semibold tabular-nums">
                   {new Date(turno.inicio).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
                 </span>
@@ -772,7 +772,7 @@ function Agenda() {
                 </Button>
               </article>
             ) : (
-            <article key={turno.id} className="panel flex flex-wrap items-center gap-3 p-4">
+            <article key={`${turno.id}-${hora}`} className="panel flex flex-wrap items-center gap-3 p-4">
               <span className="w-14 shrink-0 text-sm font-semibold tabular-nums">
                 {new Date(turno.inicio).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
               </span>
