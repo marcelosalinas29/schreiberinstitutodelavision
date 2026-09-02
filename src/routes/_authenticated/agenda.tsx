@@ -138,6 +138,10 @@ function Agenda() {
   const [creandoPaciente, setCreandoPaciente] = useState(false);
   const [vista, setVista] = useState<Vista>("dia");
   const [guardia, setGuardia] = useState(false);
+  const [openEvento, setOpenEvento] = useState(false);
+  const [formEvento, setFormEvento] = useState(EVENTO_VACIO);
+  const [openBloqueo, setOpenBloqueo] = useState(false);
+  const [formBloqueo, setFormBloqueo] = useState(BLOQUEO_VACIO);
 
   const turnos = useQuery({
     queryKey: ["turnos", fecha],
