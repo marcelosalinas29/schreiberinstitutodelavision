@@ -48,6 +48,8 @@ const TEXTOS_PREQUIRURGICOS: Record<string, string> = {
     "Solicito Electrocardiograma y valoración de riesgo prequirúrgico. DIAG: prequirúrgico cirugía de cataratas.",
   "Prequirúrgico - Laboratorio":
     "Solicito laboratorio prequirúrgico: Hemograma completo, Glucemia, Coagulograma, VSG, Orina completa, HIV y VDRL.",
+  "Complementarios Vasculitis/Uveítis":
+    "Solicito: Hemograma completo, Glucemia, VSG, PCR, Coagulograma, HIV, VDRL, Toxoplasmosis IgM e IgG, FAN, FR, C3 y C4 (complemento), HLA B27, IgE Total, ECA, ANCA C y P, Anticardiolipina IgG e IgM, Anticoagulante lúpico, B2 Glicoproteína, TSH, T4 libre, aTPO, TRABs II, Antitiroglobulina.",
 };
 
 const TITULOS_PEDIDO: Record<string, string> = {
@@ -230,6 +232,8 @@ function Consulta() {
   const pedidoEcg = () => pedidoDesdeFormato("Prequirúrgico - ECG", "ECG");
   const pedidoLaboratorioPrequirurgico = () =>
     pedidoDesdeFormato("Prequirúrgico - Laboratorio", "Laboratorio prequirúrgico");
+  const pedidoVasculitisUveitis = () =>
+    pedidoDesdeFormato("Complementarios Vasculitis/Uveítis", "Vasculitis/Uveítis");
 
   /** Receta óptica: graduación de lejos y de cerca por ojo, en A5. */
   const recetaOptica = () => {
@@ -428,6 +432,9 @@ function Consulta() {
             </Button>
             <Button variant="outline" size="sm" onClick={pedidoEcg} disabled={!paciente}>
               <ClipboardList className="size-4" /> ECG
+            </Button>
+            <Button variant="outline" size="sm" onClick={pedidoVasculitisUveitis} disabled={!paciente}>
+              <ClipboardList className="size-4" /> Vasculitis/Uveítis
             </Button>
             <Button variant="outline" size="sm" onClick={pedidoLaboratorioPrequirurgico} disabled={!paciente}>
               <ClipboardList className="size-4" /> Laboratorio Prequirúrgico
