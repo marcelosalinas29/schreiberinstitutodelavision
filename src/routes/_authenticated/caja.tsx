@@ -274,12 +274,15 @@ function Caja() {
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        {MEDIOS_PAGO.map((m) => (
-          <StatCard key={m.value} label={m.label} value={money(totales.porMedio[m.value])} />
-        ))}
-        <StatCard label="Total del día" value={money(totales.total)} hint={`${totales.cantidad} movimientos`} />
-      </div>
+      {isMedico && (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {MEDIOS_PAGO.map((m) => (
+            <StatCard key={m.value} label={m.label} value={money(totales.porMedio[m.value])} />
+          ))}
+          <StatCard label="Total del día" value={money(totales.total)} hint={`${totales.cantidad} movimientos`} />
+        </div>
+      )}
+
 
       <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <section className="panel p-4">
