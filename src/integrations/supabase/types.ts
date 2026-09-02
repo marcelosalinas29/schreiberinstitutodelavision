@@ -756,6 +756,36 @@ export type Database = {
         }
         Relationships: []
       }
+      tareas_pendientes: {
+        Row: {
+          completada: boolean
+          created_at: string
+          fecha: string | null
+          id: string
+          owner_id: string | null
+          texto: string
+          updated_at: string
+        }
+        Insert: {
+          completada?: boolean
+          created_at?: string
+          fecha?: string | null
+          id?: string
+          owner_id?: string | null
+          texto: string
+          updated_at?: string
+        }
+        Update: {
+          completada?: boolean
+          created_at?: string
+          fecha?: string | null
+          id?: string
+          owner_id?: string | null
+          texto?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       turnos: {
         Row: {
           created_at: string
