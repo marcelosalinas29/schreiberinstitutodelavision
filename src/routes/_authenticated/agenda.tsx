@@ -768,7 +768,8 @@ function Agenda() {
                 Eliminar
               </Button>
             </article>
-          ))}
+            ),
+          )}
         </div>
       )}
     </div>
