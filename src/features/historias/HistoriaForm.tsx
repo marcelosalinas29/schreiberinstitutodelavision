@@ -65,6 +65,8 @@ export const HISTORIA_VACIA: HistoriaDraft = {
 
 interface Props {
   value: HistoriaDraft;
+  /** Modo solo lectura (secretaria): no puede editar ni subir nada. */
+  soloLectura?: boolean;
   onChange: (patch: Partial<HistoriaDraft>) => void;
   historiaId?: string | undefined;
   pacienteId?: string | null | undefined;
@@ -292,7 +294,7 @@ function LinksObrasSocialesChips({ obraSocial }: { obraSocial?: string | null | 
   );
 }
 
-export function HistoriaForm({ value, onChange, historiaId, obraSocial, pacienteId }: Props & { obraSocial?: string | null | undefined }) {
+export function HistoriaForm({ value, onChange, historiaId, obraSocial, pacienteId, soloLectura = false }: Props & { obraSocial?: string | null | undefined }) {
   const props = { value, onChange, historiaId };
 
   const diccionarioCie10 = useQuery({ queryKey: ["cie10"], queryFn: listCie10 });
@@ -322,7 +324,7 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial, paciente
 
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <fieldset disabled={soloLectura} className="grid gap-4 lg:grid-cols-2">
       <Section title="Anamnesis">
         <div className="space-y-1.5">
           <Label htmlFor="fecha">Fecha</Label>
@@ -533,6 +535,6 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial, paciente
           <Input id="proxima" placeholder="Control en 3 meses" value={value.proxima_cita ?? ""} onChange={(e) => onChange({ proxima_cita: e.target.value })} />
         </div>
       </Section>
-    </div>
+    </fieldset>
   );
 }
