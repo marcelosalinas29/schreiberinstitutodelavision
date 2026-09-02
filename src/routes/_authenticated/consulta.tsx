@@ -33,7 +33,7 @@ import type { PracticaEstudio } from "@/types/domain";
 import {
   idsPracticasUsadas,
   listPracticas,
-  agruparPracticas,
+  agruparPorSeccion,
   practicasOrdenadasPorUso,
   practicasParaObraSocial,
   registrarUsoPractica,
