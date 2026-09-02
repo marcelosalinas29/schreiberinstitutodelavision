@@ -433,6 +433,9 @@ function Consulta() {
             <Button variant="outline" size="sm" onClick={pedidoEcg} disabled={!paciente}>
               <ClipboardList className="size-4" /> ECG
             </Button>
+            <Button variant="outline" size="sm" onClick={pedidoVasculitisUveitis} disabled={!paciente}>
+              <ClipboardList className="size-4" /> Vasculitis/Uveítis
+            </Button>
             <Button variant="outline" size="sm" onClick={pedidoLaboratorioPrequirurgico} disabled={!paciente}>
               <ClipboardList className="size-4" /> Laboratorio Prequirúrgico
             </Button>
