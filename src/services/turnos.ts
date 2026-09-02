@@ -51,3 +51,37 @@ export async function deleteTurno(id: string): Promise<void> {
   const { error } = await supabase.from("turnos").delete().eq("id", id);
   if (error) throw error;
 }
+
+export async function crearEventoPersonal(
+  fecha: string,
+  hora: string,
+  duracionMin: number,
+  titulo: string,
+): Promise<TurnoConPaciente> {
+  return createTurno({
+    paciente_id: null,
+    tipo: "evento_personal",
+    inicio: new Date(`${fecha}T${hora}`).toISOString(),
+    duracion_min: duracionMin,
+    motivo: titulo,
+  } as TurnoInsert);
+}
+
+export async function crearBloqueo(
+  fecha: string,
+  horaInicio: string,
+  horaFin: string,
+  motivo?: string,
+): Promise<TurnoConPaciente> {
+  const [hi, mi] = horaInicio.split(":").map(Number);
+  const [hf, mf] = horaFin.split(":").map(Number);
+  const minutos = (hf! * 60 + (mf ?? 0)) - (hi! * 60 + (mi ?? 0));
+  if (minutos <= 0) throw new Error("La hora de fin debe ser posterior a la de inicio");
+  return createTurno({
+    paciente_id: null,
+    tipo: "bloqueo",
+    inicio: new Date(`${fecha}T${horaInicio}`).toISOString(),
+    duracion_min: minutos,
+    motivo: motivo?.trim() || "Bloqueado",
+  } as TurnoInsert);
+}
