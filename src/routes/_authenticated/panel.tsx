@@ -92,6 +92,8 @@ function Panel() {
           </ul>
         )}
       </section>
+
+      <TareasPendientes />
     </div>
   );
 }
