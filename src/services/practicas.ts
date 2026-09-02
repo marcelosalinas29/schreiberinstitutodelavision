@@ -97,3 +97,18 @@ export async function idsPracticasUsadas(pacienteId: string): Promise<string[]> 
   if (error || !data) return [];
   return [...new Set(data.map((f) => f.practica_id))];
 }
+
+/** Encabezado de sección: categoría si la tiene, si no la obra social, si no "General". */
+export function grupoDePractica(p: PracticaEstudio): string {
+  return p.categoria?.trim() || p.obra_social?.trim() || "General";
+}
+
+/** Agrupa preservando el orden recibido (respeta la memoria de uso). */
+export function agruparPracticas(practicas: PracticaEstudio[]): [string, PracticaEstudio[]][] {
+  const grupos = new Map<string, PracticaEstudio[]>();
+  for (const p of practicas) {
+    const key = grupoDePractica(p);
+    grupos.set(key, [...(grupos.get(key) ?? []), p]);
+  }
+  return [...grupos.entries()];
+}
