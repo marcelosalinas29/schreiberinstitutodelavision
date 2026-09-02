@@ -253,18 +253,12 @@ export function PatientForm({ paciente, defaults, onSaved, onAbrirExistente, onC
           {campo("plan_obra_social", "Plan")}
           <div className="space-y-1.5">
             <Label htmlFor="condicion_iva">Condición IVA</Label>
-            <select
+            <Input
               id="condicion_iva"
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              type="text"
               value={form.condicion_iva}
               onChange={(e) => setForm({ ...form, condicion_iva: e.target.value })}
-            >
-              {["Consumidor Final", "Responsable Inscripto", "Monotributista", "Exento"].map((o) => (
-                <option key={o} value={o}>
-                  {o}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <div className="space-y-1.5">
             <Label>Sexo</Label>
