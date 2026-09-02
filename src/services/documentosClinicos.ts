@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { calcularEdad } from "@/features/patients/PatientForm";
 import type { DocumentoClinico, DocumentoClinicoInsert, DocumentoTipo } from "@/types/domain";
 
 export async function listDocumentos(): Promise<DocumentoClinico[]> {
