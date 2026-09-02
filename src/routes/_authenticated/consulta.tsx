@@ -29,6 +29,7 @@ import { datosMedicoReceta } from "@/services/perfil";
 import { createHistoria, getHistoria, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
+import { listFormatosHistoria } from "@/services/formatosHistoria";
 import type { PracticaEstudio } from "@/types/domain";
 import {
   idsPracticasUsadas,
@@ -110,6 +111,7 @@ function Consulta() {
   const plantillas = useQuery({ queryKey: ["plantillas"], queryFn: listPlantillas });
   const practicas = useQuery({ queryKey: ["practicas"], queryFn: listPracticas });
   const documentos = useQuery({ queryKey: ["documentos-clinicos"], queryFn: listDocumentos });
+  const formatosHistoria = useQuery({ queryKey: ["formatos-historia"], queryFn: listFormatosHistoria });
   const paciente = (pacientes.data ?? []).find((p) => p.id === pacienteId) ?? null;
 
   // Edición de una consulta existente (?historia=<id>)
@@ -183,6 +185,35 @@ function Consulta() {
       });
     })();
   };
+
+  /** Pedido rápido en A5 reutilizando el texto guardado en formatos_historia. */
+  const pedidoDesdeFormato = (nombreFormato: string, titulo: string) => {
+    if (!paciente) {
+      toast.error("Elegí un paciente");
+      return;
+    }
+    const formato = formatosHistoria.data?.find((f) => f.nombre === nombreFormato);
+    if (!formato?.contenido) {
+      toast.error(`No se encontró el formato "${nombreFormato}"`);
+      return;
+    }
+    void (async () => {
+      const medico = await datosMedicoReceta();
+      await generarRecetaPDF({
+        paciente,
+        contenido: formato.contenido,
+        fecha: new Date(),
+        plantilla: plantillas.data?.[0] ?? null,
+        medico,
+        formato: "a5",
+        titulo,
+      });
+    })();
+  };
+
+  const pedidoEcg = () => pedidoDesdeFormato("Prequirúrgico - ECG", "ECG");
+  const pedidoLaboratorioPrequirurgico = () =>
+    pedidoDesdeFormato("Prequirúrgico - Laboratorio", "Laboratorio prequirúrgico");
 
   /** Receta óptica: graduación de lejos y de cerca por ojo, en A5. */
   const recetaOptica = () => {
@@ -366,6 +397,12 @@ function Consulta() {
             </Button>
             <Button variant="outline" size="sm" onClick={abrirPedido}>
               <ClipboardList className="size-4" /> Pedido de estudios
+            </Button>
+            <Button variant="outline" size="sm" onClick={pedidoEcg} disabled={!paciente}>
+              <ClipboardList className="size-4" /> ECG
+            </Button>
+            <Button variant="outline" size="sm" onClick={pedidoLaboratorioPrequirurgico} disabled={!paciente}>
+              <ClipboardList className="size-4" /> Laboratorio Prequirúrgico
             </Button>
             <Button variant="outline" size="sm" onClick={abrirDocumentos}>
               <FileSignature className="size-4" /> Consentimientos y protocolos
