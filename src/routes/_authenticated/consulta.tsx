@@ -42,6 +42,13 @@ import {
 import { TIPOS_DOCUMENTO, completarDocumento, listDocumentos } from "@/services/documentosClinicos";
 import type { DocumentoTipo } from "@/types/domain";
 
+const TITULOS_PEDIDO: Record<string, string> = {
+  "Estudios y Prácticas": "Pedido de estudios",
+  Laboratorio: "Pedido de laboratorio",
+  "Otros estudios complementarios": "Pedido de estudios complementarios",
+  Cirugías: "Pedido de cirugía",
+};
+
 export const Route = createFileRoute("/_authenticated/consulta")({
   validateSearch: (search: Record<string, unknown>): { paciente?: string | undefined; historia?: string | undefined } => ({
     paciente: typeof search["paciente"] === "string" ? search["paciente"] : undefined,
@@ -257,15 +264,18 @@ function Consulta() {
 
   const basePracticas = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
   const [ordenPedido, setOrdenPedido] = useState<PracticaEstudio[] | null>(null);
-  const [pedidoListo, setPedidoListo] = useState<{ contenido: string; fecha: Date } | null>(null);
+  const [pedidoListo, setPedidoListo] = useState<{ contenido: string; fecha: Date; titulo: string } | null>(null);
   const [usadasAntes, setUsadasAntes] = useState<string[]>([]);
-  const disponibles = ordenPedido ?? basePracticas;
+  const [seccionPedido, setSeccionPedido] = useState<string>("Estudios y Prácticas");
+  const tituloPedido = TITULOS_PEDIDO[seccionPedido] ?? "Pedido de estudios";
+  const disponibles = (ordenPedido ?? basePracticas).filter((p) => p.seccion === seccionPedido);
 
-  const abrirPedido = () => {
+  const abrirPedido = (seccion: string) => {
     if (!paciente) {
       toast.error("Elegí un paciente");
       return;
     }
+    setSeccionPedido(seccion);
     setSeleccionadas([]);
     setOrdenPedido(null);
     setUsadasAntes([]);
@@ -292,7 +302,7 @@ function Consulta() {
       .join("\n\n");
     setPedidoAbierto(false);
     const fecha = new Date();
-    setPedidoListo({ contenido, fecha });
+    setPedidoListo({ contenido, fecha, titulo: tituloPedido });
     void (async () => {
       const medico = await datosMedicoReceta();
       await generarRecetaPDF({
@@ -301,7 +311,7 @@ function Consulta() {
         fecha,
         plantilla: plantillas.data?.[0] ?? null,
         medico,
-        titulo: "Pedido de estudios",
+        titulo: tituloPedido,
         formato: "a5",
       });
       // Memoria de uso: no debe interrumpir la generación del PDF.
@@ -395,8 +405,17 @@ function Consulta() {
             <Button variant="outline" size="sm" onClick={recetaOptica}>
               <Glasses className="size-4" /> Receta óptica
             </Button>
-            <Button variant="outline" size="sm" onClick={abrirPedido}>
+            <Button variant="outline" size="sm" onClick={() => abrirPedido("Estudios y Prácticas")}>
               <ClipboardList className="size-4" /> Pedido de estudios
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => abrirPedido("Laboratorio")}>
+              <ClipboardList className="size-4" /> Laboratorio
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => abrirPedido("Otros estudios complementarios")}>
+              <ClipboardList className="size-4" /> Otros estudios complementarios
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => abrirPedido("Cirugías")}>
+              <ClipboardList className="size-4" /> Pedido de cirugía
             </Button>
             <Button variant="outline" size="sm" onClick={pedidoEcg} disabled={!paciente}>
               <ClipboardList className="size-4" /> ECG
@@ -473,7 +492,7 @@ function Consulta() {
       <Dialog open={pedidoAbierto} onOpenChange={setPedidoAbierto}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Pedido de estudios</DialogTitle>
+            <DialogTitle>{tituloPedido}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
             {paciente?.obra_social ? `Obra social: ${paciente.obra_social}` : "Paciente particular / sin obra social"}
@@ -530,7 +549,7 @@ function Consulta() {
       <Dialog open={pedidoListo !== null} onOpenChange={(v) => (v ? null : setPedidoListo(null))}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Pedido de estudios generado</DialogTitle>
+            <DialogTitle>{pedidoListo?.titulo ?? "Pedido de estudios"} generado</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
             El PDF ya se descargó. También podés imprimirlo o avisarle al paciente por WhatsApp (el aviso es solo texto:
@@ -551,7 +570,7 @@ function Consulta() {
                       fecha: pedidoListo.fecha,
                       plantilla: plantillas.data?.[0] ?? null,
                       medico,
-                      titulo: "Pedido de estudios",
+                      titulo: pedidoListo.titulo,
                       formato: "a5",
                     },
                     { modo: "imprimir" },
@@ -574,7 +593,7 @@ function Consulta() {
                     fecha: pedidoListo.fecha,
                     plantilla: plantillas.data?.[0] ?? null,
                     medico,
-                    titulo: "Pedido de estudios",
+                    titulo: pedidoListo.titulo,
                     formato: "a5",
                   });
                 })();
