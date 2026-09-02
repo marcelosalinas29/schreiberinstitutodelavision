@@ -290,7 +290,7 @@ function LinksObrasSocialesChips({ obraSocial }: { obraSocial?: string | null | 
   );
 }
 
-export function HistoriaForm({ value, onChange, historiaId, obraSocial }: Props & { obraSocial?: string | null | undefined }) {
+export function HistoriaForm({ value, onChange, historiaId, obraSocial, pacienteId }: Props & { obraSocial?: string | null | undefined }) {
   const props = { value, onChange, historiaId };
 
   const diccionarioCie10 = useQuery({ queryKey: ["cie10"], queryFn: listCie10 });
