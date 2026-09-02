@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, MessageCircle, Glasses } from "lucide-react";
+import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, MessageCircle, Mail, Glasses } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -24,6 +24,7 @@ import {
 import { recetaSoloMedicamentos } from "@/lib/utils";
 import { generarRecetaPDF } from "@/lib/pdf";
 import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
+import { armarLinkYahooMail } from "@/lib/email";
 import { datosMedicoReceta } from "@/services/perfil";
 import { createHistoria, getHistoria, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
