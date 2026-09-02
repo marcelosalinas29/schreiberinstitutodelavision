@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      caja_pendientes: {
+        Row: {
+          concepto: string
+          created_at: string
+          id: string
+          monto: number | null
+          owner_id: string | null
+          paciente_id: string
+          resuelto: boolean
+          resuelto_at: string | null
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          concepto: string
+          created_at?: string
+          id?: string
+          monto?: number | null
+          owner_id?: string | null
+          paciente_id: string
+          resuelto?: boolean
+          resuelto_at?: string | null
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          concepto?: string
+          created_at?: string
+          id?: string
+          monto?: number | null
+          owner_id?: string | null
+          paciente_id?: string
+          resuelto?: boolean
+          resuelto_at?: string | null
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caja_pendientes_paciente_id_fkey"
+            columns: ["paciente_id"]
+            isOneToOne: false
+            referencedRelation: "pacientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cie10_diccionario: {
         Row: {
           codigo: string
