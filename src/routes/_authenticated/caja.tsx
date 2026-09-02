@@ -59,7 +59,11 @@ interface LineaPagoForm {
 
 function Caja() {
   const qc = useQueryClient();
-  const [fecha, setFecha] = useState(() => new Date().toISOString().slice(0, 10));
+  const { isMedico } = useCurrentUser();
+  const hoy = new Date().toISOString().slice(0, 10);
+  const [fechaSel, setFecha] = useState(() => hoy);
+  const fecha = isMedico ? fechaSel : hoy;
+
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
     paciente_id: "",
