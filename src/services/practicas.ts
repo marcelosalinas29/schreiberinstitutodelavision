@@ -120,6 +120,30 @@ const ORDEN_SECCIONES = [
   "Cirugías",
 ];
 
+/** Orden fijo de las subcategorías dentro de la sección Laboratorio. */
+export const ORDEN_SUBGRUPOS_LABORATORIO = [
+  "Hematología / Coagulación",
+  "Química Sanguínea",
+  "Endocrinología",
+  "Examen de Orina",
+  "Serología",
+  "Inmunología",
+  "HLA",
+  "Vitaminas",
+];
+
+/** Ordena los ítems por la columna `orden`; los null quedan al final, alfabéticos. */
+function ordenarItems(items: PracticaEstudio[]): PracticaEstudio[] {
+  return [...items].sort((a, b) => {
+    const oa = a.orden ?? Number.MAX_SAFE_INTEGER;
+    const ob = b.orden ?? Number.MAX_SAFE_INTEGER;
+    if (oa !== ob) return oa - ob;
+    return a.nombre.localeCompare(b.nombre, "es");
+  });
+}
+
+
+
 /** Sección de nivel superior; "General" si la fila todavía no tiene una. */
 export function seccionDePractica(p: PracticaEstudio): string {
   return p.seccion?.trim() || "General";
@@ -149,6 +173,16 @@ export function agruparPorSeccion(
             : p.categoria?.trim() || p.obra_social?.trim() || "General";
         subs.set(sub, [...(subs.get(sub) ?? []), p]);
       }
-      return [seccion, [...subs.entries()]] as [string, [string, PracticaEstudio[]][]];
+      let entradas = [...subs.entries()];
+      if (seccion === "Laboratorio") {
+        entradas = entradas.sort((a, b) => {
+          const ia = ORDEN_SUBGRUPOS_LABORATORIO.indexOf(a[0]);
+          const ib = ORDEN_SUBGRUPOS_LABORATORIO.indexOf(b[0]);
+          return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+        });
+      }
+      entradas = entradas.map(([sub, lista]) => [sub, ordenarItems(lista)]);
+      return [seccion, entradas] as [string, [string, PracticaEstudio[]][]];
     });
 }
+

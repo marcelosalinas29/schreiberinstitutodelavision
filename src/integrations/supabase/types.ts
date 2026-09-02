@@ -651,6 +651,7 @@ export type Database = {
           id: string
           nombre: string
           obra_social: string | null
+          orden: number | null
           owner_id: string
           seccion: string | null
           updated_at: string
@@ -663,6 +664,7 @@ export type Database = {
           id?: string
           nombre: string
           obra_social?: string | null
+          orden?: number | null
           owner_id: string
           seccion?: string | null
           updated_at?: string
@@ -675,6 +677,7 @@ export type Database = {
           id?: string
           nombre?: string
           obra_social?: string | null
+          orden?: number | null
           owner_id?: string
           seccion?: string | null
           updated_at?: string
