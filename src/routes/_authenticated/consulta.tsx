@@ -16,6 +16,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/historias/HistoriaForm";
 import { HistoricoPIO } from "@/features/historias/HistoricoPIO";
 import { parseDictado } from "@/lib/ai.functions";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { recetaSoloMedicamentos } from "@/lib/utils";
 import { generarRecetaPDF } from "@/lib/pdf";
 import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
 import { datosMedicoReceta } from "@/services/perfil";
