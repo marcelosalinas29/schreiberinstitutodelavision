@@ -297,6 +297,39 @@ function Agenda() {
     });
   }, [fecha, bloqueosDelDia]);
 
+  /** Vista Día: todos los horarios del día + cualquier turno fuera de esos horarios. */
+  const filasDia = useMemo(() => {
+    const data = turnos.data ?? [];
+    const horaDe = (iso: string) => {
+      const d = new Date(iso);
+      return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+    };
+    const rango = (t: (typeof data)[number]) => {
+      const d = new Date(t.inicio);
+      const desde = d.getHours() * 60 + d.getMinutes();
+      return [desde, desde + (t.duracion_min ?? 0)] as const;
+    };
+    const usados = new Set<string>();
+    const filas: { hora: string; turno: (typeof data)[number] | null }[] = [];
+    for (const h of horariosDisponibles(fecha)) {
+      const m = aMinutos(h);
+      const exacto = data.find((t) => horaDe(t.inicio) === h);
+      const bloqueo =
+        exacto ??
+        data.find((t) => {
+          if (tipoDe(t) !== "bloqueo") return false;
+          const [desde, hasta] = rango(t);
+          return m >= desde && m < hasta;
+        });
+      if (bloqueo) usados.add(bloqueo.id);
+      filas.push({ hora: h, turno: bloqueo ?? null });
+    }
+    const extras = data
+      .filter((t) => !usados.has(t.id))
+      .map((t) => ({ hora: horaDe(t.inicio), turno: t }));
+    return [...filas, ...extras].sort((a, b) => aMinutos(a.hora) - aMinutos(b.hora));
+  }, [turnos.data, fecha]);
+
   const camposTurno = (
     <>
       <div className="grid grid-cols-2 gap-3">
@@ -701,13 +734,27 @@ function Agenda() {
         </div>
       ) : turnos.isLoading ? (
         <p className="py-10 text-center text-sm text-muted-foreground">Cargando turnos…</p>
-      ) : (turnos.data?.length ?? 0) === 0 ? (
+      ) : filasDia.length === 0 ? (
         <div className="panel p-10 text-center text-sm text-muted-foreground">No hay turnos para esta fecha.</div>
       ) : (
         <div className="space-y-2">
-          {turnos.data!.map((turno) =>
-            esEspecial(turno) ? (
-              <article key={turno.id} className={`panel flex flex-wrap items-center gap-3 border p-4 ${claseEspecial(turno)}`}>
+          {filasDia.map(({ hora, turno }, idx) =>
+            !turno ? (
+              <button
+                key={`libre-${hora}-${idx}`}
+                type="button"
+                onClick={() => {
+                  setForm({ ...TURNO_VACIO, hora });
+                  setGuardia(false);
+                  setOpen(true);
+                }}
+                className="panel flex w-full items-center gap-3 border border-dashed p-2 text-left opacity-70 transition hover:opacity-100"
+              >
+                <span className="w-14 shrink-0 text-sm font-semibold tabular-nums text-muted-foreground">{hora}</span>
+                <span className="text-xs text-muted-foreground">Libre · tocá para agendar</span>
+              </button>
+            ) : esEspecial(turno) ? (
+              <article key={`${turno.id}-${hora}`} className={`panel flex flex-wrap items-center gap-3 border p-4 ${claseEspecial(turno)}`}>
                 <span className="w-14 shrink-0 text-sm font-semibold tabular-nums">
                   {new Date(turno.inicio).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
                 </span>
@@ -725,7 +772,7 @@ function Agenda() {
                 </Button>
               </article>
             ) : (
-            <article key={turno.id} className="panel flex flex-wrap items-center gap-3 p-4">
+            <article key={`${turno.id}-${hora}`} className="panel flex flex-wrap items-center gap-3 p-4">
               <span className="w-14 shrink-0 text-sm font-semibold tabular-nums">
                 {new Date(turno.inicio).toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}
               </span>
