@@ -15,6 +15,7 @@ import {
   Menu,
   WifiOff,
   ExternalLink,
+  Microscope,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
@@ -53,6 +54,7 @@ const NAV: NavItem[] = [
   { to: "/cie10", label: "Diccionario CIE-10", icon: ClipboardList, soloMedico: true },
   { to: "/medicamentos", label: "Medicamentos", icon: Pill, soloMedico: true },
   { to: "/documentos", label: "Consentimientos y protocolos", icon: FileSignature, soloMedico: true },
+  { to: "/investigacion", label: "Casos de interés", icon: Microscope, soloMedico: true },
   { to: "/configuracion", label: "Configuración", icon: Settings },
 ];
 
