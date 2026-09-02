@@ -632,6 +632,44 @@ export type Database = {
         }
         Relationships: []
       }
+      pacientes_investigacion: {
+        Row: {
+          created_at: string
+          diagnostico: string | null
+          id: string
+          notas: string | null
+          owner_id: string | null
+          paciente_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          diagnostico?: string | null
+          id?: string
+          notas?: string | null
+          owner_id?: string | null
+          paciente_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          diagnostico?: string | null
+          id?: string
+          notas?: string | null
+          owner_id?: string | null
+          paciente_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pacientes_investigacion_paciente_id_fkey"
+            columns: ["paciente_id"]
+            isOneToOne: false
+            referencedRelation: "pacientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plantillas: {
         Row: {
           created_at: string
