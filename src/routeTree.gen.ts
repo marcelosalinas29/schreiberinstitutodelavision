@@ -22,6 +22,7 @@ import { Route as AuthenticatedDocumentosRouteImport } from './routes/_authentic
 import { Route as AuthenticatedEstudiosComplementariosRouteImport } from './routes/_authenticated/estudios-complementarios'
 import { Route as AuthenticatedFormatosRouteImport } from './routes/_authenticated/formatos'
 import { Route as AuthenticatedImportarRouteImport } from './routes/_authenticated/importar'
+import { Route as AuthenticatedInvestigacionRouteImport } from './routes/_authenticated/investigacion'
 import { Route as AuthenticatedLaboratorioRouteImport } from './routes/_authenticated/laboratorio'
 import { Route as AuthenticatedLinksObrasSocialesRouteImport } from './routes/_authenticated/links-obras-sociales'
 import { Route as AuthenticatedMedicamentosRouteImport } from './routes/_authenticated/medicamentos'
@@ -96,6 +97,12 @@ const AuthenticatedImportarRoute = AuthenticatedImportarRouteImport.update({
   path: '/importar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedInvestigacionRoute =
+  AuthenticatedInvestigacionRouteImport.update({
+    id: '/investigacion',
+    path: '/investigacion',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedLaboratorioRoute =
   AuthenticatedLaboratorioRouteImport.update({
     id: '/laboratorio',
@@ -148,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/formatos': typeof AuthenticatedFormatosRoute
   '/importar': typeof AuthenticatedImportarRoute
+  '/investigacion': typeof AuthenticatedInvestigacionRoute
   '/laboratorio': typeof AuthenticatedLaboratorioRoute
   '/links-obras-sociales': typeof AuthenticatedLinksObrasSocialesRoute
   '/medicamentos': typeof AuthenticatedMedicamentosRoute
@@ -169,6 +177,7 @@ export interface FileRoutesByTo {
   '/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/formatos': typeof AuthenticatedFormatosRoute
   '/importar': typeof AuthenticatedImportarRoute
+  '/investigacion': typeof AuthenticatedInvestigacionRoute
   '/laboratorio': typeof AuthenticatedLaboratorioRoute
   '/links-obras-sociales': typeof AuthenticatedLinksObrasSocialesRoute
   '/medicamentos': typeof AuthenticatedMedicamentosRoute
@@ -192,6 +201,7 @@ export interface FileRoutesById {
   '/_authenticated/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/_authenticated/formatos': typeof AuthenticatedFormatosRoute
   '/_authenticated/importar': typeof AuthenticatedImportarRoute
+  '/_authenticated/investigacion': typeof AuthenticatedInvestigacionRoute
   '/_authenticated/laboratorio': typeof AuthenticatedLaboratorioRoute
   '/_authenticated/links-obras-sociales': typeof AuthenticatedLinksObrasSocialesRoute
   '/_authenticated/medicamentos': typeof AuthenticatedMedicamentosRoute
@@ -215,6 +225,7 @@ export interface FileRouteTypes {
     | '/estudios-complementarios'
     | '/formatos'
     | '/importar'
+    | '/investigacion'
     | '/laboratorio'
     | '/links-obras-sociales'
     | '/medicamentos'
@@ -236,6 +247,7 @@ export interface FileRouteTypes {
     | '/estudios-complementarios'
     | '/formatos'
     | '/importar'
+    | '/investigacion'
     | '/laboratorio'
     | '/links-obras-sociales'
     | '/medicamentos'
@@ -258,6 +270,7 @@ export interface FileRouteTypes {
     | '/_authenticated/estudios-complementarios'
     | '/_authenticated/formatos'
     | '/_authenticated/importar'
+    | '/_authenticated/investigacion'
     | '/_authenticated/laboratorio'
     | '/_authenticated/links-obras-sociales'
     | '/_authenticated/medicamentos'
@@ -366,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedImportarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/investigacion': {
+      id: '/_authenticated/investigacion'
+      path: '/investigacion'
+      fullPath: '/investigacion'
+      preLoaderRoute: typeof AuthenticatedInvestigacionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/laboratorio': {
       id: '/_authenticated/laboratorio'
       path: '/laboratorio'
@@ -429,6 +449,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEstudiosComplementariosRoute: typeof AuthenticatedEstudiosComplementariosRoute
   AuthenticatedFormatosRoute: typeof AuthenticatedFormatosRoute
   AuthenticatedImportarRoute: typeof AuthenticatedImportarRoute
+  AuthenticatedInvestigacionRoute: typeof AuthenticatedInvestigacionRoute
   AuthenticatedLaboratorioRoute: typeof AuthenticatedLaboratorioRoute
   AuthenticatedLinksObrasSocialesRoute: typeof AuthenticatedLinksObrasSocialesRoute
   AuthenticatedMedicamentosRoute: typeof AuthenticatedMedicamentosRoute
@@ -450,6 +471,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedEstudiosComplementariosRoute,
   AuthenticatedFormatosRoute: AuthenticatedFormatosRoute,
   AuthenticatedImportarRoute: AuthenticatedImportarRoute,
+  AuthenticatedInvestigacionRoute: AuthenticatedInvestigacionRoute,
   AuthenticatedLaboratorioRoute: AuthenticatedLaboratorioRoute,
   AuthenticatedLinksObrasSocialesRoute: AuthenticatedLinksObrasSocialesRoute,
   AuthenticatedMedicamentosRoute: AuthenticatedMedicamentosRoute,
