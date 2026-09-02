@@ -15,11 +15,14 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
 import { Route as AuthenticatedCajaRouteImport } from './routes/_authenticated/caja'
 import { Route as AuthenticatedCie10RouteImport } from './routes/_authenticated/cie10'
+import { Route as AuthenticatedCirugiasRouteImport } from './routes/_authenticated/cirugias'
 import { Route as AuthenticatedConfiguracionRouteImport } from './routes/_authenticated/configuracion'
 import { Route as AuthenticatedConsultaRouteImport } from './routes/_authenticated/consulta'
 import { Route as AuthenticatedDocumentosRouteImport } from './routes/_authenticated/documentos'
+import { Route as AuthenticatedEstudiosComplementariosRouteImport } from './routes/_authenticated/estudios-complementarios'
 import { Route as AuthenticatedFormatosRouteImport } from './routes/_authenticated/formatos'
 import { Route as AuthenticatedImportarRouteImport } from './routes/_authenticated/importar'
+import { Route as AuthenticatedLaboratorioRouteImport } from './routes/_authenticated/laboratorio'
 import { Route as AuthenticatedLinksObrasSocialesRouteImport } from './routes/_authenticated/links-obras-sociales'
 import { Route as AuthenticatedMedicamentosRouteImport } from './routes/_authenticated/medicamentos'
 import { Route as AuthenticatedPacientesRouteImport } from './routes/_authenticated/pacientes'
@@ -56,6 +59,11 @@ const AuthenticatedCie10Route = AuthenticatedCie10RouteImport.update({
   path: '/cie10',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCirugiasRoute = AuthenticatedCirugiasRouteImport.update({
+  id: '/cirugias',
+  path: '/cirugias',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedConfiguracionRoute =
   AuthenticatedConfiguracionRouteImport.update({
     id: '/configuracion',
@@ -72,6 +80,12 @@ const AuthenticatedDocumentosRoute = AuthenticatedDocumentosRouteImport.update({
   path: '/documentos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEstudiosComplementariosRoute =
+  AuthenticatedEstudiosComplementariosRouteImport.update({
+    id: '/estudios-complementarios',
+    path: '/estudios-complementarios',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedFormatosRoute = AuthenticatedFormatosRouteImport.update({
   id: '/formatos',
   path: '/formatos',
@@ -82,6 +96,12 @@ const AuthenticatedImportarRoute = AuthenticatedImportarRouteImport.update({
   path: '/importar',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLaboratorioRoute =
+  AuthenticatedLaboratorioRouteImport.update({
+    id: '/laboratorio',
+    path: '/laboratorio',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedLinksObrasSocialesRoute =
   AuthenticatedLinksObrasSocialesRouteImport.update({
     id: '/links-obras-sociales',
@@ -121,11 +141,14 @@ export interface FileRoutesByFullPath {
   '/agenda': typeof AuthenticatedAgendaRoute
   '/caja': typeof AuthenticatedCajaRoute
   '/cie10': typeof AuthenticatedCie10Route
+  '/cirugias': typeof AuthenticatedCirugiasRoute
   '/configuracion': typeof AuthenticatedConfiguracionRoute
   '/consulta': typeof AuthenticatedConsultaRoute
   '/documentos': typeof AuthenticatedDocumentosRoute
+  '/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/formatos': typeof AuthenticatedFormatosRoute
   '/importar': typeof AuthenticatedImportarRoute
+  '/laboratorio': typeof AuthenticatedLaboratorioRoute
   '/links-obras-sociales': typeof AuthenticatedLinksObrasSocialesRoute
   '/medicamentos': typeof AuthenticatedMedicamentosRoute
   '/pacientes': typeof AuthenticatedPacientesRoute
@@ -139,11 +162,14 @@ export interface FileRoutesByTo {
   '/agenda': typeof AuthenticatedAgendaRoute
   '/caja': typeof AuthenticatedCajaRoute
   '/cie10': typeof AuthenticatedCie10Route
+  '/cirugias': typeof AuthenticatedCirugiasRoute
   '/configuracion': typeof AuthenticatedConfiguracionRoute
   '/consulta': typeof AuthenticatedConsultaRoute
   '/documentos': typeof AuthenticatedDocumentosRoute
+  '/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/formatos': typeof AuthenticatedFormatosRoute
   '/importar': typeof AuthenticatedImportarRoute
+  '/laboratorio': typeof AuthenticatedLaboratorioRoute
   '/links-obras-sociales': typeof AuthenticatedLinksObrasSocialesRoute
   '/medicamentos': typeof AuthenticatedMedicamentosRoute
   '/pacientes': typeof AuthenticatedPacientesRoute
@@ -159,11 +185,14 @@ export interface FileRoutesById {
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
   '/_authenticated/caja': typeof AuthenticatedCajaRoute
   '/_authenticated/cie10': typeof AuthenticatedCie10Route
+  '/_authenticated/cirugias': typeof AuthenticatedCirugiasRoute
   '/_authenticated/configuracion': typeof AuthenticatedConfiguracionRoute
   '/_authenticated/consulta': typeof AuthenticatedConsultaRoute
   '/_authenticated/documentos': typeof AuthenticatedDocumentosRoute
+  '/_authenticated/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/_authenticated/formatos': typeof AuthenticatedFormatosRoute
   '/_authenticated/importar': typeof AuthenticatedImportarRoute
+  '/_authenticated/laboratorio': typeof AuthenticatedLaboratorioRoute
   '/_authenticated/links-obras-sociales': typeof AuthenticatedLinksObrasSocialesRoute
   '/_authenticated/medicamentos': typeof AuthenticatedMedicamentosRoute
   '/_authenticated/pacientes': typeof AuthenticatedPacientesRoute
@@ -179,11 +208,14 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/caja'
     | '/cie10'
+    | '/cirugias'
     | '/configuracion'
     | '/consulta'
     | '/documentos'
+    | '/estudios-complementarios'
     | '/formatos'
     | '/importar'
+    | '/laboratorio'
     | '/links-obras-sociales'
     | '/medicamentos'
     | '/pacientes'
@@ -197,11 +229,14 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/caja'
     | '/cie10'
+    | '/cirugias'
     | '/configuracion'
     | '/consulta'
     | '/documentos'
+    | '/estudios-complementarios'
     | '/formatos'
     | '/importar'
+    | '/laboratorio'
     | '/links-obras-sociales'
     | '/medicamentos'
     | '/pacientes'
@@ -216,11 +251,14 @@ export interface FileRouteTypes {
     | '/_authenticated/agenda'
     | '/_authenticated/caja'
     | '/_authenticated/cie10'
+    | '/_authenticated/cirugias'
     | '/_authenticated/configuracion'
     | '/_authenticated/consulta'
     | '/_authenticated/documentos'
+    | '/_authenticated/estudios-complementarios'
     | '/_authenticated/formatos'
     | '/_authenticated/importar'
+    | '/_authenticated/laboratorio'
     | '/_authenticated/links-obras-sociales'
     | '/_authenticated/medicamentos'
     | '/_authenticated/pacientes'
@@ -279,6 +317,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCie10RouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/cirugias': {
+      id: '/_authenticated/cirugias'
+      path: '/cirugias'
+      fullPath: '/cirugias'
+      preLoaderRoute: typeof AuthenticatedCirugiasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/configuracion': {
       id: '/_authenticated/configuracion'
       path: '/configuracion'
@@ -300,6 +345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDocumentosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/estudios-complementarios': {
+      id: '/_authenticated/estudios-complementarios'
+      path: '/estudios-complementarios'
+      fullPath: '/estudios-complementarios'
+      preLoaderRoute: typeof AuthenticatedEstudiosComplementariosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/formatos': {
       id: '/_authenticated/formatos'
       path: '/formatos'
@@ -312,6 +364,13 @@ declare module '@tanstack/react-router' {
       path: '/importar'
       fullPath: '/importar'
       preLoaderRoute: typeof AuthenticatedImportarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/laboratorio': {
+      id: '/_authenticated/laboratorio'
+      path: '/laboratorio'
+      fullPath: '/laboratorio'
+      preLoaderRoute: typeof AuthenticatedLaboratorioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/links-obras-sociales': {
@@ -363,11 +422,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
   AuthenticatedCajaRoute: typeof AuthenticatedCajaRoute
   AuthenticatedCie10Route: typeof AuthenticatedCie10Route
+  AuthenticatedCirugiasRoute: typeof AuthenticatedCirugiasRoute
   AuthenticatedConfiguracionRoute: typeof AuthenticatedConfiguracionRoute
   AuthenticatedConsultaRoute: typeof AuthenticatedConsultaRoute
   AuthenticatedDocumentosRoute: typeof AuthenticatedDocumentosRoute
+  AuthenticatedEstudiosComplementariosRoute: typeof AuthenticatedEstudiosComplementariosRoute
   AuthenticatedFormatosRoute: typeof AuthenticatedFormatosRoute
   AuthenticatedImportarRoute: typeof AuthenticatedImportarRoute
+  AuthenticatedLaboratorioRoute: typeof AuthenticatedLaboratorioRoute
   AuthenticatedLinksObrasSocialesRoute: typeof AuthenticatedLinksObrasSocialesRoute
   AuthenticatedMedicamentosRoute: typeof AuthenticatedMedicamentosRoute
   AuthenticatedPacientesRoute: typeof AuthenticatedPacientesRoute
@@ -380,11 +442,15 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgendaRoute: AuthenticatedAgendaRoute,
   AuthenticatedCajaRoute: AuthenticatedCajaRoute,
   AuthenticatedCie10Route: AuthenticatedCie10Route,
+  AuthenticatedCirugiasRoute: AuthenticatedCirugiasRoute,
   AuthenticatedConfiguracionRoute: AuthenticatedConfiguracionRoute,
   AuthenticatedConsultaRoute: AuthenticatedConsultaRoute,
   AuthenticatedDocumentosRoute: AuthenticatedDocumentosRoute,
+  AuthenticatedEstudiosComplementariosRoute:
+    AuthenticatedEstudiosComplementariosRoute,
   AuthenticatedFormatosRoute: AuthenticatedFormatosRoute,
   AuthenticatedImportarRoute: AuthenticatedImportarRoute,
+  AuthenticatedLaboratorioRoute: AuthenticatedLaboratorioRoute,
   AuthenticatedLinksObrasSocialesRoute: AuthenticatedLinksObrasSocialesRoute,
   AuthenticatedMedicamentosRoute: AuthenticatedMedicamentosRoute,
   AuthenticatedPacientesRoute: AuthenticatedPacientesRoute,
