@@ -295,7 +295,7 @@ function Consulta() {
       .join("\n\n");
     setPedidoAbierto(false);
     const fecha = new Date();
-    setPedidoListo({ contenido, fecha });
+    setPedidoListo({ contenido, fecha, titulo: tituloPedido });
     void (async () => {
       const medico = await datosMedicoReceta();
       await generarRecetaPDF({
@@ -304,7 +304,7 @@ function Consulta() {
         fecha,
         plantilla: plantillas.data?.[0] ?? null,
         medico,
-        titulo: "Pedido de estudios",
+        titulo: tituloPedido,
         formato: "a5",
       });
       // Memoria de uso: no debe interrumpir la generación del PDF.
