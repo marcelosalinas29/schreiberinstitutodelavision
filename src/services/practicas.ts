@@ -120,6 +120,30 @@ const ORDEN_SECCIONES = [
   "Cirugías",
 ];
 
+/** Orden fijo de las subcategorías dentro de la sección Laboratorio. */
+export const ORDEN_SUBGRUPOS_LABORATORIO = [
+  "Hematología / Coagulación",
+  "Química Sanguínea",
+  "Endocrinología",
+  "Examen de Orina",
+  "Serología",
+  "Inmunología",
+  "HLA",
+  "Vitaminas",
+];
+
+/** Ordena los ítems por la columna `orden`; los null quedan al final, alfabéticos. */
+function ordenarItems(items: PracticaEstudio[]): PracticaEstudio[] {
+  return [...items].sort((a, b) => {
+    const oa = a.orden ?? Number.MAX_SAFE_INTEGER;
+    const ob = b.orden ?? Number.MAX_SAFE_INTEGER;
+    if (oa !== ob) return oa - ob;
+    return a.nombre.localeCompare(b.nombre, "es");
+  });
+}
+
+
+
 /** Sección de nivel superior; "General" si la fila todavía no tiene una. */
 export function seccionDePractica(p: PracticaEstudio): string {
   return p.seccion?.trim() || "General";
