@@ -146,12 +146,17 @@ export async function generarRecetaPDF(
   if (paciente.obra_social) {
     y = wrap(
       doc,
-      `Obra social: ${paciente.obra_social}${paciente.nro_afiliado ? ` — Afiliado ${paciente.nro_afiliado}` : ""}`,
+      `Obra social: ${paciente.obra_social}${paciente.nro_afiliado ? ` — Afiliado ${paciente.nro_afiliado}` : ""}${
+        paciente.plan_obra_social ? ` — Plan ${paciente.plan_obra_social}` : ""
+      }`,
       margin,
       y,
       width,
       lhDatos,
     );
+  }
+  if (paciente.condicion_iva) {
+    y = wrap(doc, `Cond. IVA: ${paciente.condicion_iva}`, margin, y, width, lhDatos);
   }
   y += esA5 ? 5 : 6;
 
