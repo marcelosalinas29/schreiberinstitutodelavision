@@ -9,8 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { deletePractica, listPracticas, upsertPractica } from "@/services/practicas";
-import type { PracticaEstudio } from "@/types/domain";
+import { agruparPracticas, deletePractica, listPracticas, upsertPractica } from "@/services/practicas";
 
 export const Route = createFileRoute("/_authenticated/practicas")({
   head: () => ({
@@ -118,10 +117,10 @@ function Practicas() {
       ) : null}
 
       <div className="space-y-5">
-        {grupos.size === 0 ? (
+        {grupos.length === 0 ? (
           <p className="text-sm text-muted-foreground">Todavía no cargaste prácticas.</p>
         ) : null}
-        {[...grupos.entries()].map(([grupo, items]) => (
+        {grupos.map(([grupo, items]) => (
           <section key={grupo} className="panel p-5">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{grupo}</h2>
             <ul className="divide-y divide-border">
