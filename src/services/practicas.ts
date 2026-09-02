@@ -184,6 +184,13 @@ export function agruparPorSeccion(
           return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
         });
       }
+      if (seccion === "Estudios y Prácticas") {
+        entradas = entradas.sort((a, b) => {
+          const ia = ORDEN_SUBGRUPOS_ESTUDIOS.indexOf(a[0]);
+          const ib = ORDEN_SUBGRUPOS_ESTUDIOS.indexOf(b[0]);
+          return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+        });
+      }
       entradas = entradas.map(([sub, lista]) => [sub, ordenarItems(lista)]);
       return [seccion, entradas] as [string, [string, PracticaEstudio[]][]];
     });
