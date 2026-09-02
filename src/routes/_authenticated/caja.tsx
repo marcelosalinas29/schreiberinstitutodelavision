@@ -326,7 +326,9 @@ function Caja() {
           )}
         </section>
 
+        {isMedico && (
         <section className="panel h-fit p-4">
+
           <h2 className="mb-3 text-sm font-semibold">Cierre de caja</h2>
           <div className="space-y-3">
             <div className="space-y-1.5">
