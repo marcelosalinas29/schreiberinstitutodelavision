@@ -40,7 +40,7 @@ const NAV: NavItem[] = [
   { to: "/panel", label: "Panel", icon: LayoutDashboard },
   { to: "/agenda", label: "Agenda", icon: CalendarDays },
   { to: "/pacientes", label: "Pacientes", icon: Users },
-  { to: "/consulta", label: "Historias Clínicas", icon: Stethoscope, soloMedico: true },
+  { to: "/consulta", label: "Historia Clínica", icon: Stethoscope, soloMedico: true },
   { to: "/importar", label: "Importar fichas", icon: ScanLine, soloMedico: true },
   { to: "/caja", label: "Caja", icon: Wallet },
   { to: "/plantillas", label: "Plantillas", icon: FileText, soloMedico: true },
