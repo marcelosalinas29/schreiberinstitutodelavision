@@ -200,7 +200,8 @@ function Consulta() {
       return;
     }
     const formato = formatosHistoria.data?.find((f) => f.nombre === nombreFormato);
-    if (!formato?.contenido) {
+    const contenido = formato?.contenido ?? TEXTOS_PREQUIRURGICOS[nombreFormato] ?? "";
+    if (!contenido) {
       toast.error(`No se encontró el formato "${nombreFormato}"`);
       return;
     }
@@ -208,7 +209,7 @@ function Consulta() {
       const medico = await datosMedicoReceta();
       await generarRecetaPDF({
         paciente,
-        contenido: formato.contenido,
+        contenido,
         fecha: new Date(),
         plantilla: plantillas.data?.[0] ?? null,
         medico,
