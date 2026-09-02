@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, MessageCircle, Glasses } from "lucide-react";
+import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, MessageCircle, Mail, Glasses } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -24,6 +24,7 @@ import {
 import { recetaSoloMedicamentos } from "@/lib/utils";
 import { generarRecetaPDF } from "@/lib/pdf";
 import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
+import { armarLinkYahooMail } from "@/lib/email";
 import { datosMedicoReceta } from "@/services/perfil";
 import { createHistoria, getHistoria, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
@@ -554,6 +555,24 @@ function Consulta() {
                 }}
               >
                 <MessageCircle className="size-4" /> Enviar por WhatsApp
+              </Button>
+            ) : null}
+            {paciente?.email ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (!paciente?.email || !pedidoListo) return;
+                  const asunto = `Pedido de estudios - ${paciente.apellido}, ${paciente.nombre}`;
+                  const cuerpo = `Hola ${paciente.nombre}, tiene listo su pedido de estudios de ${pedidoListo.fecha.toLocaleDateString("es-AR")}. Puede pasar a buscarlo o coordinar el envío por este medio.`;
+                  window.open(
+                    armarLinkYahooMail(paciente.email, asunto, cuerpo),
+                    "_blank",
+                    "noopener,noreferrer",
+                  );
+                }}
+              >
+                <Mail className="size-4" /> Enviar por email
               </Button>
             ) : null}
             <Button size="sm" onClick={() => setPedidoListo(null)}>
