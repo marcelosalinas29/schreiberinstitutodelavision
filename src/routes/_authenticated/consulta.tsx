@@ -313,7 +313,7 @@ function Consulta() {
     if (!paciente || seleccionadas.length === 0) return;
     const elegidas = disponibles.filter((p) => seleccionadas.includes(p.id));
     const contenido = elegidas
-      .map((p) => `• ${p.nombre}${p.codigo ? ` (${p.codigo})` : ""}\n${p.contenido}`)
+      .map((p) => p.contenido)
       .join("\n\n");
     setPedidoAbierto(false);
     const fecha = new Date();
