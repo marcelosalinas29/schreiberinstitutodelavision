@@ -183,6 +183,16 @@ function Agenda() {
     return mapa;
   }, [turnosMes.data]);
 
+  const especialesMes = useMemo(() => {
+    const mapa: Record<string, TipoTurno> = {};
+    for (const t of turnosMes.data ?? []) {
+      if (!esEspecial(t)) continue;
+      const k = aISO(new Date(t.inicio));
+      if (mapa[k] !== "bloqueo") mapa[k] = tipoDe(t);
+    }
+    return mapa;
+  }, [turnosMes.data]);
+
   const celdasMes = useMemo(() => {
     const inicio = lunesDe(primerDiaMes);
     const celdas: string[] = [];
