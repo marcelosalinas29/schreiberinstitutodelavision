@@ -364,8 +364,13 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial, paciente
 
       <Section title="Examen oftalmológico">
         <Bilateral {...props} label="Autorrefractómetro (ARM)" odKey="arm_od" oiKey="arm_oi" placeholder="esf / cil x eje" />
-        <Bilateral {...props} label="Refracción subjetiva" odKey="refraccion_od" oiKey="refraccion_oi" placeholder="esf / cil x eje" />
-        <Bilateral {...props} label="Refracción de cerca" odKey="refraccion_cerca_od" oiKey="refraccion_cerca_oi" placeholder="esf / cil x eje" />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="space-y-4">
+            <Bilateral {...props} label="Refracción subjetiva" odKey="refraccion_od" oiKey="refraccion_oi" placeholder="esf / cil x eje" />
+            <Bilateral {...props} label="Refracción de cerca" odKey="refraccion_cerca_od" oiKey="refraccion_cerca_oi" placeholder="esf / cil x eje" />
+          </div>
+          {pacienteId ? <HistoricoRefraccion pacienteId={pacienteId} /> : null}
+        </div>
         <DatosPrevios
           value={value}
           campos={[
