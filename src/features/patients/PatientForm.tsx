@@ -256,8 +256,8 @@ export function PatientForm({ paciente, defaults, onSaved, onAbrirExistente, onC
             <select
               id="condicion_iva"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              value={valores.condicion_iva}
-              onChange={(e) => setValores({ ...valores, condicion_iva: e.target.value })}
+              value={form.condicion_iva}
+              onChange={(e) => setForm({ ...form, condicion_iva: e.target.value })}
             >
               {["Consumidor Final", "Responsable Inscripto", "Monotributista", "Exento"].map((o) => (
                 <option key={o} value={o}>
