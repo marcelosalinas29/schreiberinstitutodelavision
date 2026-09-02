@@ -29,6 +29,7 @@ import { datosMedicoReceta } from "@/services/perfil";
 import { createHistoria, getHistoria, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
+import { listFormatosHistoria } from "@/services/formatosHistoria";
 import type { PracticaEstudio } from "@/types/domain";
 import {
   idsPracticasUsadas,
