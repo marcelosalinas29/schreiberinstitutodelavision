@@ -115,6 +115,8 @@ function Consulta() {
   const qc = useQueryClient();
   const { paciente: pacienteDeUrl, historia: historiaDeUrl } = Route.useSearch();
   const [pacienteId, setPacienteId] = useState(pacienteDeUrl ?? "");
+  const [historiaId, setHistoriaId] = useState<string | undefined>(historiaDeUrl);
+  const [autoEstado, setAutoEstado] = useState<"idle" | "guardando" | "guardado">("idle");
   const [transcripcion, setTranscripcion] = useState("");
   const [draft, setDraft] = useState<HistoriaDraft>(HISTORIA_VACIA);
   const [pedidoAbierto, setPedidoAbierto] = useState(false);
@@ -153,6 +155,53 @@ function Consulta() {
     setTranscripcion((h.dictado_crudo as string | null) ?? "");
   }, [historiaExistente.data]);
 
+  // Nueva consulta: al elegir paciente (sin ?historia=) se crea la historia enseguida,
+  // así "Adjuntar estudio" y el autoguardado funcionan desde el primer momento.
+  const creandoRef = useRef(false);
+  useEffect(() => {
+    if (historiaDeUrl) return;
+    if (!isMedico || !pacienteId || historiaId || creandoRef.current) return;
+    creandoRef.current = true;
+    const hoy = new Date().toISOString().slice(0, 10);
+    void createHistoria({ paciente_id: pacienteId, fecha: hoy, dictado_crudo: null })
+      .then((h) => {
+        setHistoriaId(h.id);
+        setDraft({ ...HISTORIA_VACIA, fecha: hoy });
+        setTranscripcion("");
+      })
+      .catch(() => toast.error("No se pudo iniciar la consulta"))
+      .finally(() => {
+        creandoRef.current = false;
+      });
+  }, [pacienteId, historiaDeUrl, historiaId, isMedico]);
+
+  // Si se cambia de paciente en una consulta nueva, se arranca otra historia.
+  const pacienteAnterior = useRef(pacienteId);
+  useEffect(() => {
+    if (historiaDeUrl) return;
+    if (pacienteAnterior.current !== pacienteId) {
+      pacienteAnterior.current = pacienteId;
+      setHistoriaId(undefined);
+      setAutoEstado("idle");
+    }
+  }, [pacienteId, historiaDeUrl]);
+
+  // Autoguardado con debounce (no en cada tecla).
+  const primerRender = useRef(true);
+  useEffect(() => {
+    if (!historiaId || !isMedico) return;
+    if (primerRender.current) {
+      primerRender.current = false;
+      return;
+    }
+    setAutoEstado("guardando");
+    const t = setTimeout(() => {
+      void updateHistoria(historiaId, { ...draft, dictado_crudo: transcripcion || null })
+        .then(() => setAutoEstado("guardado"))
+        .catch(() => setAutoEstado("idle"));
+    }, 2500);
+    return () => clearTimeout(t);
+  }, [draft, transcripcion, historiaId, isMedico]);
 
   const { grabando, alternar } = useDictado((texto) => setTranscripcion((prev) => `${prev} ${texto}`.trim()));
 
@@ -169,22 +218,21 @@ function Consulta() {
   const guardar = useMutation({
     mutationFn: async () => {
       if (!pacienteId) throw new Error("Elegí un paciente");
-      if (historiaDeUrl) {
-        await updateHistoria(historiaDeUrl, { ...draft, dictado_crudo: transcripcion || null });
+      if (historiaId) {
+        await updateHistoria(historiaId, { ...draft, dictado_crudo: transcripcion || null });
         return;
       }
-      await createHistoria({ ...draft, paciente_id: pacienteId, dictado_crudo: transcripcion || null });
+      const creada = await createHistoria({ ...draft, paciente_id: pacienteId, dictado_crudo: transcripcion || null });
+      setHistoriaId(creada.id);
     },
     onSuccess: () => {
       toast.success(historiaDeUrl ? "Consulta actualizada" : "Historia clínica guardada");
-      if (!historiaDeUrl) {
-        setDraft(HISTORIA_VACIA);
-        setTranscripcion("");
-      }
+      setAutoEstado("guardado");
       void qc.invalidateQueries({ queryKey: ["historias"] });
     },
     onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo guardar"),
   });
+
 
   const receta = (soloMedicamentos = false) => {
     if (!paciente) {
@@ -555,9 +603,14 @@ function Consulta() {
               <FileSignature className="size-4" /> Consentimientos y protocolos
             </Button>
             {isMedico && (
-              <Button size="sm" onClick={() => guardar.mutate()} disabled={guardar.isPending}>
-                {guardar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Guardar
-              </Button>
+              <>
+                <span className="self-center text-xs text-muted-foreground">
+                  {autoEstado === "guardando" ? "Guardando…" : autoEstado === "guardado" ? "Guardado" : ""}
+                </span>
+                <Button size="sm" onClick={() => guardar.mutate()} disabled={guardar.isPending}>
+                  {guardar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Guardar
+                </Button>
+              </>
             )}
           </>
         }
@@ -617,6 +670,7 @@ function Consulta() {
       <HistoriaForm
         value={draft}
         onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))}
+        historiaId={historiaId}
         obraSocial={paciente?.obra_social ?? null}
         soloLectura={!isMedico}
         pacienteId={pacienteId}
