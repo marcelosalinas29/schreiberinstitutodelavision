@@ -96,9 +96,12 @@ function useDictado(onTexto: (texto: string) => void) {
 
 function Consulta() {
   const qc = useQueryClient();
-  const { paciente: pacienteDeUrl, historia: historiaDeUrl } = Route.useSearch();
+  const { paciente: pacienteDeUrl, historia: historiaEnUrl } = Route.useSearch();
+  const navigate = useNavigate();
+  // Consulta existente que se está viendo/editando (viene de la URL o se elige en la lista).
+  const [historiaDeUrl, setHistoriaDeUrl] = useState<string | undefined>(historiaEnUrl);
   const [pacienteId, setPacienteId] = useState(pacienteDeUrl ?? "");
-  const [historiaId, setHistoriaId] = useState<string | undefined>(historiaDeUrl);
+  const [historiaId, setHistoriaId] = useState<string | undefined>(historiaEnUrl);
   const [autoEstado, setAutoEstado] = useState<"idle" | "guardando" | "guardado">("idle");
   const [transcripcion, setTranscripcion] = useState("");
   const [draft, setDraft] = useState<HistoriaDraft>(HISTORIA_VACIA);
