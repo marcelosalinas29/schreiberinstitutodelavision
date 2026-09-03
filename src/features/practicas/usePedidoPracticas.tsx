@@ -88,7 +88,7 @@ export function usePedidoPracticas(paciente: Paciente | null) {
         medico,
         titulo: tituloPedido,
         formato: "a5",
-      });
+      }, { modo: "imprimir" });
       // Memoria de uso: no debe interrumpir la generación del PDF.
       await Promise.all(
         elegidas.map((p) => registrarUsoPractica(p.id, paciente.id).catch((e: unknown) => console.error(e))),

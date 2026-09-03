@@ -255,7 +255,7 @@ function Consulta() {
         plantilla: plantillas.data?.[0] ?? null,
         medico,
         formato: "a5",
-      });
+      }, { modo: "imprimir" });
     })();
   };
 
@@ -281,7 +281,7 @@ function Consulta() {
         medico,
         formato: "a5",
         titulo,
-      });
+      }, { modo: "imprimir" });
     })();
   };
 
@@ -327,7 +327,7 @@ function Consulta() {
         medico,
         titulo: "Receta óptica",
         formato: "a5",
-      });
+      }, { modo: "imprimir" });
     })();
   };
 
@@ -365,7 +365,7 @@ function Consulta() {
         plantilla: plantillas.data?.[0] ?? null,
         medico,
         titulo: manualTitulo.trim() || "Documento",
-      });
+      }, { modo: "imprimir" });
     })();
   };
 
@@ -389,7 +389,7 @@ function Consulta() {
         plantilla: plantillas.data?.[0] ?? null,
         medico,
         titulo: doc.nombre,
-      });
+      }, { modo: "imprimir" });
     })();
   };
 
@@ -449,7 +449,7 @@ function Consulta() {
         plantilla: plantillas.data?.[0] ?? null,
         medico,
         titulo: "Historia clínica",
-      });
+      }, { modo: "imprimir" });
     })();
   };
 
@@ -485,7 +485,7 @@ function Consulta() {
           plantilla: plantillas.data?.[0] ?? null,
           medico,
           titulo: "Historia clínica completa",
-        });
+        }, { modo: "imprimir" });
       } catch (error) {
         toast.error(error instanceof Error ? error.message : "No se pudo generar la historia completa");
       }
