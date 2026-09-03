@@ -240,6 +240,35 @@ function Consulta() {
     descartar.mutate();
   };
 
+  // Consultas anteriores del paciente elegido (para cambiar de consulta sin salir de la pantalla).
+  const historiasPaciente = useQuery({
+    queryKey: ["historias-paciente", pacienteId],
+    enabled: Boolean(pacienteId),
+    queryFn: () => listHistoriasPaciente(pacienteId),
+  });
+
+  /** Abre una consulta anterior en esta misma pantalla (sin sumar entradas al historial del navegador). */
+  const abrirConsulta = (id: string) => {
+    if (id === historiaDeUrl) return;
+    setHistoriaDeUrl(id);
+    setHistoriaId(id);
+    setAutoEstado("idle");
+    primerRender.current = true;
+    void navigate({ to: "/consulta", search: { paciente: pacienteId || undefined, historia: id }, replace: true });
+  };
+
+  /** Vuelve a una consulta en blanco para el mismo paciente. */
+  const nuevaConsulta = () => {
+    setHistoriaDeUrl(undefined);
+    setHistoriaId(undefined);
+    setDraft(HISTORIA_VACIA);
+    setTranscripcion("");
+    setAutoEstado("idle");
+    primerRender.current = true;
+    void navigate({ to: "/consulta", search: { paciente: pacienteId || undefined, historia: undefined }, replace: true });
+  };
+
+
 
   const receta = (soloMedicamentos = false) => {
     if (!paciente) {
