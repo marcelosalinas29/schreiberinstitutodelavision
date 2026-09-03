@@ -245,15 +245,62 @@ function Consulta() {
     void navigate({ to: "/consulta", search: { paciente: pacienteId || undefined, historia: id }, replace: true });
   };
 
-  /** Vuelve a una consulta en blanco para el mismo paciente. */
+  const hoyISO = new Date().toISOString().slice(0, 10);
+
+  /** Carga en el formulario una historia ya existente (sin crear nada). */
+  const cargarEnDraft = (h: Record<string, unknown> & { id: string; paciente_id: string }) => {
+    const { id: _id, paciente_id: _pid, created_at: _c, ...campos } = h;
+    setDraft(campos as unknown as HistoriaDraft);
+    setTranscripcion(((h as { dictado_crudo?: string | null }).dictado_crudo ?? "") as string);
+  };
+
+  // Si el paciente elegido ya tiene una consulta de HOY, se retoma automáticamente.
+  useEffect(() => {
+    if (historiaDeUrl || historiaId || !pacienteId) return;
+    const lista = historiasPaciente.data;
+    if (!lista) return;
+    const deHoy = lista.find((h) => h.fecha === hoyISO);
+    if (!deHoy) return;
+    setHistoriaId(deHoy.id);
+    primerRender.current = true;
+    cargarEnDraft(deHoy as never);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [historiasPaciente.data, pacienteId, historiaId, historiaDeUrl, hoyISO]);
+
+  const hayConsultaDeHoy = Boolean(historiaId) || (historiasPaciente.data ?? []).some((h) => h.fecha === hoyISO);
+
+  /** Crea explícitamente la consulta de hoy (único punto donde se crea una historia nueva). */
   const nuevaConsulta = () => {
+    if (!pacienteId) {
+      toast.error("Elegí un paciente");
+      return;
+    }
+    if (creandoRef.current) return;
+    const existente = (historiasPaciente.data ?? []).find((h) => h.fecha === hoyISO);
+    if (existente) {
+      setHistoriaDeUrl(undefined);
+      setHistoriaId(existente.id);
+      primerRender.current = true;
+      cargarEnDraft(existente as never);
+      toast.info("Ya había una consulta de hoy: se retomó esa");
+      return;
+    }
+    creandoRef.current = true;
     setHistoriaDeUrl(undefined);
-    setHistoriaId(undefined);
-    setDraft(HISTORIA_VACIA);
+    setDraft({ ...HISTORIA_VACIA, fecha: hoyISO });
     setTranscripcion("");
     setAutoEstado("idle");
     primerRender.current = true;
-    void navigate({ to: "/consulta", search: { paciente: pacienteId || undefined, historia: undefined }, replace: true });
+    void createHistoria({ paciente_id: pacienteId, fecha: hoyISO, dictado_crudo: null })
+      .then((h) => {
+        setHistoriaId(h.id);
+        void qc.invalidateQueries({ queryKey: ["historias-paciente"] });
+        void navigate({ to: "/consulta", search: { paciente: pacienteId, historia: undefined }, replace: true });
+      })
+      .catch(() => toast.error("No se pudo iniciar la consulta"))
+      .finally(() => {
+        creandoRef.current = false;
+      });
   };
 
 
