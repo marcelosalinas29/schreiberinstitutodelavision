@@ -397,17 +397,15 @@ function Consulta() {
       return;
     }
     const vacio = "Esf: ___ Cil: ___ Eje: ___";
-    const contenido = [
-      "Lejos",
-      `O.D. ${lejosOd || vacio}`,
-      `O.I. ${lejosOi || vacio}`,
-      "",
-      "Cerca",
-      `O.D. ${cercaOd || vacio}`,
-      `O.I. ${cercaOi || vacio}`,
-      "",
-      "Diagnóstico: Ametropía",
-    ].join("\n");
+    const lineas: string[] = [];
+    if (lejosOd || lejosOi) {
+      lineas.push("Lejos", `O.D. ${lejosOd || vacio}`, `O.I. ${lejosOi || vacio}`, "");
+    }
+    if (cercaOd || cercaOi) {
+      lineas.push("Cerca", `O.D. ${cercaOd || vacio}`, `O.I. ${cercaOi || vacio}`, "");
+    }
+    lineas.push("Diagnóstico: Ametropía");
+    const contenido = lineas.join("\n");
     void (async () => {
       const medico = await datosMedicoReceta();
       await generarRecetaPDF({
