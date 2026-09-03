@@ -115,6 +115,8 @@ function Consulta() {
   const qc = useQueryClient();
   const { paciente: pacienteDeUrl, historia: historiaDeUrl } = Route.useSearch();
   const [pacienteId, setPacienteId] = useState(pacienteDeUrl ?? "");
+  const [historiaId, setHistoriaId] = useState<string | undefined>(historiaDeUrl);
+  const [autoEstado, setAutoEstado] = useState<"idle" | "guardando" | "guardado">("idle");
   const [transcripcion, setTranscripcion] = useState("");
   const [draft, setDraft] = useState<HistoriaDraft>(HISTORIA_VACIA);
   const [pedidoAbierto, setPedidoAbierto] = useState(false);
