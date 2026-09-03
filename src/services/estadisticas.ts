@@ -84,20 +84,22 @@ export async function getEstadisticas(): Promise<Estadisticas> {
     filasHist
       .filter(
         (h) =>
-          tieneTexto(h.campo_visual_obs) || tieneTexto(h.cv_od_imagen_url) || tieneTexto(h.cv_oi_imagen_url),
+          tieneTexto(h["campo_visual_obs"]) ||
+          tieneTexto(h["cv_od_imagen_url"]) ||
+          tieneTexto(h["cv_oi_imagen_url"]),
       )
-      .map((h) => h.fecha as string | null),
+      .map((h) => h["fecha"] as string | null),
   );
   const curvasPio = contarPorPeriodo(
     filasHist
       .filter(
         (h) =>
-          h.curva_pio_ayunas_od !== null ||
-          h.curva_pio_ayunas_oi !== null ||
-          h.curva_pio_sobrecarga_od !== null ||
-          h.curva_pio_sobrecarga_oi !== null,
+          h["curva_pio_ayunas_od"] !== null ||
+          h["curva_pio_ayunas_oi"] !== null ||
+          h["curva_pio_sobrecarga_od"] !== null ||
+          h["curva_pio_sobrecarga_oi"] !== null,
       )
-      .map((h) => h.fecha as string | null),
+      .map((h) => h["fecha"] as string | null),
   );
 
   const filasTurno = (turnos.data ?? []) as { inicio: string; estado: string }[];
