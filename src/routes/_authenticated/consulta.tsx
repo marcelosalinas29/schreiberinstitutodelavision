@@ -264,7 +264,7 @@ function Consulta() {
       `O.D. ${cercaOd || vacio}`,
       `O.I. ${cercaOi || vacio}`,
       "",
-      `Diagnóstico: ${(draft.diagnostico ?? "").trim() || "—"}`,
+      "Diagnóstico: Ametropía",
     ].join("\n");
     void (async () => {
       const medico = await datosMedicoReceta();
