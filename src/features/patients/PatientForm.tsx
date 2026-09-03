@@ -41,7 +41,7 @@ const VACIO = {
   obra_social: "",
   nro_afiliado: "",
   plan_obra_social: "",
-  condicion_iva: "Consumidor Final",
+  condicion_iva: "",
   direccion: "",
   localidad: "",
   notas: "",
@@ -88,7 +88,7 @@ function desdePaciente(p?: Paciente | null): Campos {
     obra_social: p.obra_social ?? "",
     nro_afiliado: p.nro_afiliado ?? "",
     plan_obra_social: p.plan_obra_social ?? p.plan ?? "",
-    condicion_iva: p.condicion_iva ?? "Consumidor Final",
+    condicion_iva: p.condicion_iva ?? "",
     direccion: p.direccion ?? "",
     localidad: p.localidad ?? "",
     notas: p.notas ?? "",
@@ -251,15 +251,6 @@ export function PatientForm({ paciente, defaults, onSaved, onAbrirExistente, onC
           {campo("obra_social", "Obra social / Prepaga")}
           {campo("nro_afiliado", "N° de afiliado")}
           {campo("plan_obra_social", "Plan")}
-          <div className="space-y-1.5">
-            <Label htmlFor="condicion_iva">Condición IVA</Label>
-            <Input
-              id="condicion_iva"
-              type="text"
-              value={form.condicion_iva}
-              onChange={(e) => setForm({ ...form, condicion_iva: e.target.value })}
-            />
-          </div>
           <div className="space-y-1.5">
             <Label>Sexo</Label>
             <div className="flex gap-2">
