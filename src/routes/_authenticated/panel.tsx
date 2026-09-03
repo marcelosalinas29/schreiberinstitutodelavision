@@ -95,6 +95,37 @@ function Panel() {
         )}
       </section>
 
+      {(cumpleanos.data?.length ?? 0) > 0 ? (
+        <section className="panel mt-6 p-4">
+          <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
+            <Cake className="size-4" /> Cumpleaños de hoy
+          </h2>
+          <ul className="divide-y divide-border">
+            {cumpleanos.data!.map((p) => {
+              const edad = p.fecha_nacimiento ? calcularEdad(p.fecha_nacimiento) : null;
+              const mensaje = `¡Feliz cumpleaños, ${p.nombre}! Le deseamos un muy lindo día de parte de todo el equipo de Schreiber Instituto de la Visión.`;
+              return (
+                <li key={p.id} className="flex items-center justify-between gap-3 py-2.5">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{p.apellido}, {p.nombre}</p>
+                    {edad ? <p className="text-xs text-muted-foreground">Cumple {edad}</p> : null}
+                  </div>
+                  {p.telefono ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(armarLinkWhatsAppTexto(p.telefono!, mensaje), "_blank")}
+                    >
+                      <MessageCircle className="size-4" /> Enviar saludo por WhatsApp
+                    </Button>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
+
       <TareasPendientes />
     </div>
   );
