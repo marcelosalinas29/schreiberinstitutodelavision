@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { hoyISO } from "@/lib/fecha";
 import { BUCKET_MEDICAL } from "@/services/perfil";
 import type { CierreCaja, CobroConPaciente, CobroInsert, MedioPago, Tables } from "@/types/domain";
 
@@ -243,7 +244,7 @@ export async function exportarCobrosCSV(cobros: CobroConPaciente[]): Promise<voi
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `cobros-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `cobros-${hoyISO()}.csv`;
   document.body.appendChild(a);
   a.click();
   a.remove();

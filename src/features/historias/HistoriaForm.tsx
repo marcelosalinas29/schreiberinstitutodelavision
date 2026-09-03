@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { hoyISO } from "@/lib/fecha";
 import {
   urlFirmadaImagenHistoria,
   subirAdjuntoEstudio,
@@ -26,7 +27,7 @@ import {
 export type HistoriaDraft = Omit<HistoriaClinicaInsert, "paciente_id">;
 
 export const HISTORIA_VACIA: HistoriaDraft = {
-  fecha: new Date().toISOString().slice(0, 10),
+  fecha: hoyISO(),
   motivo_consulta: "",
   antecedentes_personales: "",
   antecedentes_familiares: "",

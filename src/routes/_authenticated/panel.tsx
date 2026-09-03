@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/features/auth/useAuth";
 import { calcularTotales, listCobrosPorFecha } from "@/services/caja";
 import { listPacientes } from "@/services/pacientes";
+import { hoyISO } from "@/lib/fecha";
 import { listTurnosPorRango } from "@/services/turnos";
 import { ESTADOS_TURNO } from "@/types/domain";
 
@@ -23,8 +24,6 @@ export const Route = createFileRoute("/_authenticated/panel")({
   }),
   component: Panel,
 });
-
-const hoyISO = () => new Date().toISOString().slice(0, 10);
 
 function Panel() {
   const { profile, isMedico } = useCurrentUser();

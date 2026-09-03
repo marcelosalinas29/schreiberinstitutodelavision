@@ -17,6 +17,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PatientForm } from "@/features/patients/PatientForm";
 import { listPacientes } from "@/services/pacientes";
 import { armarLinkRecordatorioTurno } from "@/lib/whatsapp";
+import { hoyISO } from "@/lib/fecha";
 import { crearBloqueo, crearEventoPersonal, createTurno, deleteTurno, listTurnosPorRango, setEstadoTurno } from "@/services/turnos";
 import { ESTADOS_TURNO, type Paciente, type TurnoEstado } from "@/types/domain";
 
@@ -130,7 +131,7 @@ const hhmm = (iso: string) => new Date(iso).toLocaleTimeString("es-AR", { hour: 
 
 function Agenda() {
   const qc = useQueryClient();
-  const [fecha, setFecha] = useState(() => new Date().toISOString().slice(0, 10));
+  const [fecha, setFecha] = useState(() => hoyISO());
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(TURNO_VACIO);
   const [busqueda, setBusqueda] = useState("");

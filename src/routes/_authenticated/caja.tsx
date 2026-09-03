@@ -32,6 +32,7 @@ import {
   type TipoPendiente,
 } from "@/services/caja";
 import { listPacientes } from "@/services/pacientes";
+import { formatearFechaLocal, hoyISO } from "@/lib/fecha";
 import { MEDIOS_PAGO, TIPOS_COBRO, type MedioPago, type TipoCobro } from "@/types/domain";
 
 
@@ -62,7 +63,7 @@ interface LineaPagoForm {
 function Caja() {
   const qc = useQueryClient();
   const { isMedico } = useCurrentUser();
-  const hoy = new Date().toISOString().slice(0, 10);
+  const hoy = hoyISO();
   const [fechaSel, setFecha] = useState(() => hoy);
   const fecha = isMedico ? fechaSel : hoy;
 
@@ -370,7 +371,7 @@ function Caja() {
             {(cierres.data ?? []).slice(0, 8).map((c) => (
               <li key={c.id} className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm">
                 <span className="text-muted-foreground">
-                  {new Date(`${c.fecha}T12:00:00`).toLocaleDateString("es-AR")} · {c.turno_label}
+                  {formatearFechaLocal(c.fecha)} · {c.turno_label}
                 </span>
                 <span className="font-medium tabular-nums">{money(Number(c.total_general))}</span>
               </li>

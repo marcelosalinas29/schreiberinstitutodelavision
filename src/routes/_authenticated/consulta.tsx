@@ -30,6 +30,7 @@ import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
 import { listFormatosHistoria } from "@/services/formatosHistoria";
 import { usePedidoPracticas } from "@/features/practicas/usePedidoPracticas";
+import { formatearFechaLocal, hoyISO, parsearFechaLocal } from "@/lib/fecha";
 import { TIPOS_DOCUMENTO, completarDocumento, listDocumentos } from "@/services/documentosClinicos";
 import type { DocumentoTipo } from "@/types/domain";
 
@@ -178,7 +179,7 @@ function Consulta() {
   const ordenar = useMutation({
     mutationFn: () => parse({ data: { transcripcion } }),
     onSuccess: (data) => {
-      setDraft((prev) => ({ ...prev, ...data, fecha: prev.fecha ?? new Date().toISOString().slice(0, 10) }));
+      setDraft((prev) => ({ ...prev, ...data, fecha: prev.fecha ?? hoyISO() }));
       toast.success("Dictado ordenado en los campos clínicos");
     },
     onError: () => toast.error("No se pudo procesar el dictado"),
@@ -245,7 +246,7 @@ function Consulta() {
     void navigate({ to: "/consulta", search: { paciente: pacienteId || undefined, historia: id }, replace: true });
   };
 
-  const hoyISO = new Date().toISOString().slice(0, 10);
+  const hoy = hoyISO();
 
   /** Carga en el formulario una historia ya existente (sin crear nada). */
   const cargarEnDraft = (h: Record<string, unknown> & { id: string; paciente_id: string }) => {
@@ -259,15 +260,15 @@ function Consulta() {
     if (historiaDeUrl || historiaId || !pacienteId) return;
     const lista = historiasPaciente.data;
     if (!lista) return;
-    const deHoy = lista.find((h) => h.fecha === hoyISO);
+    const deHoy = lista.find((h) => h.fecha === hoy);
     if (!deHoy) return;
     setHistoriaId(deHoy.id);
     primerRender.current = true;
     cargarEnDraft(deHoy as never);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [historiasPaciente.data, pacienteId, historiaId, historiaDeUrl, hoyISO]);
+  }, [historiasPaciente.data, pacienteId, historiaId, historiaDeUrl, hoy]);
 
-  const hayConsultaDeHoy = Boolean(historiaId) || (historiasPaciente.data ?? []).some((h) => h.fecha === hoyISO);
+  const hayConsultaDeHoy = Boolean(historiaId) || (historiasPaciente.data ?? []).some((h) => h.fecha === hoy);
 
   /** Crea explícitamente la consulta de hoy (único punto donde se crea una historia nueva). */
   const nuevaConsulta = () => {
@@ -276,7 +277,7 @@ function Consulta() {
       return;
     }
     if (creandoRef.current) return;
-    const existente = (historiasPaciente.data ?? []).find((h) => h.fecha === hoyISO);
+    const existente = (historiasPaciente.data ?? []).find((h) => h.fecha === hoy);
     if (existente) {
       setHistoriaDeUrl(undefined);
       setHistoriaId(existente.id);
@@ -287,11 +288,11 @@ function Consulta() {
     }
     creandoRef.current = true;
     setHistoriaDeUrl(undefined);
-    setDraft({ ...HISTORIA_VACIA, fecha: hoyISO });
+    setDraft({ ...HISTORIA_VACIA, fecha: hoy });
     setTranscripcion("");
     setAutoEstado("idle");
     primerRender.current = true;
-    void createHistoria({ paciente_id: pacienteId, fecha: hoyISO, dictado_crudo: null })
+    void createHistoria({ paciente_id: pacienteId, fecha: hoy, dictado_crudo: null })
       .then((h) => {
         setHistoriaId(h.id);
         void qc.invalidateQueries({ queryKey: ["historias-paciente"] });
@@ -497,7 +498,7 @@ function Consulta() {
 
   const fechaLegible = (valor?: string | null) => {
     if (!valor) return new Date().toLocaleDateString("es-AR");
-    const d = new Date(`${String(valor).slice(0, 10)}T12:00:00`);
+    const d = parsearFechaLocal(String(valor).slice(0, 10));
     return isNaN(d.getTime()) ? String(valor) : d.toLocaleDateString("es-AR");
   };
 
@@ -731,7 +732,7 @@ function Consulta() {
                       }`}
                     >
                       <span className="mr-2">
-                        {h.fecha ? new Date(`${h.fecha}T00:00:00`).toLocaleDateString("es-AR") : "Sin fecha"}
+                        {h.fecha ? formatearFechaLocal(h.fecha) : "Sin fecha"}
                       </span>
                       <span className="text-muted-foreground">
                         {resumen ? resumen.slice(0, 70) : "Sin diagnóstico"}
@@ -753,7 +754,7 @@ function Consulta() {
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
           Editando consulta
           {historiaExistente.data?.fecha
-            ? ` del ${new Date(historiaExistente.data.fecha).toLocaleDateString("es-AR")}`
+            ? ` del ${formatearFechaLocal(historiaExistente.data.fecha)}`
             : ""}
         </div>
       ) : null}

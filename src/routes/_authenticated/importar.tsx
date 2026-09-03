@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/historias/HistoriaForm";
 import { parseDocumento } from "@/lib/ai.functions";
 import { createHistoria } from "@/services/historias";
+import { hoyISO } from "@/lib/fecha";
 import { createPaciente, listPacientes } from "@/services/pacientes";
 
 export const Route = createFileRoute("/_authenticated/importar")({
@@ -58,7 +59,7 @@ function Importar() {
     },
     onSuccess: (data) => {
       const { historia, paciente, resumen: texto } = data;
-      setDraft((prev) => ({ ...prev, ...historia, fecha: historia.fecha ?? prev.fecha ?? new Date().toISOString().slice(0, 10) }));
+      setDraft((prev) => ({ ...prev, ...historia, fecha: historia.fecha ?? prev.fecha ?? hoyISO() }));
       setSugerido(paciente ?? null);
       setResumen(texto ?? "");
       const coincidencia = (pacientes.data ?? []).find(

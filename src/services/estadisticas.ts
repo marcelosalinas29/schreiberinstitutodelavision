@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { aFechaISO } from "@/lib/fecha";
 
 export type Periodos = { semana: number; mes: number; anio: number };
 
@@ -50,7 +51,7 @@ export type Estadisticas = {
 
 export async function getEstadisticas(): Promise<Estadisticas> {
   const desdeAnio = inicioDeAnio().toISOString();
-  const desdeAnioFecha = inicioDeAnio().toISOString().slice(0, 10);
+  const desdeAnioFecha = aFechaISO(inicioDeAnio());
 
   const [usos, historias, turnos] = await Promise.all([
     supabase

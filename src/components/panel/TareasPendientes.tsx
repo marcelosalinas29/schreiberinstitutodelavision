@@ -6,9 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { formatearFechaLocal, hoyISO } from "@/lib/fecha";
 import { crearTarea, eliminarTarea, listTareas, marcarTareaCompletada, type TareaPendiente } from "@/services/tareas";
-
-const hoyISO = () => new Date().toISOString().slice(0, 10);
 
 function ordenar(tareas: TareaPendiente[]): TareaPendiente[] {
   return [...tareas].sort((a, b) => {
@@ -23,8 +22,8 @@ function etiquetaFecha(fecha: string | null): string {
   if (!fecha) return "Sin fecha";
   const hoy = hoyISO();
   if (fecha === hoy) return "Hoy";
-  if (fecha < hoy) return `Vencida · ${new Date(`${fecha}T12:00:00`).toLocaleDateString("es-AR", { day: "numeric", month: "short" })}`;
-  return new Date(`${fecha}T12:00:00`).toLocaleDateString("es-AR", { day: "numeric", month: "short" });
+  if (fecha < hoy) return `Vencida · ${formatearFechaLocal(fecha, { day: "numeric", month: "short" })}`;
+  return formatearFechaLocal(fecha, { day: "numeric", month: "short" });
 }
 
 export function TareasPendientes() {

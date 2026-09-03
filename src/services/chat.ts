@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { hoyISO } from "@/lib/fecha";
 
 export interface MensajeChat {
   id: string;
@@ -84,7 +85,7 @@ export async function exportarConversacion(): Promise<void> {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `chat-interno-${new Date().toISOString().slice(0, 10)}.txt`;
+  a.download = `chat-interno-${hoyISO()}.txt`;
   document.body.appendChild(a);
   a.click();
   a.remove();
