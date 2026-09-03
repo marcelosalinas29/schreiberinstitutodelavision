@@ -36,6 +36,7 @@ function Panel() {
   const turnos = useQuery({ queryKey: ["turnos", fecha], queryFn: () => listTurnosPorRango(desde, hasta) });
   const cobros = useQuery({ queryKey: ["cobros", fecha], queryFn: () => listCobrosPorFecha(fecha) });
   const pacientes = useQuery({ queryKey: ["pacientes", ""], queryFn: () => listPacientes("") });
+  const cumpleanos = useQuery({ queryKey: ["cumpleanos", fecha], queryFn: listCumpleanosHoy });
 
   const totales = calcularTotales(cobros.data ?? []);
   const enEspera = (turnos.data ?? []).filter((t) => t.estado === "en_espera");
