@@ -4,6 +4,7 @@ import { Plus, Save, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
+import { SelectorYPedido } from "@/features/practicas/SelectorYPedido";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
