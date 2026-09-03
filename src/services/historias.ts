@@ -45,6 +45,11 @@ export async function updateHistoria(id: string, values: Partial<HistoriaClinica
   return data;
 }
 
+export async function deleteHistoria(id: string): Promise<void> {
+  const { error } = await supabase.from("historias_clinicas").delete().eq("id", id);
+  if (error) throw error;
+}
+
 /* ----------------------------------------------------------------------------
  * Imágenes adjuntas de la historia clínica (fondo de ojo / campo visual).
  * Reutiliza el bucket privado "medical-assets" ya existente.

@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, MessageCircle, Mail, Glasses } from "lucide-react";
+import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, MessageCircle, Mail, Glasses, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -27,7 +27,7 @@ import { generarRecetaPDF } from "@/lib/pdf";
 import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
 import { armarLinkYahooMail } from "@/lib/email";
 import { datosMedicoReceta } from "@/services/perfil";
-import { createHistoria, getHistoria, listHistoriasPaciente, updateHistoria } from "@/services/historias";
+import { createHistoria, deleteHistoria, getHistoria, listHistoriasPaciente, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
 import { listFormatosHistoria } from "@/services/formatosHistoria";
@@ -232,6 +232,30 @@ function Consulta() {
     },
     onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo guardar"),
   });
+
+  // Descartar una consulta nueva creada por error: borra la historia y deja la pantalla limpia.
+  const descartar = useMutation({
+    mutationFn: async () => {
+      if (!historiaId) throw new Error("No hay consulta para descartar");
+      await deleteHistoria(historiaId);
+    },
+    onSuccess: () => {
+      setHistoriaId(undefined);
+      setDraft(HISTORIA_VACIA);
+      setTranscripcion("");
+      setAutoEstado("idle");
+      setPacienteId("");
+      pacienteAnterior.current = "";
+      toast.success("Consulta descartada");
+      void qc.invalidateQueries({ queryKey: ["historias"] });
+    },
+    onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo descartar"),
+  });
+
+  const confirmarDescarte = () => {
+    if (!window.confirm("¿Descartar esta consulta? Se borra de la base y no se puede recuperar.")) return;
+    descartar.mutate();
+  };
 
 
   const receta = (soloMedicamentos = false) => {
@@ -607,6 +631,14 @@ function Consulta() {
                 <span className="self-center text-xs text-muted-foreground">
                   {autoEstado === "guardando" ? "Guardando…" : autoEstado === "guardado" ? "Guardado" : ""}
                 </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={confirmarDescarte}
+                  disabled={!historiaId || descartar.isPending}
+                >
+                  {descartar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} Descartar consulta
+                </Button>
                 <Button size="sm" onClick={() => guardar.mutate()} disabled={guardar.isPending}>
                   {guardar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Guardar
                 </Button>
