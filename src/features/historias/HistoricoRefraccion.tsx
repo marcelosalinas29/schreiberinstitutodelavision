@@ -11,8 +11,40 @@ export function HistoricoRefraccion({ pacienteId, className }: { pacienteId: str
     queryFn: () => listHistoriasPaciente(pacienteId),
   });
 
+  /** "Esf Cil x Eje" con las columnas nuevas; si no hay, cae al texto viejo. */
+  const fmt = (esf?: string | null, cil?: string | null, eje?: string | null, viejo?: string | null) => {
+    const e = (esf ?? "").trim();
+    const c = (cil ?? "").trim();
+    const j = (eje ?? "").trim();
+    if (e || c || j) {
+      const base = [e, c].filter(Boolean).join(" ");
+      return j ? `${base || "—"} x ${j}` : base;
+    }
+    return (viejo ?? "").trim() || "—";
+  };
+
+  const tieneReceta = (h: Record<string, unknown>) =>
+    [
+      "refraccion_od",
+      "refraccion_oi",
+      "refraccion_cerca_od",
+      "refraccion_cerca_oi",
+      "refraccion_od_esf",
+      "refraccion_od_cil",
+      "refraccion_od_eje",
+      "refraccion_oi_esf",
+      "refraccion_oi_cil",
+      "refraccion_oi_eje",
+      "refraccion_cerca_od_esf",
+      "refraccion_cerca_od_cil",
+      "refraccion_cerca_od_eje",
+      "refraccion_cerca_oi_esf",
+      "refraccion_cerca_oi_cil",
+      "refraccion_cerca_oi_eje",
+    ].some((k) => typeof h[k] === "string" && (h[k] as string).trim() !== "");
+
   const recetas = (historias.data ?? [])
-    .filter((h) => h.refraccion_od || h.refraccion_oi || h.refraccion_cerca_od || h.refraccion_cerca_oi)
+    .filter((h) => tieneReceta(h as unknown as Record<string, unknown>))
     .sort((a, b) => (a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : 0));
 
   return (
