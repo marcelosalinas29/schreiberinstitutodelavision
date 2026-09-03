@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/historias/HistoriaForm";
 import { useCurrentUser } from "@/features/auth/useAuth";
+import { calcularEdad } from "@/features/patients/PatientForm";
 import { parseDictado } from "@/lib/ai.functions";
 import {
   DropdownMenu,
@@ -584,6 +585,11 @@ function Consulta() {
                 ))}
               </SelectContent>
             </Select>
+            {paciente?.fecha_nacimiento && calcularEdad(paciente.fecha_nacimiento) ? (
+              <p className="text-xs text-muted-foreground">
+                {paciente.apellido}, {paciente.nombre} — {calcularEdad(paciente.fecha_nacimiento)}
+              </p>
+            ) : null}
           </div>
 
           {isMedico && (
