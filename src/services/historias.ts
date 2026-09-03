@@ -102,7 +102,8 @@ export async function urlFirmadaImagenHistoria(path: string | null | undefined):
 
 export type HistoriaAdjunto = {
   id: string;
-  historia_id: string;
+  historia_id: string | null;
+  paciente_id?: string | null;
   path: string;
   nombre_archivo: string | null;
   owner_id: string | null;
