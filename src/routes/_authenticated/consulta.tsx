@@ -584,6 +584,11 @@ function Consulta() {
                 ))}
               </SelectContent>
             </Select>
+            {paciente?.fecha_nacimiento && calcularEdad(paciente.fecha_nacimiento) ? (
+              <p className="text-xs text-muted-foreground">
+                {paciente.apellido}, {paciente.nombre} — {calcularEdad(paciente.fecha_nacimiento)}
+              </p>
+            ) : null}
           </div>
 
           {isMedico && (
