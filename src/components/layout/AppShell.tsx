@@ -16,6 +16,7 @@ import {
   WifiOff,
   ExternalLink,
   Microscope,
+  BarChart3,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
@@ -56,6 +57,7 @@ const NAV: NavItem[] = [
   { to: "/documentos", label: "Consentimientos y protocolos", icon: FileSignature, soloMedico: true },
   { to: "/investigacion", label: "Casos de interés", icon: Microscope, soloMedico: true },
   { to: "/historias-vacias", label: "Historias vacías", icon: ClipboardList, soloMedico: true },
+  { to: "/estadisticas", label: "Estadísticas", icon: BarChart3, soloMedico: true },
   { to: "/configuracion", label: "Configuración", icon: Settings },
 ];
 
