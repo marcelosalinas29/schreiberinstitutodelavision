@@ -76,6 +76,8 @@ export function SeccionPracticas({ seccion, title, description }: Props) {
         }
       />
 
+      <SelectorYPedido seccion={seccion} />
+
       {form ? (
         <div className="panel mb-4 grid max-w-3xl gap-4 p-5 sm:grid-cols-2">
           <div className="space-y-1.5">
