@@ -278,6 +278,39 @@ function Bilateral({
   );
 }
 
+/** Grilla de refracción con casilleros separados Esfera / Cilindro / Eje por ojo. */
+function RefraccionGrilla({
+  label,
+  claves,
+  value,
+  onChange,
+}: Props & {
+  label: string;
+  claves: { od: [keyof HistoriaDraft, keyof HistoriaDraft, keyof HistoriaDraft]; oi: [keyof HistoriaDraft, keyof HistoriaDraft, keyof HistoriaDraft] };
+}) {
+  const fila = (ojo: "OD" | "OI", keys: [keyof HistoriaDraft, keyof HistoriaDraft, keyof HistoriaDraft]) => (
+    <div className="grid grid-cols-[2rem_1fr_1fr_1fr] items-center gap-2">
+      <span className="text-xs font-medium text-muted-foreground">{ojo}</span>
+      {(["Esf", "Cil", "Eje"] as const).map((etiqueta, i) => (
+        <Input
+          key={etiqueta}
+          aria-label={`${label} ${ojo} ${etiqueta}`}
+          placeholder={etiqueta}
+          value={(value[keys[i]] as string) ?? ""}
+          onChange={(e) => onChange({ [keys[i]]: e.target.value } as Partial<HistoriaDraft>)}
+        />
+      ))}
+    </div>
+  );
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-xs uppercase tracking-wide text-muted-foreground">{label}</Label>
+      {fila("OD", claves.od)}
+      {fila("OI", claves.oi)}
+    </div>
+  );
+}
+
 /** Muestra, sólo lectura, datos históricos de campos que ya no se editan. */
 function DatosPrevios({
   value,
