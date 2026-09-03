@@ -51,3 +51,16 @@ export async function deletePaciente(id: string): Promise<void> {
   const { error } = await supabase.from("pacientes").delete().eq("id", id);
   if (error) throw error;
 }
+
+/** Pacientes que cumplen años hoy (mismo mes y día, sin importar el año). */
+export async function listCumpleanosHoy(): Promise<Paciente[]> {
+  const { data, error } = await supabase
+    .from("pacientes")
+    .select("*")
+    .not("fecha_nacimiento", "is", null);
+  if (error) throw error;
+  const ahora = new Date();
+  const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+  const dia = String(ahora.getDate()).padStart(2, "0");
+  return (data ?? []).filter((p) => (p.fecha_nacimiento ?? "").slice(5, 10) === `${mes}-${dia}`);
+}
