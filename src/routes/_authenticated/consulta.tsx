@@ -158,20 +158,42 @@ function Consulta() {
 
   // Autoguardado con debounce de 1 minuto (no en cada tecla).
   const primerRender = useRef(true);
+  /** Último cambio todavía NO guardado. Se limpia apenas se guarda. */
+  const pendienteRef = useRef<{ historiaId: string; datos: Record<string, unknown> } | null>(null);
   useEffect(() => {
     if (!historiaId || !isMedico) return;
     if (primerRender.current) {
       primerRender.current = false;
       return;
     }
+    const datos = { ...draft, dictado_crudo: transcripcion || null };
+    pendienteRef.current = { historiaId, datos };
     setAutoEstado("guardando");
     const t = setTimeout(() => {
-      void updateHistoria(historiaId, { ...draft, dictado_crudo: transcripcion || null })
-        .then(() => setAutoEstado("guardado"))
+      void updateHistoria(historiaId, datos)
+        .then(() => {
+          pendienteRef.current = null;
+          setAutoEstado("guardado");
+        })
         .catch(() => setAutoEstado("idle"));
     }, 60000);
     return () => clearTimeout(t);
   }, [draft, transcripcion, historiaId, isMedico]);
+
+  // Al salir de la pantalla (o cerrar la pestaña) se guarda de inmediato lo que quedó pendiente.
+  useEffect(() => {
+    const guardarPendiente = () => {
+      const pendiente = pendienteRef.current;
+      if (!pendiente) return;
+      pendienteRef.current = null;
+      void updateHistoria(pendiente.historiaId, pendiente.datos).catch(() => {});
+    };
+    window.addEventListener("pagehide", guardarPendiente);
+    return () => {
+      window.removeEventListener("pagehide", guardarPendiente);
+      guardarPendiente();
+    };
+  }, []);
 
   const { grabando, alternar } = useDictado((texto) => setTranscripcion((prev) => `${prev} ${texto}`.trim()));
 
