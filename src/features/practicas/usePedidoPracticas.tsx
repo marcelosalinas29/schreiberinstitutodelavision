@@ -160,7 +160,7 @@ export function usePedidoPracticas(paciente: Paciente | null) {
             <DialogTitle>{pedidoListo?.titulo ?? "Pedido de estudios"} generado</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            El PDF ya se descargó. También podés imprimirlo o avisarle al paciente por WhatsApp (el aviso es solo texto:
+            Se abrió el diálogo de impresión. También podés descargarlo o avisarle al paciente por WhatsApp (el aviso es solo texto:
             el PDF no se adjunta automáticamente).
           </p>
           <DialogFooter className="flex-wrap gap-2">
