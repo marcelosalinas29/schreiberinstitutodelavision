@@ -605,7 +605,19 @@ function Consulta() {
         <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
           <div className="space-y-1.5">
             <Label>Paciente</Label>
-            <Select value={pacienteId} onValueChange={setPacienteId}>
+            <Select
+              value={pacienteId}
+              onValueChange={(v) => {
+                setPacienteId(v);
+                if (historiaDeUrl) {
+                  setHistoriaDeUrl(undefined);
+                  setHistoriaId(undefined);
+                  setDraft(HISTORIA_VACIA);
+                  setTranscripcion("");
+                  void navigate({ to: "/consulta", search: { paciente: v, historia: undefined }, replace: true });
+                }
+              }}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Elegí un paciente" />
               </SelectTrigger>
