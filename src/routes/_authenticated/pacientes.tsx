@@ -43,10 +43,14 @@ function Pacientes() {
     queryFn: () => listHistoriasPaciente(seleccionado!.id),
   });
 
+  const [recienCreado, setRecienCreado] = useState<Paciente | null>(null);
+
   const alGuardar = (p: Paciente) => {
+    const esNuevo = !editando;
     setOpen(false);
     setEditando(null);
     setSeleccionado(p);
+    setRecienCreado(esNuevo ? p : null);
     void qc.invalidateQueries({ queryKey: ["pacientes"] });
   };
 
@@ -87,6 +91,28 @@ function Pacientes() {
           </Dialog>
         }
       />
+
+      {recienCreado ? (
+        <div className="panel mb-4 flex flex-wrap items-center justify-between gap-3 border-primary/40 p-4">
+          <p className="text-sm">
+            Paciente <span className="font-medium">{recienCreado.apellido}, {recienCreado.nombre}</span> creado
+            correctamente.
+          </p>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              onClick={() =>
+                void navigate({ to: "/consulta", search: { paciente: recienCreado.id } })
+              }
+            >
+              Ir a Historia Clínica
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setRecienCreado(null)}>
+              Cerrar
+            </Button>
+          </div>
+        </div>
+      ) : null}
 
       <div className="relative mb-4 max-w-md">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
