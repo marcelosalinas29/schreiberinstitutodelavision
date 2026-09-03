@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, Glasses, Trash2 } from "lucide-react";
@@ -96,9 +96,12 @@ function useDictado(onTexto: (texto: string) => void) {
 
 function Consulta() {
   const qc = useQueryClient();
-  const { paciente: pacienteDeUrl, historia: historiaDeUrl } = Route.useSearch();
+  const { paciente: pacienteDeUrl, historia: historiaEnUrl } = Route.useSearch();
+  const navigate = useNavigate();
+  // Consulta existente que se está viendo/editando (viene de la URL o se elige en la lista).
+  const [historiaDeUrl, setHistoriaDeUrl] = useState<string | undefined>(historiaEnUrl);
   const [pacienteId, setPacienteId] = useState(pacienteDeUrl ?? "");
-  const [historiaId, setHistoriaId] = useState<string | undefined>(historiaDeUrl);
+  const [historiaId, setHistoriaId] = useState<string | undefined>(historiaEnUrl);
   const [autoEstado, setAutoEstado] = useState<"idle" | "guardando" | "guardado">("idle");
   const [transcripcion, setTranscripcion] = useState("");
   const [draft, setDraft] = useState<HistoriaDraft>(HISTORIA_VACIA);
@@ -209,6 +212,7 @@ function Consulta() {
       toast.success(historiaDeUrl ? "Consulta actualizada" : "Historia clínica guardada");
       setAutoEstado("guardado");
       void qc.invalidateQueries({ queryKey: ["historias"] });
+      void qc.invalidateQueries({ queryKey: ["historias-paciente"] });
     },
     onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo guardar"),
   });
@@ -228,6 +232,7 @@ function Consulta() {
       pacienteAnterior.current = "";
       toast.success("Consulta descartada");
       void qc.invalidateQueries({ queryKey: ["historias"] });
+      void qc.invalidateQueries({ queryKey: ["historias-paciente"] });
     },
     onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo descartar"),
   });
@@ -236,6 +241,35 @@ function Consulta() {
     if (!window.confirm("¿Descartar esta consulta? Se borra de la base y no se puede recuperar.")) return;
     descartar.mutate();
   };
+
+  // Consultas anteriores del paciente elegido (para cambiar de consulta sin salir de la pantalla).
+  const historiasPaciente = useQuery({
+    queryKey: ["historias-paciente", pacienteId],
+    enabled: Boolean(pacienteId),
+    queryFn: () => listHistoriasPaciente(pacienteId),
+  });
+
+  /** Abre una consulta anterior en esta misma pantalla (sin sumar entradas al historial del navegador). */
+  const abrirConsulta = (id: string) => {
+    if (id === historiaDeUrl) return;
+    setHistoriaDeUrl(id);
+    setHistoriaId(id);
+    setAutoEstado("idle");
+    primerRender.current = true;
+    void navigate({ to: "/consulta", search: { paciente: pacienteId || undefined, historia: id }, replace: true });
+  };
+
+  /** Vuelve a una consulta en blanco para el mismo paciente. */
+  const nuevaConsulta = () => {
+    setHistoriaDeUrl(undefined);
+    setHistoriaId(undefined);
+    setDraft(HISTORIA_VACIA);
+    setTranscripcion("");
+    setAutoEstado("idle");
+    primerRender.current = true;
+    void navigate({ to: "/consulta", search: { paciente: pacienteId || undefined, historia: undefined }, replace: true });
+  };
+
 
 
   const receta = (soloMedicamentos = false) => {
@@ -573,7 +607,19 @@ function Consulta() {
         <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
           <div className="space-y-1.5">
             <Label>Paciente</Label>
-            <Select value={pacienteId} onValueChange={setPacienteId}>
+            <Select
+              value={pacienteId}
+              onValueChange={(v) => {
+                setPacienteId(v);
+                if (historiaDeUrl) {
+                  setHistoriaDeUrl(undefined);
+                  setHistoriaId(undefined);
+                  setDraft(HISTORIA_VACIA);
+                  setTranscripcion("");
+                  void navigate({ to: "/consulta", search: { paciente: v, historia: undefined }, replace: true });
+                }
+              }}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Elegí un paciente" />
               </SelectTrigger>
@@ -614,7 +660,52 @@ function Consulta() {
           </div>
           )}
         </div>
+
+        {pacienteId ? (
+          <details className="mt-4 rounded-lg border border-border/60 p-3" open>
+            <summary className="cursor-pointer text-sm font-medium">
+              Consultas anteriores{" "}
+              <span className="text-xs text-muted-foreground">({(historiasPaciente.data ?? []).length})</span>
+            </summary>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <Button variant="outline" size="sm" onClick={nuevaConsulta}>
+                Nueva consulta
+              </Button>
+              {historiasPaciente.isLoading ? (
+                <span className="text-xs text-muted-foreground">Cargando…</span>
+              ) : null}
+            </div>
+            <ul className="mt-3 max-h-56 space-y-1 overflow-auto">
+              {(historiasPaciente.data ?? []).map((h) => {
+                const activa = h.id === historiaDeUrl || h.id === historiaId;
+                const resumen = (h.diagnostico ?? "").trim();
+                return (
+                  <li key={h.id}>
+                    <button
+                      type="button"
+                      onClick={() => abrirConsulta(h.id)}
+                      className={`w-full rounded-md px-2 py-1.5 text-left text-xs transition ${
+                        activa ? "bg-primary/10 font-medium text-primary" : "hover:bg-muted"
+                      }`}
+                    >
+                      <span className="mr-2">
+                        {h.fecha ? new Date(`${h.fecha}T00:00:00`).toLocaleDateString("es-AR") : "Sin fecha"}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {resumen ? resumen.slice(0, 70) : "Sin diagnóstico"}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+              {!historiasPaciente.isLoading && (historiasPaciente.data ?? []).length === 0 ? (
+                <li className="px-2 py-1 text-xs text-muted-foreground">Sin consultas previas.</li>
+              ) : null}
+            </ul>
+          </details>
+        ) : null}
       </div>
+
 
       {historiaDeUrl ? (
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
