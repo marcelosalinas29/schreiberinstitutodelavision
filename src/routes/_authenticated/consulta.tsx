@@ -352,66 +352,7 @@ function Consulta() {
     })();
   };
 
-  const basePracticas = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
-  const [ordenPedido, setOrdenPedido] = useState<PracticaEstudio[] | null>(null);
-  const [pedidoListo, setPedidoListo] = useState<{ contenido: string; fecha: Date; titulo: string } | null>(null);
-  const [usadasAntes, setUsadasAntes] = useState<string[]>([]);
-  const [seccionPedido, setSeccionPedido] = useState<string>("Estudios y Prácticas");
-  const tituloPedido = TITULOS_PEDIDO[seccionPedido] ?? "Pedido de estudios";
-  const disponibles = (ordenPedido ?? basePracticas).filter((p) => p.seccion === seccionPedido);
-
-  const abrirPedido = (seccion: string) => {
-    if (!paciente) {
-      toast.error("Elegí un paciente");
-      return;
-    }
-    setSeccionPedido(seccion);
-    setSeleccionadas([]);
-    setOrdenPedido(null);
-    setUsadasAntes([]);
-    setPedidoAbierto(true);
-    void (async () => {
-      try {
-        const [ordenadas, usados] = await Promise.all([
-          practicasOrdenadasPorUso(basePracticas, paciente.id),
-          idsPracticasUsadas(paciente.id),
-        ]);
-        setOrdenPedido(ordenadas);
-        setUsadasAntes(usados);
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-  };
-
-  const generarPedido = () => {
-    if (!paciente || seleccionadas.length === 0) return;
-    const elegidas = disponibles.filter((p) => seleccionadas.includes(p.id));
-    const contenido = elegidas
-      .map((p) => p.contenido)
-      .join("\n\n");
-    setPedidoAbierto(false);
-    const fecha = new Date();
-    setPedidoListo({ contenido, fecha, titulo: tituloPedido });
-    void (async () => {
-      const medico = await datosMedicoReceta();
-      await generarRecetaPDF({
-        paciente,
-        contenido,
-        fecha,
-        plantilla: plantillas.data?.[0] ?? null,
-        medico,
-        titulo: tituloPedido,
-        formato: "a5",
-      });
-      // Memoria de uso: no debe interrumpir la generación del PDF.
-      await Promise.all(
-        elegidas.map((p) =>
-          registrarUsoPractica(p.id, paciente.id).catch((e: unknown) => console.error(e)),
-        ),
-      );
-    })();
-  };
+  const { abrirPedido, dialogos: dialogosPedido } = usePedidoPracticas(paciente);
 
   const abrirDocumentos = () => {
     if (!paciente) {
