@@ -658,7 +658,52 @@ function Consulta() {
           </div>
           )}
         </div>
+
+        {pacienteId ? (
+          <details className="mt-4 rounded-lg border border-border/60 p-3" open>
+            <summary className="cursor-pointer text-sm font-medium">
+              Consultas anteriores{" "}
+              <span className="text-xs text-muted-foreground">({(historiasPaciente.data ?? []).length})</span>
+            </summary>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <Button variant="outline" size="sm" onClick={nuevaConsulta}>
+                Nueva consulta
+              </Button>
+              {historiasPaciente.isLoading ? (
+                <span className="text-xs text-muted-foreground">Cargando…</span>
+              ) : null}
+            </div>
+            <ul className="mt-3 max-h-56 space-y-1 overflow-auto">
+              {(historiasPaciente.data ?? []).map((h) => {
+                const activa = h.id === historiaDeUrl || h.id === historiaId;
+                const resumen = (h.diagnostico ?? "").trim();
+                return (
+                  <li key={h.id}>
+                    <button
+                      type="button"
+                      onClick={() => abrirConsulta(h.id)}
+                      className={`w-full rounded-md px-2 py-1.5 text-left text-xs transition ${
+                        activa ? "bg-primary/10 font-medium text-primary" : "hover:bg-muted"
+                      }`}
+                    >
+                      <span className="mr-2">
+                        {h.fecha ? new Date(`${h.fecha}T00:00:00`).toLocaleDateString("es-AR") : "Sin fecha"}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {resumen ? resumen.slice(0, 70) : "Sin diagnóstico"}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+              {!historiasPaciente.isLoading && (historiasPaciente.data ?? []).length === 0 ? (
+                <li className="px-2 py-1 text-xs text-muted-foreground">Sin consultas previas.</li>
+              ) : null}
+            </ul>
+          </details>
+        ) : null}
       </div>
+
 
       {historiaDeUrl ? (
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
