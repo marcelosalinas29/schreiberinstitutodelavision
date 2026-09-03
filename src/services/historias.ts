@@ -179,3 +179,100 @@ export async function listAdjuntosPaciente(pacienteId: string): Promise<Historia
   if (error) throw error;
   return (data ?? []) as HistoriaAdjunto[];
 }
+
+/* ----------------------------------------------------------------------------
+ * Detección de historias clínicas completamente vacías (basura del bug viejo).
+ * Solo lectura: no borra nada.
+ * -------------------------------------------------------------------------- */
+
+export type HistoriaVacia = {
+  id: string;
+  fecha: string | null;
+  created_at: string;
+  paciente_id: string;
+  paciente_nombre: string;
+};
+
+const CAMPOS_VACIO_TEXTO = [
+  "examen_ocular_obs",
+  "evolucion_clinica",
+  "diagnostico",
+  "tratamiento",
+  "pio_hora",
+  "refraccion_od",
+  "refraccion_oi",
+  "refraccion_cerca_od",
+  "refraccion_cerca_oi",
+  "campo_visual_obs",
+  "fo_od",
+  "fo_oi",
+  "bmc_od",
+  "bmc_oi",
+  "arm_od",
+  "arm_oi",
+  "antecedentes_personales",
+  "antecedentes_familiares",
+  "antecedentes_oftalmologicos",
+  "motivo_consulta",
+  "cie10",
+  "dictado_crudo",
+  "fo_od_imagen_url",
+  "fo_oi_imagen_url",
+  "cv_od_imagen_url",
+  "cv_oi_imagen_url",
+] as const;
+
+const CAMPOS_VACIO_NUMERO = [
+  "pio_od",
+  "pio_oi",
+  "curva_pio_ayunas_od",
+  "curva_pio_ayunas_oi",
+  "curva_pio_sobrecarga_od",
+  "curva_pio_sobrecarga_oi",
+] as const;
+
+/** Historias sin ningún dato clínico cargado y sin adjuntos asociados. */
+export async function listHistoriasVacias(): Promise<HistoriaVacia[]> {
+  const { data, error } = await supabase
+    .from("historias_clinicas")
+    .select("*, pacientes(nombre, apellido)")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+
+  const filas = (data ?? []) as unknown as (Record<string, unknown> & {
+    id: string;
+    paciente_id: string;
+    fecha: string | null;
+    created_at: string;
+    pacientes?: { nombre: string | null; apellido: string | null } | null;
+  })[];
+
+  const vacias = filas.filter((h) => {
+    const textoVacio = CAMPOS_VACIO_TEXTO.every((c) => {
+      const v = h[c];
+      return v === null || v === undefined || String(v).trim() === "";
+    });
+    const numeroVacio = CAMPOS_VACIO_NUMERO.every((c) => h[c] === null || h[c] === undefined);
+    return textoVacio && numeroVacio;
+  });
+  if (vacias.length === 0) return [];
+
+  // Excluir las que tengan adjuntos cargados.
+  const ids = vacias.map((h) => h.id);
+  const { data: adj, error: adjErr } = await supabase
+    .from("historia_adjuntos")
+    .select("historia_id")
+    .in("historia_id", ids);
+  if (adjErr) throw adjErr;
+  const conAdjunto = new Set((adj ?? []).map((a) => a.historia_id as string));
+
+  return vacias
+    .filter((h) => !conAdjunto.has(h.id))
+    .map((h) => ({
+      id: h.id,
+      fecha: h.fecha,
+      created_at: h.created_at,
+      paciente_id: h.paciente_id,
+      paciente_nombre: `${h.pacientes?.apellido ?? ""}, ${h.pacientes?.nombre ?? ""}`.replace(/^, |, $/g, "").trim() || "Sin paciente",
+    }));
+}

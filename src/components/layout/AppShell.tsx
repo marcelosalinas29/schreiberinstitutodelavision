@@ -55,6 +55,7 @@ const NAV: NavItem[] = [
   { to: "/medicamentos", label: "Medicamentos", icon: Pill, soloMedico: true },
   { to: "/documentos", label: "Consentimientos y protocolos", icon: FileSignature, soloMedico: true },
   { to: "/investigacion", label: "Casos de interés", icon: Microscope, soloMedico: true },
+  { to: "/historias-vacias", label: "Historias vacías", icon: ClipboardList, soloMedico: true },
   { to: "/configuracion", label: "Configuración", icon: Settings },
 ];
 

@@ -21,6 +21,7 @@ import { Route as AuthenticatedConsultaRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDocumentosRouteImport } from './routes/_authenticated/documentos'
 import { Route as AuthenticatedEstudiosComplementariosRouteImport } from './routes/_authenticated/estudios-complementarios'
 import { Route as AuthenticatedFormatosRouteImport } from './routes/_authenticated/formatos'
+import { Route as AuthenticatedHistoriasVaciasRouteImport } from './routes/_authenticated/historias-vacias'
 import { Route as AuthenticatedImportarRouteImport } from './routes/_authenticated/importar'
 import { Route as AuthenticatedInvestigacionRouteImport } from './routes/_authenticated/investigacion'
 import { Route as AuthenticatedLaboratorioRouteImport } from './routes/_authenticated/laboratorio'
@@ -92,6 +93,12 @@ const AuthenticatedFormatosRoute = AuthenticatedFormatosRouteImport.update({
   path: '/formatos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedHistoriasVaciasRoute =
+  AuthenticatedHistoriasVaciasRouteImport.update({
+    id: '/historias-vacias',
+    path: '/historias-vacias',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedImportarRoute = AuthenticatedImportarRouteImport.update({
   id: '/importar',
   path: '/importar',
@@ -154,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/documentos': typeof AuthenticatedDocumentosRoute
   '/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/formatos': typeof AuthenticatedFormatosRoute
+  '/historias-vacias': typeof AuthenticatedHistoriasVaciasRoute
   '/importar': typeof AuthenticatedImportarRoute
   '/investigacion': typeof AuthenticatedInvestigacionRoute
   '/laboratorio': typeof AuthenticatedLaboratorioRoute
@@ -176,6 +184,7 @@ export interface FileRoutesByTo {
   '/documentos': typeof AuthenticatedDocumentosRoute
   '/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/formatos': typeof AuthenticatedFormatosRoute
+  '/historias-vacias': typeof AuthenticatedHistoriasVaciasRoute
   '/importar': typeof AuthenticatedImportarRoute
   '/investigacion': typeof AuthenticatedInvestigacionRoute
   '/laboratorio': typeof AuthenticatedLaboratorioRoute
@@ -200,6 +209,7 @@ export interface FileRoutesById {
   '/_authenticated/documentos': typeof AuthenticatedDocumentosRoute
   '/_authenticated/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/_authenticated/formatos': typeof AuthenticatedFormatosRoute
+  '/_authenticated/historias-vacias': typeof AuthenticatedHistoriasVaciasRoute
   '/_authenticated/importar': typeof AuthenticatedImportarRoute
   '/_authenticated/investigacion': typeof AuthenticatedInvestigacionRoute
   '/_authenticated/laboratorio': typeof AuthenticatedLaboratorioRoute
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/documentos'
     | '/estudios-complementarios'
     | '/formatos'
+    | '/historias-vacias'
     | '/importar'
     | '/investigacion'
     | '/laboratorio'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/documentos'
     | '/estudios-complementarios'
     | '/formatos'
+    | '/historias-vacias'
     | '/importar'
     | '/investigacion'
     | '/laboratorio'
@@ -269,6 +281,7 @@ export interface FileRouteTypes {
     | '/_authenticated/documentos'
     | '/_authenticated/estudios-complementarios'
     | '/_authenticated/formatos'
+    | '/_authenticated/historias-vacias'
     | '/_authenticated/importar'
     | '/_authenticated/investigacion'
     | '/_authenticated/laboratorio'
@@ -372,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFormatosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/historias-vacias': {
+      id: '/_authenticated/historias-vacias'
+      path: '/historias-vacias'
+      fullPath: '/historias-vacias'
+      preLoaderRoute: typeof AuthenticatedHistoriasVaciasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/importar': {
       id: '/_authenticated/importar'
       path: '/importar'
@@ -448,6 +468,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDocumentosRoute: typeof AuthenticatedDocumentosRoute
   AuthenticatedEstudiosComplementariosRoute: typeof AuthenticatedEstudiosComplementariosRoute
   AuthenticatedFormatosRoute: typeof AuthenticatedFormatosRoute
+  AuthenticatedHistoriasVaciasRoute: typeof AuthenticatedHistoriasVaciasRoute
   AuthenticatedImportarRoute: typeof AuthenticatedImportarRoute
   AuthenticatedInvestigacionRoute: typeof AuthenticatedInvestigacionRoute
   AuthenticatedLaboratorioRoute: typeof AuthenticatedLaboratorioRoute
@@ -470,6 +491,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEstudiosComplementariosRoute:
     AuthenticatedEstudiosComplementariosRoute,
   AuthenticatedFormatosRoute: AuthenticatedFormatosRoute,
+  AuthenticatedHistoriasVaciasRoute: AuthenticatedHistoriasVaciasRoute,
   AuthenticatedImportarRoute: AuthenticatedImportarRoute,
   AuthenticatedInvestigacionRoute: AuthenticatedInvestigacionRoute,
   AuthenticatedLaboratorioRoute: AuthenticatedLaboratorioRoute,
