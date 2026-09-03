@@ -19,6 +19,7 @@ import { Route as AuthenticatedCirugiasRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedConfiguracionRouteImport } from './routes/_authenticated/configuracion'
 import { Route as AuthenticatedConsultaRouteImport } from './routes/_authenticated/consulta'
 import { Route as AuthenticatedDocumentosRouteImport } from './routes/_authenticated/documentos'
+import { Route as AuthenticatedEstadisticasRouteImport } from './routes/_authenticated/estadisticas'
 import { Route as AuthenticatedEstudiosComplementariosRouteImport } from './routes/_authenticated/estudios-complementarios'
 import { Route as AuthenticatedFormatosRouteImport } from './routes/_authenticated/formatos'
 import { Route as AuthenticatedHistoriasVaciasRouteImport } from './routes/_authenticated/historias-vacias'
@@ -82,6 +83,12 @@ const AuthenticatedDocumentosRoute = AuthenticatedDocumentosRouteImport.update({
   path: '/documentos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEstadisticasRoute =
+  AuthenticatedEstadisticasRouteImport.update({
+    id: '/estadisticas',
+    path: '/estadisticas',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEstudiosComplementariosRoute =
   AuthenticatedEstudiosComplementariosRouteImport.update({
     id: '/estudios-complementarios',
@@ -159,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/configuracion': typeof AuthenticatedConfiguracionRoute
   '/consulta': typeof AuthenticatedConsultaRoute
   '/documentos': typeof AuthenticatedDocumentosRoute
+  '/estadisticas': typeof AuthenticatedEstadisticasRoute
   '/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/formatos': typeof AuthenticatedFormatosRoute
   '/historias-vacias': typeof AuthenticatedHistoriasVaciasRoute
@@ -182,6 +190,7 @@ export interface FileRoutesByTo {
   '/configuracion': typeof AuthenticatedConfiguracionRoute
   '/consulta': typeof AuthenticatedConsultaRoute
   '/documentos': typeof AuthenticatedDocumentosRoute
+  '/estadisticas': typeof AuthenticatedEstadisticasRoute
   '/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/formatos': typeof AuthenticatedFormatosRoute
   '/historias-vacias': typeof AuthenticatedHistoriasVaciasRoute
@@ -207,6 +216,7 @@ export interface FileRoutesById {
   '/_authenticated/configuracion': typeof AuthenticatedConfiguracionRoute
   '/_authenticated/consulta': typeof AuthenticatedConsultaRoute
   '/_authenticated/documentos': typeof AuthenticatedDocumentosRoute
+  '/_authenticated/estadisticas': typeof AuthenticatedEstadisticasRoute
   '/_authenticated/estudios-complementarios': typeof AuthenticatedEstudiosComplementariosRoute
   '/_authenticated/formatos': typeof AuthenticatedFormatosRoute
   '/_authenticated/historias-vacias': typeof AuthenticatedHistoriasVaciasRoute
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
     | '/configuracion'
     | '/consulta'
     | '/documentos'
+    | '/estadisticas'
     | '/estudios-complementarios'
     | '/formatos'
     | '/historias-vacias'
@@ -255,6 +266,7 @@ export interface FileRouteTypes {
     | '/configuracion'
     | '/consulta'
     | '/documentos'
+    | '/estadisticas'
     | '/estudios-complementarios'
     | '/formatos'
     | '/historias-vacias'
@@ -279,6 +291,7 @@ export interface FileRouteTypes {
     | '/_authenticated/configuracion'
     | '/_authenticated/consulta'
     | '/_authenticated/documentos'
+    | '/_authenticated/estadisticas'
     | '/_authenticated/estudios-complementarios'
     | '/_authenticated/formatos'
     | '/_authenticated/historias-vacias'
@@ -369,6 +382,13 @@ declare module '@tanstack/react-router' {
       path: '/documentos'
       fullPath: '/documentos'
       preLoaderRoute: typeof AuthenticatedDocumentosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/estadisticas': {
+      id: '/_authenticated/estadisticas'
+      path: '/estadisticas'
+      fullPath: '/estadisticas'
+      preLoaderRoute: typeof AuthenticatedEstadisticasRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/estudios-complementarios': {
@@ -466,6 +486,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedConfiguracionRoute: typeof AuthenticatedConfiguracionRoute
   AuthenticatedConsultaRoute: typeof AuthenticatedConsultaRoute
   AuthenticatedDocumentosRoute: typeof AuthenticatedDocumentosRoute
+  AuthenticatedEstadisticasRoute: typeof AuthenticatedEstadisticasRoute
   AuthenticatedEstudiosComplementariosRoute: typeof AuthenticatedEstudiosComplementariosRoute
   AuthenticatedFormatosRoute: typeof AuthenticatedFormatosRoute
   AuthenticatedHistoriasVaciasRoute: typeof AuthenticatedHistoriasVaciasRoute
@@ -488,6 +509,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConfiguracionRoute: AuthenticatedConfiguracionRoute,
   AuthenticatedConsultaRoute: AuthenticatedConsultaRoute,
   AuthenticatedDocumentosRoute: AuthenticatedDocumentosRoute,
+  AuthenticatedEstadisticasRoute: AuthenticatedEstadisticasRoute,
   AuthenticatedEstudiosComplementariosRoute:
     AuthenticatedEstudiosComplementariosRoute,
   AuthenticatedFormatosRoute: AuthenticatedFormatosRoute,
