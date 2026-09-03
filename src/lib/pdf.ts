@@ -161,7 +161,10 @@ export async function generarRecetaPDF(
   if (paciente.condicion_iva) {
     y = wrap(doc, `Cond. IVA: ${paciente.condicion_iva}`, margin, y, width, lhDatos);
   }
-  y += esA5 ? 5 : 6;
+  y += esA5 ? 8 : 10;
+  // Línea divisoria fina entre los datos del paciente y el texto clínico.
+  doc.setDrawColor(215, 215, 215);
+  doc.line(margin, y - 3, margin + width, y - 3);
 
   // Texto clínico con salto de página: nunca se recorta, continúa con membrete y pie.
   doc.setFontSize(fs.cuerpo);
