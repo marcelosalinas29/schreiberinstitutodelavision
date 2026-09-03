@@ -2,6 +2,7 @@ import jsPDF from "jspdf";
 
 
 import { LOGO_HORIZONTAL_TRANSPARENTE_URL } from "@/components/layout/Logo";
+import { aFechaISO } from "@/lib/fecha";
 import type { MedicoReceta } from "@/services/perfil";
 import type { Paciente, Plantilla } from "@/types/domain";
 
