@@ -86,11 +86,11 @@ export async function generarRecetaPDF(
   // Escala tipográfica: A5 usa un punto menos en cada nivel.
   const fs = {
     titulo: esA5 ? 10 : 11,
-    encabezado: esA5 ? 8 : 9,
+    encabezado: esA5 ? 10 : 11,
     datos: esA5 ? 9 : 10,
     cuerpo: esA5 ? 11 : 12,
     firma: esA5 ? 8 : 9,
-    pie: esA5 ? 7 : 8,
+    pie: esA5 ? 9 : 10,
   };
   let y = margin;
 
