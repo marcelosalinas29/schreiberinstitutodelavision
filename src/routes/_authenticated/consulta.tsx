@@ -401,6 +401,107 @@ function Consulta() {
     })();
   };
 
+  /** Resumen legible de una consulta (draft o historia guardada) en texto plano. */
+  const resumenConsulta = (h: Record<string, unknown>): string => {
+    const t = (k: string) => String(h[k] ?? "").trim();
+    const n = (k: string) => (h[k] === null || h[k] === undefined || h[k] === "" ? "" : String(h[k]));
+    const partes: string[] = [];
+    const push = (label: string, valor: string) => {
+      if (valor) partes.push(`${label}:\n${valor}`);
+    };
+    push("Motivo de consulta", t("motivo_consulta"));
+    push("Antecedentes personales", t("antecedentes_personales"));
+    push("Antecedentes familiares", t("antecedentes_familiares"));
+    push("Antecedentes oftalmológicos", t("antecedentes_oftalmologicos"));
+    push("Evolución clínica", t("evolucion_clinica"));
+    const refraccion = [
+      t("refraccion_od") ? `Lejos O.D. ${t("refraccion_od")}` : "",
+      t("refraccion_oi") ? `Lejos O.I. ${t("refraccion_oi")}` : "",
+      t("refraccion_cerca_od") ? `Cerca O.D. ${t("refraccion_cerca_od")}` : "",
+      t("refraccion_cerca_oi") ? `Cerca O.I. ${t("refraccion_cerca_oi")}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+    push("Refracción", refraccion);
+    const pio =
+      n("pio_od") || n("pio_oi")
+        ? `O.D. ${n("pio_od") || "—"} / O.I. ${n("pio_oi") || "—"}${t("pio_hora") ? ` (${t("pio_hora")})` : ""}`
+        : "";
+    push("PIO", pio);
+    push("Campo visual", t("campo_visual_obs"));
+    push("Diagnóstico", t("diagnostico"));
+    push("Tratamiento", t("tratamiento"));
+    push("Próxima cita", t("proxima_cita"));
+    return partes.join("\n\n") || "Sin datos cargados.";
+  };
+
+  const fechaLegible = (valor?: string | null) => {
+    if (!valor) return new Date().toLocaleDateString("es-AR");
+    const d = new Date(`${String(valor).slice(0, 10)}T12:00:00`);
+    return isNaN(d.getTime()) ? String(valor) : d.toLocaleDateString("es-AR");
+  };
+
+  /** PDF con la consulta que se está viendo/escribiendo. */
+  const imprimirHistoriaDelDia = () => {
+    if (!paciente) {
+      toast.error("Elegí un paciente");
+      return;
+    }
+    void (async () => {
+      const medico = await datosMedicoReceta();
+      const contenido = `FECHA: ${fechaLegible(draft.fecha)}\n\n${resumenConsulta(draft as unknown as Record<string, unknown>)}`;
+      await generarRecetaPDF({
+        paciente,
+        contenido,
+        fecha: new Date(),
+        plantilla: plantillas.data?.[0] ?? null,
+        medico,
+        titulo: "Historia clínica",
+      });
+    })();
+  };
+
+  /** PDF con todas las consultas del paciente, de la más vieja a la más nueva. */
+  const imprimirHistoriaCompleta = () => {
+    if (!paciente) {
+      toast.error("Elegí un paciente");
+      return;
+    }
+    void (async () => {
+      try {
+        const [medico, historias] = await Promise.all([
+          datosMedicoReceta(),
+          listHistoriasPaciente(paciente.id),
+        ]);
+        const ordenadas = [...historias].sort((a, b) => (a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : 0));
+        if (ordenadas.length === 0) {
+          toast.error("El paciente no tiene consultas registradas");
+          return;
+        }
+        const contenido = ordenadas
+          .map(
+            (h) =>
+              `--------------------------------------------\nCONSULTA DEL ${fechaLegible(h.fecha).toUpperCase()}\n--------------------------------------------\n\n${resumenConsulta(
+                h as unknown as Record<string, unknown>,
+              )}`,
+          )
+          .join("\n\n\n");
+        await generarRecetaPDF({
+          paciente,
+          contenido,
+          fecha: new Date(),
+          plantilla: plantillas.data?.[0] ?? null,
+          medico,
+          titulo: "Historia clínica completa",
+        });
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "No se pudo generar la historia completa");
+      }
+    })();
+  };
+
+
+
 
   return (
     <div>
