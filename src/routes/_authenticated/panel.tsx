@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, Users, Wallet, Stethoscope } from "lucide-react";
+import { CalendarDays, Users, Wallet, Stethoscope, Cake, MessageCircle } from "lucide-react";
 
 import { PageHeader, StatCard } from "@/components/layout/PageHeader";
 import { TareasPendientes } from "@/components/panel/TareasPendientes";
