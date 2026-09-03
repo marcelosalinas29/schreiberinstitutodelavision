@@ -212,6 +212,7 @@ function Consulta() {
       toast.success(historiaDeUrl ? "Consulta actualizada" : "Historia clínica guardada");
       setAutoEstado("guardado");
       void qc.invalidateQueries({ queryKey: ["historias"] });
+      void qc.invalidateQueries({ queryKey: ["historias-paciente"] });
     },
     onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo guardar"),
   });
@@ -231,6 +232,7 @@ function Consulta() {
       pacienteAnterior.current = "";
       toast.success("Consulta descartada");
       void qc.invalidateQueries({ queryKey: ["historias"] });
+      void qc.invalidateQueries({ queryKey: ["historias-paciente"] });
     },
     onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo descartar"),
   });
