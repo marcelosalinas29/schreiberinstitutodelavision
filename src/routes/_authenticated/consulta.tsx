@@ -233,6 +233,30 @@ function Consulta() {
     onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo guardar"),
   });
 
+  // Descartar una consulta nueva creada por error: borra la historia y deja la pantalla limpia.
+  const descartar = useMutation({
+    mutationFn: async () => {
+      if (!historiaId) throw new Error("No hay consulta para descartar");
+      await deleteHistoria(historiaId);
+    },
+    onSuccess: () => {
+      setHistoriaId(undefined);
+      setDraft(HISTORIA_VACIA);
+      setTranscripcion("");
+      setAutoEstado("idle");
+      setPacienteId("");
+      pacienteAnterior.current = "";
+      toast.success("Consulta descartada");
+      void qc.invalidateQueries({ queryKey: ["historias"] });
+    },
+    onError: (error: unknown) => toast.error(error instanceof Error ? error.message : "No se pudo descartar"),
+  });
+
+  const confirmarDescarte = () => {
+    if (!window.confirm("¿Descartar esta consulta? Se borra de la base y no se puede recuperar.")) return;
+    descartar.mutate();
+  };
+
 
   const receta = (soloMedicamentos = false) => {
     if (!paciente) {
