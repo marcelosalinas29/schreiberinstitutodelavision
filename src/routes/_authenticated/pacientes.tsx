@@ -102,7 +102,7 @@ function Pacientes() {
             <Button
               size="sm"
               onClick={() =>
-                navigate({ to: "/consulta", search: { paciente: recienCreado.id } as never })
+                void navigate({ to: "/consulta", search: { paciente: recienCreado.id } })
               }
             >
               Ir a Historia Clínica
