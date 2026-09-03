@@ -428,18 +428,16 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial, paciente
             onChange={(e) => onChange({ fecha: e.target.value })}
           />
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="motivo">Motivo de consulta</Label>
-          <Textarea id="motivo" rows={3} value={value.motivo_consulta ?? ""} onChange={(e) => onChange({ motivo_consulta: e.target.value })} />
-        </div>
         <DatosPrevios
           value={value}
           campos={[
+            ["Motivo de consulta", "motivo_consulta"],
             ["Antecedentes personales", "antecedentes_personales"],
             ["Antecedentes familiares", "antecedentes_familiares"],
             ["Antecedentes oftalmológicos", "antecedentes_oftalmologicos"],
           ]}
         />
+
         <div className="space-y-1.5">
           <Label htmlFor="evolucion">Antecedentes y examen</Label>
           <FormatosChips
