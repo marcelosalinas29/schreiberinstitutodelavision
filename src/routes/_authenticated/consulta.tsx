@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, MessageCircle, Mail, Glasses, Trash2 } from "lucide-react";
+import { Loader2, Mic, Save, Sparkles, Square, FileDown, ClipboardList, FileSignature, Printer, Glasses, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/historias/HistoriaForm";
@@ -24,8 +23,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { recetaSoloMedicamentos } from "@/lib/utils";
 import { generarRecetaPDF } from "@/lib/pdf";
-import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
-import { armarLinkYahooMail } from "@/lib/email";
 import { datosMedicoReceta } from "@/services/perfil";
 import { createHistoria, deleteHistoria, getHistoria, listHistoriasPaciente, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
