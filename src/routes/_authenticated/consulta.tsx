@@ -142,18 +142,20 @@ function Consulta() {
   // Si no existe, NO se crea nada solo: la médica toca "Nueva consulta".
   const creandoRef = useRef(false);
 
-  // Si se cambia de paciente en una consulta nueva, se arranca otra historia.
+  // Si se cambia de paciente en una consulta nueva, se limpia el estado.
   const pacienteAnterior = useRef(pacienteId);
   useEffect(() => {
     if (historiaDeUrl) return;
     if (pacienteAnterior.current !== pacienteId) {
       pacienteAnterior.current = pacienteId;
       setHistoriaId(undefined);
+      setDraft(HISTORIA_VACIA);
+      setTranscripcion("");
       setAutoEstado("idle");
     }
   }, [pacienteId, historiaDeUrl]);
 
-  // Autoguardado con debounce (no en cada tecla).
+  // Autoguardado con debounce de 1 minuto (no en cada tecla).
   const primerRender = useRef(true);
   useEffect(() => {
     if (!historiaId || !isMedico) return;
@@ -166,7 +168,7 @@ function Consulta() {
       void updateHistoria(historiaId, { ...draft, dictado_crudo: transcripcion || null })
         .then(() => setAutoEstado("guardado"))
         .catch(() => setAutoEstado("idle"));
-    }, 2500);
+    }, 60000);
     return () => clearTimeout(t);
   }, [draft, transcripcion, historiaId, isMedico]);
 
