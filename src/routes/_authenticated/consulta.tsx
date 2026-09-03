@@ -27,7 +27,7 @@ import { generarRecetaPDF } from "@/lib/pdf";
 import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
 import { armarLinkYahooMail } from "@/lib/email";
 import { datosMedicoReceta } from "@/services/perfil";
-import { createHistoria, getHistoria, listHistoriasPaciente, updateHistoria } from "@/services/historias";
+import { createHistoria, deleteHistoria, getHistoria, listHistoriasPaciente, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
 import { listFormatosHistoria } from "@/services/formatosHistoria";
