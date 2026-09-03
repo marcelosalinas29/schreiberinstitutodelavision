@@ -370,9 +370,21 @@ export type Database = {
           pio_oi: number | null
           proxima_cita: string | null
           refraccion_cerca_od: string | null
+          refraccion_cerca_od_cil: string | null
+          refraccion_cerca_od_eje: string | null
+          refraccion_cerca_od_esf: string | null
           refraccion_cerca_oi: string | null
+          refraccion_cerca_oi_cil: string | null
+          refraccion_cerca_oi_eje: string | null
+          refraccion_cerca_oi_esf: string | null
           refraccion_od: string | null
+          refraccion_od_cil: string | null
+          refraccion_od_eje: string | null
+          refraccion_od_esf: string | null
           refraccion_oi: string | null
+          refraccion_oi_cil: string | null
+          refraccion_oi_eje: string | null
+          refraccion_oi_esf: string | null
           tratamiento: string | null
           turno_id: string | null
           updated_at: string
@@ -416,9 +428,21 @@ export type Database = {
           pio_oi?: number | null
           proxima_cita?: string | null
           refraccion_cerca_od?: string | null
+          refraccion_cerca_od_cil?: string | null
+          refraccion_cerca_od_eje?: string | null
+          refraccion_cerca_od_esf?: string | null
           refraccion_cerca_oi?: string | null
+          refraccion_cerca_oi_cil?: string | null
+          refraccion_cerca_oi_eje?: string | null
+          refraccion_cerca_oi_esf?: string | null
           refraccion_od?: string | null
+          refraccion_od_cil?: string | null
+          refraccion_od_eje?: string | null
+          refraccion_od_esf?: string | null
           refraccion_oi?: string | null
+          refraccion_oi_cil?: string | null
+          refraccion_oi_eje?: string | null
+          refraccion_oi_esf?: string | null
           tratamiento?: string | null
           turno_id?: string | null
           updated_at?: string
@@ -462,9 +486,21 @@ export type Database = {
           pio_oi?: number | null
           proxima_cita?: string | null
           refraccion_cerca_od?: string | null
+          refraccion_cerca_od_cil?: string | null
+          refraccion_cerca_od_eje?: string | null
+          refraccion_cerca_od_esf?: string | null
           refraccion_cerca_oi?: string | null
+          refraccion_cerca_oi_cil?: string | null
+          refraccion_cerca_oi_eje?: string | null
+          refraccion_cerca_oi_esf?: string | null
           refraccion_od?: string | null
+          refraccion_od_cil?: string | null
+          refraccion_od_eje?: string | null
+          refraccion_od_esf?: string | null
           refraccion_oi?: string | null
+          refraccion_oi_cil?: string | null
+          refraccion_oi_eje?: string | null
+          refraccion_oi_esf?: string | null
           tratamiento?: string | null
           turno_id?: string | null
           updated_at?: string
