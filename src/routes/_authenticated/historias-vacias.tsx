@@ -50,7 +50,7 @@ function HistoriasVacias() {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{h.paciente_nombre}</p>
                     <p className="text-xs text-muted-foreground">
-                      Fecha: {h.fecha ? new Date(`${h.fecha}T00:00:00`).toLocaleDateString("es-AR") : "—"} · Creada:{" "}
+                      Fecha: {h.fecha ? formatearFechaLocal(h.fecha) : "—"} · Creada:{" "}
                       {new Date(h.created_at).toLocaleString("es-AR")}
                     </p>
                   </div>

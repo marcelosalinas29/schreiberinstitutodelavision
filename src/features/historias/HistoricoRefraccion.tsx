@@ -36,7 +36,7 @@ export function HistoricoRefraccion({ pacienteId, className }: { pacienteId: str
             <tbody>
               {recetas.map((h) => (
                 <tr key={h.id} className="border-t border-border">
-                  <td className="px-2 py-1.5">{new Date(h.fecha).toLocaleDateString("es-AR")}</td>
+                  <td className="px-2 py-1.5">{formatearFechaLocal(h.fecha)}</td>
                   <td className="px-2 py-1.5">{h.refraccion_od || "—"}</td>
                   <td className="px-2 py-1.5">{h.refraccion_oi || "—"}</td>
                   <td className="px-2 py-1.5">{h.refraccion_cerca_od || "—"}</td>

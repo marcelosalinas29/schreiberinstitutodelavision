@@ -193,7 +193,7 @@ function Pacientes() {
                       className="cursor-pointer rounded-lg border border-border p-3 transition-colors hover:border-primary/50 hover:bg-accent/60"
                     >
                       <p className="text-xs font-medium text-muted-foreground">
-                        {new Date(h.fecha).toLocaleDateString("es-AR")}
+                        {formatearFechaLocal(h.fecha)}
                       </p>
                       <p className="mt-1 text-sm">{h.diagnostico || h.motivo_consulta || "Sin diagnóstico cargado"}</p>
                     </li>

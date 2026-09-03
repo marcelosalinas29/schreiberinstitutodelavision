@@ -24,8 +24,6 @@ export const Route = createFileRoute("/_authenticated/panel")({
   component: Panel,
 });
 
-const hoyISO = () => new Date().toISOString().slice(0, 10);
-
 function Panel() {
   const { profile, isMedico } = useCurrentUser();
   const fecha = hoyISO();

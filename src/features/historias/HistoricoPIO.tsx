@@ -35,7 +35,7 @@ export function HistoricoPIO({ pacienteId, className }: { pacienteId: string; cl
             <tbody>
               {tomas.map((h) => (
                 <tr key={h.id} className="border-t border-border">
-                  <td className="px-2 py-1.5">{new Date(h.fecha).toLocaleDateString("es-AR")}</td>
+                  <td className="px-2 py-1.5">{formatearFechaLocal(h.fecha)}</td>
                   <td className="px-2 py-1.5 text-muted-foreground">{h.pio_hora || "—"}</td>
                   <td className="px-2 py-1.5 text-right tabular-nums">{h.pio_od ?? "—"}</td>
                   <td className="px-2 py-1.5 text-right tabular-nums">{h.pio_oi ?? "—"}</td>

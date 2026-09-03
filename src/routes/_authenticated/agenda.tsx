@@ -130,7 +130,7 @@ const hhmm = (iso: string) => new Date(iso).toLocaleTimeString("es-AR", { hour: 
 
 function Agenda() {
   const qc = useQueryClient();
-  const [fecha, setFecha] = useState(() => new Date().toISOString().slice(0, 10));
+  const [fecha, setFecha] = useState(() => hoyISO());
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(TURNO_VACIO);
   const [busqueda, setBusqueda] = useState("");

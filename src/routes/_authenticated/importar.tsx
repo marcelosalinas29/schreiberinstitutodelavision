@@ -58,7 +58,7 @@ function Importar() {
     },
     onSuccess: (data) => {
       const { historia, paciente, resumen: texto } = data;
-      setDraft((prev) => ({ ...prev, ...historia, fecha: historia.fecha ?? prev.fecha ?? new Date().toISOString().slice(0, 10) }));
+      setDraft((prev) => ({ ...prev, ...historia, fecha: historia.fecha ?? prev.fecha ?? hoyISO() }));
       setSugerido(paciente ?? null);
       setResumen(texto ?? "");
       const coincidencia = (pacientes.data ?? []).find(

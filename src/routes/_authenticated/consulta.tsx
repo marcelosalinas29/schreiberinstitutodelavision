@@ -178,7 +178,7 @@ function Consulta() {
   const ordenar = useMutation({
     mutationFn: () => parse({ data: { transcripcion } }),
     onSuccess: (data) => {
-      setDraft((prev) => ({ ...prev, ...data, fecha: prev.fecha ?? new Date().toISOString().slice(0, 10) }));
+      setDraft((prev) => ({ ...prev, ...data, fecha: prev.fecha ?? hoyISO() }));
       toast.success("Dictado ordenado en los campos clínicos");
     },
     onError: () => toast.error("No se pudo procesar el dictado"),
@@ -245,7 +245,7 @@ function Consulta() {
     void navigate({ to: "/consulta", search: { paciente: pacienteId || undefined, historia: id }, replace: true });
   };
 
-  const hoyISO = new Date().toISOString().slice(0, 10);
+  const hoy = hoyISO();
 
   /** Carga en el formulario una historia ya existente (sin crear nada). */
   const cargarEnDraft = (h: Record<string, unknown> & { id: string; paciente_id: string }) => {
@@ -497,7 +497,7 @@ function Consulta() {
 
   const fechaLegible = (valor?: string | null) => {
     if (!valor) return new Date().toLocaleDateString("es-AR");
-    const d = new Date(`${String(valor).slice(0, 10)}T12:00:00`);
+    const d = parsearFechaLocal(String(valor).slice(0, 10));
     return isNaN(d.getTime()) ? String(valor) : d.toLocaleDateString("es-AR");
   };
 
@@ -731,7 +731,7 @@ function Consulta() {
                       }`}
                     >
                       <span className="mr-2">
-                        {h.fecha ? new Date(`${h.fecha}T00:00:00`).toLocaleDateString("es-AR") : "Sin fecha"}
+                        {h.fecha ? formatearFechaLocal(h.fecha) : "Sin fecha"}
                       </span>
                       <span className="text-muted-foreground">
                         {resumen ? resumen.slice(0, 70) : "Sin diagnóstico"}
@@ -753,7 +753,7 @@ function Consulta() {
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
           Editando consulta
           {historiaExistente.data?.fecha
-            ? ` del ${new Date(historiaExistente.data.fecha).toLocaleDateString("es-AR")}`
+            ? ` del ${formatearFechaLocal(historiaExistente.data.fecha)}`
             : ""}
         </div>
       ) : null}
