@@ -468,8 +468,31 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial, paciente
         />
         <div className="grid gap-4 lg:grid-cols-2">
           <div className="space-y-4">
-            <Bilateral {...props} label="Refracción subjetiva" odKey="refraccion_od" oiKey="refraccion_oi" placeholder="esf / cil x eje" />
-            <Bilateral {...props} label="Refracción de cerca" odKey="refraccion_cerca_od" oiKey="refraccion_cerca_oi" placeholder="esf / cil x eje" />
+            <DatosPrevios
+              value={value}
+              campos={[
+                ["Refracción subjetiva OD", "refraccion_od"],
+                ["Refracción subjetiva OI", "refraccion_oi"],
+                ["Refracción de cerca OD", "refraccion_cerca_od"],
+                ["Refracción de cerca OI", "refraccion_cerca_oi"],
+              ]}
+            />
+            <RefraccionGrilla
+              {...props}
+              label="Refracción subjetiva (lejos)"
+              claves={{
+                od: ["refraccion_od_esf", "refraccion_od_cil", "refraccion_od_eje"],
+                oi: ["refraccion_oi_esf", "refraccion_oi_cil", "refraccion_oi_eje"],
+              }}
+            />
+            <RefraccionGrilla
+              {...props}
+              label="Refracción de cerca"
+              claves={{
+                od: ["refraccion_cerca_od_esf", "refraccion_cerca_od_cil", "refraccion_cerca_od_eje"],
+                oi: ["refraccion_cerca_oi_esf", "refraccion_cerca_oi_cil", "refraccion_cerca_oi_eje"],
+              }}
+            />
           </div>
           {pacienteId ? <HistoricoRefraccion pacienteId={pacienteId} /> : null}
         </div>
