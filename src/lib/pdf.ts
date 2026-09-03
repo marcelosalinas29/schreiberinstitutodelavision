@@ -235,5 +235,5 @@ export async function generarRecetaPDF(
     return;
   }
 
-  doc.save(`${titulo.toLowerCase()}-${paciente.apellido}-${fecha.toISOString().slice(0, 10)}.pdf`);
+  doc.save(`${titulo.toLowerCase()}-${paciente.apellido}-${aFechaISO(fecha)}.pdf`);
 }
