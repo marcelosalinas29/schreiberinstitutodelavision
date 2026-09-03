@@ -31,15 +31,7 @@ import { createHistoria, deleteHistoria, getHistoria, listHistoriasPaciente, upd
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
 import { listFormatosHistoria } from "@/services/formatosHistoria";
-import type { PracticaEstudio } from "@/types/domain";
-import {
-  idsPracticasUsadas,
-  listPracticas,
-  agruparPorSeccion,
-  practicasOrdenadasPorUso,
-  practicasParaObraSocial,
-  registrarUsoPractica,
-} from "@/services/practicas";
+import { usePedidoPracticas } from "@/features/practicas/usePedidoPracticas";
 import { TIPOS_DOCUMENTO, completarDocumento, listDocumentos } from "@/services/documentosClinicos";
 import type { DocumentoTipo } from "@/types/domain";
 
@@ -51,13 +43,6 @@ const TEXTOS_PREQUIRURGICOS: Record<string, string> = {
     "Solicito laboratorio prequirúrgico: Hemograma completo, Glucemia, Coagulograma, VSG, Orina completa, HIV y VDRL.",
   "Complementarios Vasculitis/Uveítis":
     "Solicito: Hemograma completo, Glucemia, VSG, PCR, Coagulograma, HIV, VDRL, Toxoplasmosis IgM e IgG, FAN, FR, C3 y C4 (complemento), HLA B27, IgE Total, ECA, ANCA C y P, Anticardiolipina IgG e IgM, Anticoagulante lúpico, B2 Glicoproteína, TSH, T4 libre, aTPO, TRABs II, Antitiroglobulina.",
-};
-
-const TITULOS_PEDIDO: Record<string, string> = {
-  "Estudios y Prácticas": "Pedido de estudios",
-  Laboratorio: "Pedido de laboratorio",
-  "Otros estudios complementarios": "Pedido de estudios complementarios",
-  Cirugías: "Pedido de cirugía",
 };
 
 export const Route = createFileRoute("/_authenticated/consulta")({
@@ -119,8 +104,6 @@ function Consulta() {
   const [autoEstado, setAutoEstado] = useState<"idle" | "guardando" | "guardado">("idle");
   const [transcripcion, setTranscripcion] = useState("");
   const [draft, setDraft] = useState<HistoriaDraft>(HISTORIA_VACIA);
-  const [pedidoAbierto, setPedidoAbierto] = useState(false);
-  const [seleccionadas, setSeleccionadas] = useState<string[]>([]);
   const [docsAbierto, setDocsAbierto] = useState(false);
   const [docElegido, setDocElegido] = useState("");
   const [docManual, setDocManual] = useState(false);
@@ -130,7 +113,6 @@ function Consulta() {
   const { isMedico } = useCurrentUser();
   const pacientes = useQuery({ queryKey: ["pacientes", ""], queryFn: () => listPacientes("") });
   const plantillas = useQuery({ queryKey: ["plantillas"], queryFn: listPlantillas });
-  const practicas = useQuery({ queryKey: ["practicas"], queryFn: listPracticas });
   const documentos = useQuery({ queryKey: ["documentos-clinicos"], queryFn: listDocumentos });
   const formatosHistoria = useQuery({ queryKey: ["formatos-historia"], queryFn: listFormatosHistoria });
   const paciente = (pacientes.data ?? []).find((p) => p.id === pacienteId) ?? null;
