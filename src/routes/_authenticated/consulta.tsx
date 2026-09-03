@@ -388,10 +388,17 @@ function Consulta() {
       toast.error("Elegí un paciente");
       return;
     }
-    const lejosOd = (draft.refraccion_od ?? "").trim();
-    const lejosOi = (draft.refraccion_oi ?? "").trim();
-    const cercaOd = (draft.refraccion_cerca_od ?? "").trim();
-    const cercaOi = (draft.refraccion_cerca_oi ?? "").trim();
+    const ojo = (esf?: string | null, cil?: string | null, eje?: string | null) => {
+      const e = (esf ?? "").trim();
+      const c = (cil ?? "").trim();
+      const j = (eje ?? "").trim();
+      if (!e && !c && !j) return "";
+      return `Esf: ${e || "___"} Cil: ${c || "___"} Eje: ${j || "___"}`;
+    };
+    const lejosOd = ojo(draft.refraccion_od_esf, draft.refraccion_od_cil, draft.refraccion_od_eje);
+    const lejosOi = ojo(draft.refraccion_oi_esf, draft.refraccion_oi_cil, draft.refraccion_oi_eje);
+    const cercaOd = ojo(draft.refraccion_cerca_od_esf, draft.refraccion_cerca_od_cil, draft.refraccion_cerca_od_eje);
+    const cercaOi = ojo(draft.refraccion_cerca_oi_esf, draft.refraccion_cerca_oi_cil, draft.refraccion_cerca_oi_eje);
     if (!lejosOd && !lejosOi && !cercaOd && !cercaOi) {
       toast.error("Cargá la refracción de lejos o de cerca antes de generar la receta óptica");
       return;
