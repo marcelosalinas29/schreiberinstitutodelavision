@@ -30,6 +30,7 @@ import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
 import { listFormatosHistoria } from "@/services/formatosHistoria";
 import { usePedidoPracticas } from "@/features/practicas/usePedidoPracticas";
+import { formatearFechaLocal, hoyISO, parsearFechaLocal } from "@/lib/fecha";
 import { TIPOS_DOCUMENTO, completarDocumento, listDocumentos } from "@/services/documentosClinicos";
 import type { DocumentoTipo } from "@/types/domain";
 

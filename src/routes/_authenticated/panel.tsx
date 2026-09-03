@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/features/auth/useAuth";
 import { calcularTotales, listCobrosPorFecha } from "@/services/caja";
 import { listPacientes } from "@/services/pacientes";
+import { hoyISO } from "@/lib/fecha";
 import { listTurnosPorRango } from "@/services/turnos";
 import { ESTADOS_TURNO } from "@/types/domain";
 

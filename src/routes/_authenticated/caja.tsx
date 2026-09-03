@@ -32,6 +32,7 @@ import {
   type TipoPendiente,
 } from "@/services/caja";
 import { listPacientes } from "@/services/pacientes";
+import { formatearFechaLocal, hoyISO } from "@/lib/fecha";
 import { MEDIOS_PAGO, TIPOS_COBRO, type MedioPago, type TipoCobro } from "@/types/domain";
 
 

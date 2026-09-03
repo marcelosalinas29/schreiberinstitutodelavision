@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { listHistoriasPaciente } from "@/services/historias";
+import { formatearFechaLocal } from "@/lib/fecha";
 
 /** Cuadro compacto con el historial de PIO (presión intraocular) del paciente. */
 export function HistoricoPIO({ pacienteId, className }: { pacienteId: string; className?: string }) {

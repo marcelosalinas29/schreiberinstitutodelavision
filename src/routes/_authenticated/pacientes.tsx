@@ -12,6 +12,7 @@ import { PatientForm, calcularEdad } from "@/features/patients/PatientForm";
 import { HistoricoPIO } from "@/features/historias/HistoricoPIO";
 import { AdjuntosPaciente } from "@/features/historias/AdjuntosPaciente";
 import { listPacientes } from "@/services/pacientes";
+import { formatearFechaLocal } from "@/lib/fecha";
 import { listHistoriasPaciente } from "@/services/historias";
 import type { Paciente } from "@/types/domain";
 

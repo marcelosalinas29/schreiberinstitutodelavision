@@ -5,6 +5,7 @@ import { Stethoscope } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { listHistoriasVacias } from "@/services/historias";
+import { formatearFechaLocal } from "@/lib/fecha";
 
 export const Route = createFileRoute("/_authenticated/historias-vacias")({
   head: () => ({

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { listHistoriasPaciente } from "@/services/historias";
+import { formatearFechaLocal } from "@/lib/fecha";
 
 /** Cuadro compacto con el historial de recetas ópticas (lejos / cerca) del paciente. */
 export function HistoricoRefraccion({ pacienteId, className }: { pacienteId: string; className?: string }) {

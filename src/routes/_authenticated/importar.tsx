@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { HISTORIA_VACIA, HistoriaForm, type HistoriaDraft } from "@/features/historias/HistoriaForm";
 import { parseDocumento } from "@/lib/ai.functions";
 import { createHistoria } from "@/services/historias";
+import { hoyISO } from "@/lib/fecha";
 import { createPaciente, listPacientes } from "@/services/pacientes";
 
 export const Route = createFileRoute("/_authenticated/importar")({
