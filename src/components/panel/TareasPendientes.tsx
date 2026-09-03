@@ -6,9 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { formatearFechaLocal, hoyISO } from "@/lib/fecha";
 import { crearTarea, eliminarTarea, listTareas, marcarTareaCompletada, type TareaPendiente } from "@/services/tareas";
-
-const hoyISO = () => new Date().toISOString().slice(0, 10);
 
 function ordenar(tareas: TareaPendiente[]): TareaPendiente[] {
   return [...tareas].sort((a, b) => {
