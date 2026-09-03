@@ -70,10 +70,10 @@ export function HistoricoRefraccion({ pacienteId, className }: { pacienteId: str
               {recetas.map((h) => (
                 <tr key={h.id} className="border-t border-border">
                   <td className="px-2 py-1.5">{formatearFechaLocal(h.fecha)}</td>
-                  <td className="px-2 py-1.5">{h.refraccion_od || "—"}</td>
-                  <td className="px-2 py-1.5">{h.refraccion_oi || "—"}</td>
-                  <td className="px-2 py-1.5">{h.refraccion_cerca_od || "—"}</td>
-                  <td className="px-2 py-1.5">{h.refraccion_cerca_oi || "—"}</td>
+                  <td className="px-2 py-1.5">{fmt(h.refraccion_od_esf, h.refraccion_od_cil, h.refraccion_od_eje, h.refraccion_od)}</td>
+                  <td className="px-2 py-1.5">{fmt(h.refraccion_oi_esf, h.refraccion_oi_cil, h.refraccion_oi_eje, h.refraccion_oi)}</td>
+                  <td className="px-2 py-1.5">{fmt(h.refraccion_cerca_od_esf, h.refraccion_cerca_od_cil, h.refraccion_cerca_od_eje, h.refraccion_cerca_od)}</td>
+                  <td className="px-2 py-1.5">{fmt(h.refraccion_cerca_oi_esf, h.refraccion_cerca_oi_cil, h.refraccion_cerca_oi_eje, h.refraccion_cerca_oi)}</td>
                 </tr>
               ))}
             </tbody>
