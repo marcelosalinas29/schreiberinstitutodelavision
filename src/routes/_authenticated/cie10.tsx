@@ -26,6 +26,26 @@ export const Route = createFileRoute("/_authenticated/cie10")({
 });
 
 const VACIO = { palabra_clave: "", codigo: "", descripcion: "" };
+
+/** Diagnósticos de consulta rápida, se resuelven contra el diccionario cargado. */
+const FRECUENTES = [
+  "Catarata",
+  "Glaucoma",
+  "Conjuntivitis",
+  "Queratitis",
+  "Ametropía",
+  "Miopía",
+  "Astigmatismo",
+  "Presbicia",
+  "Hipermetropía",
+  "Dolor ocular",
+  "Inflamación ocular",
+  "Cefaleas",
+  "Hipertensión ocular",
+];
+
+const normalizar = (t: string) =>
+  t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 type Form = typeof VACIO & { id?: string };
 
 function Cie10Page() {
@@ -114,6 +134,35 @@ function Cie10Page() {
           </div>
         </div>
       ) : null}
+
+      <section className="panel mb-4 border-primary/40 p-5">
+        <h2 className="mb-3 text-sm font-semibold">Diagnósticos más frecuentes</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <th className="py-2 pr-4 font-medium">Diagnóstico</th>
+                <th className="py-2 font-medium">Código CIE-10</th>
+              </tr>
+            </thead>
+            <tbody>
+              {FRECUENTES.map((nombre) => {
+                const match = items.find(
+                  (c) =>
+                    normalizar(c.palabra_clave) === normalizar(nombre) ||
+                    normalizar(c.descripcion) === normalizar(nombre),
+                );
+                return (
+                  <tr key={nombre} className="border-b border-border/60 last:border-0">
+                    <td className="py-1.5 pr-4">{nombre}</td>
+                    <td className="py-1.5 font-semibold text-primary">{match?.codigo ?? "—"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       <section className="panel p-5">
         {items.length === 0 ? (
