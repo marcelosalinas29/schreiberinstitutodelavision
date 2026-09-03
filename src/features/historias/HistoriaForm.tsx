@@ -303,13 +303,13 @@ function RefraccionGrilla({
   const fila = (ojo: "OD" | "OI", keys: [keyof HistoriaDraft, keyof HistoriaDraft, keyof HistoriaDraft]) => (
     <div className="grid grid-cols-[2rem_1fr_1fr_1fr] items-center gap-2">
       <span className="text-xs font-medium text-muted-foreground">{ojo}</span>
-      {(["Esf", "Cil", "Eje"] as const).map((etiqueta, i) => (
+      {([["Esf", keys[0]], ["Cil", keys[1]], ["Eje", keys[2]]] as const).map(([etiqueta, k]) => (
         <Input
           key={etiqueta}
           aria-label={`${label} ${ojo} ${etiqueta}`}
           placeholder={etiqueta}
-          value={(value[keys[i]] as string) ?? ""}
-          onChange={(e) => onChange({ [keys[i]]: e.target.value } as Partial<HistoriaDraft>)}
+          value={(value[k] as string) ?? ""}
+          onChange={(e) => onChange({ [k]: e.target.value } as Partial<HistoriaDraft>)}
         />
       ))}
     </div>
