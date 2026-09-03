@@ -631,6 +631,14 @@ function Consulta() {
                 <span className="self-center text-xs text-muted-foreground">
                   {autoEstado === "guardando" ? "Guardando…" : autoEstado === "guardado" ? "Guardado" : ""}
                 </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={confirmarDescarte}
+                  disabled={!historiaId || descartar.isPending}
+                >
+                  {descartar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} Descartar consulta
+                </Button>
                 <Button size="sm" onClick={() => guardar.mutate()} disabled={guardar.isPending}>
                   {guardar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Guardar
                 </Button>
