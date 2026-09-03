@@ -668,6 +668,7 @@ function Consulta() {
       <HistoriaForm
         value={draft}
         onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))}
+        historiaId={historiaId}
         obraSocial={paciente?.obra_social ?? null}
         soloLectura={!isMedico}
         pacienteId={pacienteId}
