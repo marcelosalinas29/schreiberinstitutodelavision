@@ -259,15 +259,15 @@ function Consulta() {
     if (historiaDeUrl || historiaId || !pacienteId) return;
     const lista = historiasPaciente.data;
     if (!lista) return;
-    const deHoy = lista.find((h) => h.fecha === hoyISO);
+    const deHoy = lista.find((h) => h.fecha === hoy);
     if (!deHoy) return;
     setHistoriaId(deHoy.id);
     primerRender.current = true;
     cargarEnDraft(deHoy as never);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [historiasPaciente.data, pacienteId, historiaId, historiaDeUrl, hoyISO]);
+  }, [historiasPaciente.data, pacienteId, historiaId, historiaDeUrl, hoy]);
 
-  const hayConsultaDeHoy = Boolean(historiaId) || (historiasPaciente.data ?? []).some((h) => h.fecha === hoyISO);
+  const hayConsultaDeHoy = Boolean(historiaId) || (historiasPaciente.data ?? []).some((h) => h.fecha === hoy);
 
   /** Crea explícitamente la consulta de hoy (único punto donde se crea una historia nueva). */
   const nuevaConsulta = () => {
@@ -276,7 +276,7 @@ function Consulta() {
       return;
     }
     if (creandoRef.current) return;
-    const existente = (historiasPaciente.data ?? []).find((h) => h.fecha === hoyISO);
+    const existente = (historiasPaciente.data ?? []).find((h) => h.fecha === hoy);
     if (existente) {
       setHistoriaDeUrl(undefined);
       setHistoriaId(existente.id);
@@ -287,11 +287,11 @@ function Consulta() {
     }
     creandoRef.current = true;
     setHistoriaDeUrl(undefined);
-    setDraft({ ...HISTORIA_VACIA, fecha: hoyISO });
+    setDraft({ ...HISTORIA_VACIA, fecha: hoy });
     setTranscripcion("");
     setAutoEstado("idle");
     primerRender.current = true;
-    void createHistoria({ paciente_id: pacienteId, fecha: hoyISO, dictado_crudo: null })
+    void createHistoria({ paciente_id: pacienteId, fecha: hoy, dictado_crudo: null })
       .then((h) => {
         setHistoriaId(h.id);
         void qc.invalidateQueries({ queryKey: ["historias-paciente"] });
