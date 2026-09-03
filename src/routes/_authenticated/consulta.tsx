@@ -701,9 +701,18 @@ function Consulta() {
               <span className="text-xs text-muted-foreground">({(historiasPaciente.data ?? []).length})</span>
             </summary>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Button variant="outline" size="sm" onClick={nuevaConsulta}>
+              <Button
+                variant={hayConsultaDeHoy ? "outline" : "default"}
+                size="sm"
+                onClick={nuevaConsulta}
+                disabled={!isMedico}
+              >
                 Nueva consulta
               </Button>
+              {!hayConsultaDeHoy && isMedico ? (
+                <span className="text-xs text-muted-foreground">No hay consulta de hoy para este paciente.</span>
+              ) : null}
+
               {historiasPaciente.isLoading ? (
                 <span className="text-xs text-muted-foreground">Cargando…</span>
               ) : null}
