@@ -138,25 +138,9 @@ function Consulta() {
     setTranscripcion((h.dictado_crudo as string | null) ?? "");
   }, [historiaExistente.data]);
 
-  // Nueva consulta: al elegir paciente (sin ?historia=) se crea la historia enseguida,
-  // así "Adjuntar estudio" y el autoguardado funcionan desde el primer momento.
+  // Una sola historia por paciente por día: si ya existe una de HOY, se retoma.
+  // Si no existe, NO se crea nada solo: la médica toca "Nueva consulta".
   const creandoRef = useRef(false);
-  useEffect(() => {
-    if (historiaDeUrl) return;
-    if (!isMedico || !pacienteId || historiaId || creandoRef.current) return;
-    creandoRef.current = true;
-    const hoy = new Date().toISOString().slice(0, 10);
-    void createHistoria({ paciente_id: pacienteId, fecha: hoy, dictado_crudo: null })
-      .then((h) => {
-        setHistoriaId(h.id);
-        setDraft({ ...HISTORIA_VACIA, fecha: hoy });
-        setTranscripcion("");
-      })
-      .catch(() => toast.error("No se pudo iniciar la consulta"))
-      .finally(() => {
-        creandoRef.current = false;
-      });
-  }, [pacienteId, historiaDeUrl, historiaId, isMedico]);
 
   // Si se cambia de paciente en una consulta nueva, se arranca otra historia.
   const pacienteAnterior = useRef(pacienteId);
