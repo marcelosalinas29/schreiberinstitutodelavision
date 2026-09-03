@@ -603,12 +603,14 @@ function Consulta() {
               <FileSignature className="size-4" /> Consentimientos y protocolos
             </Button>
             {isMedico && (
-              <span className="self-center text-xs text-muted-foreground">
-                {autoEstado === "guardando" ? "Guardando…" : autoEstado === "guardado" ? "Guardado" : ""}
-              </span>
-              <Button size="sm" onClick={() => guardar.mutate()} disabled={guardar.isPending}>
-                {guardar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Guardar
-              </Button>
+              <>
+                <span className="self-center text-xs text-muted-foreground">
+                  {autoEstado === "guardando" ? "Guardando…" : autoEstado === "guardado" ? "Guardado" : ""}
+                </span>
+                <Button size="sm" onClick={() => guardar.mutate()} disabled={guardar.isPending}>
+                  {guardar.isPending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />} Guardar
+                </Button>
+              </>
             )}
           </>
         }
