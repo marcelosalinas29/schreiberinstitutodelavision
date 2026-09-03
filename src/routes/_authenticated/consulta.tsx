@@ -27,7 +27,7 @@ import { generarRecetaPDF } from "@/lib/pdf";
 import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
 import { armarLinkYahooMail } from "@/lib/email";
 import { datosMedicoReceta } from "@/services/perfil";
-import { createHistoria, getHistoria, updateHistoria } from "@/services/historias";
+import { createHistoria, getHistoria, listHistoriasPaciente, updateHistoria } from "@/services/historias";
 import { listPacientes } from "@/services/pacientes";
 import { listPlantillas } from "@/services/plantillas";
 import { listFormatosHistoria } from "@/services/formatosHistoria";
@@ -544,6 +544,12 @@ function Consulta() {
             </Button>
             <Button variant="outline" size="sm" onClick={pedidoLaboratorioPrequirurgico} disabled={!paciente}>
               <ClipboardList className="size-4" /> Laboratorio Prequirúrgico
+            </Button>
+            <Button variant="outline" size="sm" onClick={imprimirHistoriaDelDia} disabled={!paciente}>
+              <Printer className="size-4" /> Imprimir historia del día
+            </Button>
+            <Button variant="outline" size="sm" onClick={imprimirHistoriaCompleta} disabled={!paciente}>
+              <Printer className="size-4" /> Imprimir historia completa
             </Button>
             <Button variant="outline" size="sm" onClick={abrirDocumentos}>
               <FileSignature className="size-4" /> Consentimientos y protocolos
