@@ -38,6 +38,18 @@ export const HISTORIA_VACIA: HistoriaDraft = {
   refraccion_oi: "",
   refraccion_cerca_od: "",
   refraccion_cerca_oi: "",
+  refraccion_od_esf: "",
+  refraccion_od_cil: "",
+  refraccion_od_eje: "",
+  refraccion_oi_esf: "",
+  refraccion_oi_cil: "",
+  refraccion_oi_eje: "",
+  refraccion_cerca_od_esf: "",
+  refraccion_cerca_od_cil: "",
+  refraccion_cerca_od_eje: "",
+  refraccion_cerca_oi_esf: "",
+  refraccion_cerca_oi_cil: "",
+  refraccion_cerca_oi_eje: "",
   av_sc_od: "",
   av_sc_oi: "",
   av_cc_od: "",
@@ -278,6 +290,39 @@ function Bilateral({
   );
 }
 
+/** Grilla de refracción con casilleros separados Esfera / Cilindro / Eje por ojo. */
+function RefraccionGrilla({
+  label,
+  claves,
+  value,
+  onChange,
+}: Props & {
+  label: string;
+  claves: { od: [keyof HistoriaDraft, keyof HistoriaDraft, keyof HistoriaDraft]; oi: [keyof HistoriaDraft, keyof HistoriaDraft, keyof HistoriaDraft] };
+}) {
+  const fila = (ojo: "OD" | "OI", keys: [keyof HistoriaDraft, keyof HistoriaDraft, keyof HistoriaDraft]) => (
+    <div className="grid grid-cols-[2rem_1fr_1fr_1fr] items-center gap-2">
+      <span className="text-xs font-medium text-muted-foreground">{ojo}</span>
+      {([["Esf", keys[0]], ["Cil", keys[1]], ["Eje", keys[2]]] as const).map(([etiqueta, k]) => (
+        <Input
+          key={etiqueta}
+          aria-label={`${label} ${ojo} ${etiqueta}`}
+          placeholder={etiqueta}
+          value={(value[k] as string) ?? ""}
+          onChange={(e) => onChange({ [k]: e.target.value } as Partial<HistoriaDraft>)}
+        />
+      ))}
+    </div>
+  );
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-xs uppercase tracking-wide text-muted-foreground">{label}</Label>
+      {fila("OD", claves.od)}
+      {fila("OI", claves.oi)}
+    </div>
+  );
+}
+
 /** Muestra, sólo lectura, datos históricos de campos que ya no se editan. */
 function DatosPrevios({
   value,
@@ -468,8 +513,31 @@ export function HistoriaForm({ value, onChange, historiaId, obraSocial, paciente
         />
         <div className="grid gap-4 lg:grid-cols-2">
           <div className="space-y-4">
-            <Bilateral {...props} label="Refracción subjetiva" odKey="refraccion_od" oiKey="refraccion_oi" placeholder="esf / cil x eje" />
-            <Bilateral {...props} label="Refracción de cerca" odKey="refraccion_cerca_od" oiKey="refraccion_cerca_oi" placeholder="esf / cil x eje" />
+            <DatosPrevios
+              value={value}
+              campos={[
+                ["Refracción subjetiva OD", "refraccion_od"],
+                ["Refracción subjetiva OI", "refraccion_oi"],
+                ["Refracción de cerca OD", "refraccion_cerca_od"],
+                ["Refracción de cerca OI", "refraccion_cerca_oi"],
+              ]}
+            />
+            <RefraccionGrilla
+              {...props}
+              label="Refracción subjetiva (lejos)"
+              claves={{
+                od: ["refraccion_od_esf", "refraccion_od_cil", "refraccion_od_eje"],
+                oi: ["refraccion_oi_esf", "refraccion_oi_cil", "refraccion_oi_eje"],
+              }}
+            />
+            <RefraccionGrilla
+              {...props}
+              label="Refracción de cerca"
+              claves={{
+                od: ["refraccion_cerca_od_esf", "refraccion_cerca_od_cil", "refraccion_cerca_od_eje"],
+                oi: ["refraccion_cerca_oi_esf", "refraccion_cerca_oi_cil", "refraccion_cerca_oi_eje"],
+              }}
+            />
           </div>
           {pacienteId ? <HistoricoRefraccion pacienteId={pacienteId} /> : null}
         </div>
