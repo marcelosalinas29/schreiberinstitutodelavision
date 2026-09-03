@@ -22,8 +22,8 @@ function etiquetaFecha(fecha: string | null): string {
   if (!fecha) return "Sin fecha";
   const hoy = hoyISO();
   if (fecha === hoy) return "Hoy";
-  if (fecha < hoy) return `Vencida · ${new Date(`${fecha}T12:00:00`).toLocaleDateString("es-AR", { day: "numeric", month: "short" })}`;
-  return new Date(`${fecha}T12:00:00`).toLocaleDateString("es-AR", { day: "numeric", month: "short" });
+  if (fecha < hoy) return `Vencida · ${formatearFechaLocal(fecha, { day: "numeric", month: "short" })}`;
+  return formatearFechaLocal(fecha, { day: "numeric", month: "short" });
 }
 
 export function TareasPendientes() {
