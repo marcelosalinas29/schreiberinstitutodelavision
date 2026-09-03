@@ -288,26 +288,29 @@ export type Database = {
       historia_adjuntos: {
         Row: {
           created_at: string
-          historia_id: string
+          historia_id: string | null
           id: string
           nombre_archivo: string | null
           owner_id: string | null
+          paciente_id: string | null
           path: string
         }
         Insert: {
           created_at?: string
-          historia_id: string
+          historia_id?: string | null
           id?: string
           nombre_archivo?: string | null
           owner_id?: string | null
+          paciente_id?: string | null
           path: string
         }
         Update: {
           created_at?: string
-          historia_id?: string
+          historia_id?: string | null
           id?: string
           nombre_archivo?: string | null
           owner_id?: string | null
+          paciente_id?: string | null
           path?: string
         }
         Relationships: [
@@ -316,6 +319,13 @@ export type Database = {
             columns: ["historia_id"]
             isOneToOne: false
             referencedRelation: "historias_clinicas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "historia_adjuntos_paciente_id_fkey"
+            columns: ["paciente_id"]
+            isOneToOne: false
+            referencedRelation: "pacientes"
             referencedColumns: ["id"]
           },
         ]

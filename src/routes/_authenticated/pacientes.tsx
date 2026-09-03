@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { PatientForm, calcularEdad } from "@/features/patients/PatientForm";
 import { HistoricoPIO } from "@/features/historias/HistoricoPIO";
+import { AdjuntosPaciente } from "@/features/historias/AdjuntosPaciente";
 import { listPacientes } from "@/services/pacientes";
 import { listHistoriasPaciente } from "@/services/historias";
 import type { Paciente } from "@/types/domain";
@@ -165,6 +166,8 @@ function Pacientes() {
               </dl>
 
               <HistoricoPIO pacienteId={seleccionado.id} className="mt-6" />
+
+              <AdjuntosPaciente pacienteId={seleccionado.id} />
 
               <h3 className="mb-2 mt-6 text-sm font-semibold">Consultas</h3>
               {historias.isLoading ? (

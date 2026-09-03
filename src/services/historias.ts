@@ -102,7 +102,8 @@ export async function urlFirmadaImagenHistoria(path: string | null | undefined):
 
 export type HistoriaAdjunto = {
   id: string;
-  historia_id: string;
+  historia_id: string | null;
+  paciente_id?: string | null;
   path: string;
   nombre_archivo: string | null;
   owner_id: string | null;
@@ -144,4 +145,37 @@ export async function listAdjuntosEstudio(historiaId: string): Promise<HistoriaA
 export async function eliminarAdjuntoEstudio(id: string): Promise<void> {
   const { error } = await supabase.from("historia_adjuntos").delete().eq("id", id);
   if (error) throw error;
+}
+
+/** Sube un estudio que trae el paciente y lo liga a su ficha (sin depender de una consulta). */
+export async function subirAdjuntoPaciente(file: File, pacienteId: string): Promise<HistoriaAdjunto> {
+  const { data: auth } = await supabase.auth.getUser();
+  const uid = auth.user?.id;
+  if (!uid) throw new Error("Sesión no válida");
+  const ext = (file.name.split(".").pop() || "png").toLowerCase();
+  const path = `${uid}/paciente-${pacienteId}-adjunto-${Date.now()}.${ext}`;
+  const { error: upErr } = await supabase.storage.from(BUCKET_MEDICAL).upload(path, file, {
+    upsert: true,
+    contentType: file.type || "application/octet-stream",
+  });
+  if (upErr) throw upErr;
+
+  const { data, error } = await supabase
+    .from("historia_adjuntos")
+    .insert({ paciente_id: pacienteId, path, nombre_archivo: file.name, owner_id: uid })
+    .select("*")
+    .single();
+  if (error) throw error;
+  return data as HistoriaAdjunto;
+}
+
+/** Adjuntos cargados directamente en la ficha del paciente. */
+export async function listAdjuntosPaciente(pacienteId: string): Promise<HistoriaAdjunto[]> {
+  const { data, error } = await supabase
+    .from("historia_adjuntos")
+    .select("*")
+    .eq("paciente_id", pacienteId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as HistoriaAdjunto[];
 }
