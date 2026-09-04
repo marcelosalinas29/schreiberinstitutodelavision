@@ -26,7 +26,14 @@ export const Route = createFileRoute("/_authenticated/medicamentos")({
   component: Medicamentos,
 });
 
-const VACIO = { nombre: "", dosis: "", posologia: "", via_administracion: "", unidades_envase: "" };
+const VACIO = {
+  nombre: "",
+  dosis: "",
+  posologia: "",
+  via_administracion: "",
+  unidades_envase: "",
+  forma_farmaceutica: "",
+};
 type Form = typeof VACIO & { id?: string };
 
 function Medicamentos() {
