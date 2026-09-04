@@ -168,16 +168,24 @@ function Pacientes() {
                     </Badge>
                   ) : null}
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setEditando(seleccionado);
-                    setOpen(true);
-                  }}
-                >
-                  <Pencil className="size-4" /> Editar
-                </Button>
+                <div className="flex flex-wrap justify-end gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => void navigate({ to: "/consulta", search: { paciente: seleccionado.id } })}
+                  >
+                    Ir a Historia Clínica
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setEditando(seleccionado);
+                      setOpen(true);
+                    }}
+                  >
+                    <Pencil className="size-4" /> Editar
+                  </Button>
+                </div>
               </div>
               <dl className="mt-3 space-y-1.5 text-sm">
                 <Dato label="DNI" value={seleccionado.dni} />

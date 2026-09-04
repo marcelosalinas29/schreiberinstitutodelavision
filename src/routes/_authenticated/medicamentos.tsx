@@ -26,7 +26,14 @@ export const Route = createFileRoute("/_authenticated/medicamentos")({
   component: Medicamentos,
 });
 
-const VACIO = { nombre: "", dosis: "", posologia: "", via_administracion: "", unidades_envase: "" };
+const VACIO = {
+  nombre: "",
+  dosis: "",
+  posologia: "",
+  via_administracion: "",
+  unidades_envase: "",
+  forma_farmaceutica: "",
+};
 type Form = typeof VACIO & { id?: string };
 
 function Medicamentos() {
@@ -49,6 +56,7 @@ function Medicamentos() {
         posologia: form.posologia.trim(),
         via_administracion: form.via_administracion.trim() || null,
         unidades_envase: form.unidades_envase.trim() || null,
+        forma_farmaceutica: form.forma_farmaceutica.trim() || null,
       });
     },
     onSuccess: () => {
@@ -106,6 +114,15 @@ function Medicamentos() {
               onChange={(e) => setForm({ ...form, unidades_envase: e.target.value })}
             />
           </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="forma">Forma farmacéutica</Label>
+            <Input
+              id="forma"
+              placeholder="Colirio, Ungüento, Gel, Comprimido…"
+              value={form.forma_farmaceutica}
+              onChange={(e) => setForm({ ...form, forma_farmaceutica: e.target.value })}
+            />
+          </div>
           <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="posologia">Indicaciones</Label>
             <Textarea
@@ -146,7 +163,7 @@ function Medicamentos() {
                 </p>
                 <p className="text-xs text-muted-foreground">{m.posologia}</p>
                 <p className="text-xs text-muted-foreground">
-                  {[m.via_administracion, m.unidades_envase].filter(Boolean).join(" · ")}
+                  {[m.forma_farmaceutica, m.via_administracion, m.unidades_envase].filter(Boolean).join(" · ")}
                 </p>
               </div>
               <div className="flex gap-1">
@@ -161,6 +178,7 @@ function Medicamentos() {
                       posologia: m.posologia,
                       via_administracion: m.via_administracion ?? "",
                       unidades_envase: m.unidades_envase ?? "",
+                      forma_farmaceutica: m.forma_farmaceutica ?? "",
                     })
                   }
                 >

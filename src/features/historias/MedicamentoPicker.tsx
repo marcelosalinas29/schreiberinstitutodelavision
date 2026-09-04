@@ -47,10 +47,13 @@ export function MedicamentoPicker({ onAgregar }: Props) {
                   }}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium">{m.nombre}</span>
-                    <span className="block truncate text-xs text-muted-foreground">
-                      {[m.dosis, m.posologia].filter(Boolean).join(" · ")}
+                    <span className="block truncate text-sm font-medium">
+                      {[m.nombre, m.dosis].filter(Boolean).join(" ")}
+                      {m.forma_farmaceutica ? (
+                        <span className="ml-1 font-normal text-muted-foreground">— {m.forma_farmaceutica}</span>
+                      ) : null}
                     </span>
+                    <span className="block truncate text-xs text-muted-foreground">{m.posologia}</span>
                   </span>
                 </CommandItem>
               ))}

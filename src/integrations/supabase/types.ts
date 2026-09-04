@@ -556,6 +556,7 @@ export type Database = {
         Row: {
           created_at: string
           dosis: string | null
+          forma_farmaceutica: string | null
           id: string
           nombre: string
           owner_id: string | null
@@ -567,6 +568,7 @@ export type Database = {
         Insert: {
           created_at?: string
           dosis?: string | null
+          forma_farmaceutica?: string | null
           id?: string
           nombre: string
           owner_id?: string | null
@@ -578,6 +580,7 @@ export type Database = {
         Update: {
           created_at?: string
           dosis?: string | null
+          forma_farmaceutica?: string | null
           id?: string
           nombre?: string
           owner_id?: string | null
