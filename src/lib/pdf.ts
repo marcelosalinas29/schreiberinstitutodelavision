@@ -99,9 +99,9 @@ export async function generarRecetaPDF(
   const logo = fondo ? null : await cargarImagen(LOGO_HORIZONTAL_TRANSPARENTE_URL);
 
   // Zona segura de contenido sobre la hoja preimpresa:
-  // arranca al 22% de la altura (debajo del "Rp/") y termina al 88% (antes del pie impreso).
-  const inicioContenido = pageH * 0.22;
-  const finContenido = pageH * 0.88;
+  // arranca al 27% de la altura (debajo del "Rp/") y termina al 85,5% (antes del pie impreso).
+  const inicioContenido = pageH * 0.27;
+  const finContenido = pageH * 0.855;
 
   /** Dibuja el fondo (hoja completa) o el membrete de respaldo, y devuelve la Y libre. */
   const dibujarMembrete = (yInicial: number): number => {
