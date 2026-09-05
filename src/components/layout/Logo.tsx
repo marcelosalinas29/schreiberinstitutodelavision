@@ -1,12 +1,15 @@
 import horizontal from "@/assets/schreiber-horizontal.jpg.asset.json";
 import sello from "@/assets/schreiber-sello.jpg.asset.json";
 import horizontalTransparente from "@/assets/schreiber-horizontal-transparente.png.asset.json";
+import plantillaRecetario from "@/assets/plantilla-recetario-completa.png.asset.json";
 
 import { cn } from "@/lib/utils";
 
 export const LOGO_HORIZONTAL_URL = horizontal.url;
 export const LOGO_SELLO_URL = sello.url;
 export const LOGO_HORIZONTAL_TRANSPARENTE_URL = horizontalTransparente.url;
+/** Hoja completa del recetario (membrete + ojo decorativo + pie) usada como fondo de los PDF. */
+export const PLANTILLA_RECETARIO_COMPLETA_URL = plantillaRecetario.url;
 
 
 /** Marca institucional: sello circular + wordmark. */

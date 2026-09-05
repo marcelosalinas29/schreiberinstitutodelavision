@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 
 
-import { LOGO_HORIZONTAL_TRANSPARENTE_URL } from "@/components/layout/Logo";
+import { LOGO_HORIZONTAL_TRANSPARENTE_URL, PLANTILLA_RECETARIO_COMPLETA_URL } from "@/components/layout/Logo";
 import { aFechaISO } from "@/lib/fecha";
 import type { MedicoReceta } from "@/services/perfil";
 import type { Paciente, Plantilla } from "@/types/domain";
@@ -95,10 +95,21 @@ export async function generarRecetaPDF(
   };
   let y = margin;
 
-  const logo = await cargarImagen(LOGO_HORIZONTAL_TRANSPARENTE_URL);
+  const fondo = await cargarImagen(PLANTILLA_RECETARIO_COMPLETA_URL);
+  const logo = fondo ? null : await cargarImagen(LOGO_HORIZONTAL_TRANSPARENTE_URL);
 
-  /** Dibuja el membrete institucional en la página actual y devuelve la Y libre. */
+  // Zona segura de contenido sobre la hoja preimpresa:
+  // arranca al 29% de la altura (debajo del "Rp/") y termina al 85,5% (antes del pie impreso).
+  const inicioContenido = pageH * 0.29;
+  const finContenido = pageH * 0.855;
+
+  /** Dibuja el fondo (hoja completa) o el membrete de respaldo, y devuelve la Y libre. */
   const dibujarMembrete = (yInicial: number): number => {
+    if (fondo) {
+      doc.addImage(fondo, "PNG", 0, 0, pageW, pageH, undefined, "FAST");
+      return inicioContenido;
+    }
+
     let yy = yInicial;
     if (logo) {
       const props = doc.getImageProperties(logo);
@@ -126,8 +137,9 @@ export async function generarRecetaPDF(
     return yy + (esA5 ? 6 : 8);
   };
 
-  /** Pie institucional de la página actual. */
+  /** Pie institucional: solo cuando no hay hoja preimpresa (la imagen ya lo trae). */
   const dibujarPie = () => {
+    if (fondo) return;
     doc.setFontSize(fs.pie);
     doc.setTextColor(120);
     doc.text(plantilla?.pie_pagina || MEMBRETE.pie, centro, pieY, { align: "center" });
@@ -135,6 +147,7 @@ export async function generarRecetaPDF(
   };
 
   y = dibujarMembrete(y);
+
 
   doc.setFontSize(fs.titulo);
   doc.setFont("helvetica", "bold");
@@ -172,7 +185,8 @@ export async function generarRecetaPDF(
   const lhCuerpo = esA5 ? 6 : 7;
   // Espacio reservado abajo para firma/sello.
   const reservaFirma = esA5 ? 34 : 44;
-  const limiteCuerpo = pieY - 6 - reservaFirma;
+  const baseInferior = fondo ? finContenido : pieY - 6;
+  const limiteCuerpo = baseInferior - reservaFirma;
   const lineas = doc.splitTextToSize(contenido || "—", width) as string[];
   for (const linea of lineas) {
     if (y > limiteCuerpo) {
@@ -186,13 +200,16 @@ export async function generarRecetaPDF(
   }
 
   // Pie de firma: se ubica debajo del texto clínico, sin superponerse nunca.
-  const firmaMin = esA5 ? pageH * 0.62 : 235;
-  const firmaY = Math.min(Math.max(y + (esA5 ? 24 : 34), firmaMin), pieY - (esA5 ? 14 : 16));
+  const firmaMin = fondo ? pageH * 0.66 : esA5 ? pageH * 0.62 : 235;
+  const firmaY = Math.min(Math.max(y + (esA5 ? 24 : 34), firmaMin), baseInferior - (esA5 ? 12 : 14));
 
   // Firma digital del profesional logueado. Si no cargó ninguna, no se dibuja imagen:
   // se imprime el mismo bloque de texto (nombre, especialidad, matrículas) del médico logueado.
   const firmaImg = medico?.firmaDataUrl ?? null;
-  const cajaFirmaW = esA5 ? 58 : 78;
+  const anchoLineaFirma = esA5 ? 52 : 70;
+  // Sobre la hoja preimpresa la firma va a la derecha; sin fondo, a la izquierda (comportamiento previo).
+  const firmaX = fondo ? pageW - margin - anchoLineaFirma : margin;
+  const cajaFirmaW = fondo ? anchoLineaFirma : esA5 ? 58 : 78;
   if (firmaImg) {
     try {
       const props = doc.getImageProperties(firmaImg);
@@ -203,7 +220,7 @@ export async function generarRecetaPDF(
       const ratio = Math.min(maxW / props.width, maxH / props.height);
       const w = props.width * ratio;
       const h = props.height * ratio;
-      doc.addImage(firmaImg, margin + (cajaFirmaW - w) / 2, firmaY - h - 1, w, h, undefined, "FAST");
+      doc.addImage(firmaImg, firmaX + (cajaFirmaW - w) / 2, firmaY - h - 1, w, h, undefined, "FAST");
     } catch {
       /* firma inválida: se omite */
     }
@@ -211,7 +228,7 @@ export async function generarRecetaPDF(
 
   doc.setFontSize(fs.firma);
   doc.setTextColor(0);
-  doc.line(margin, firmaY, margin + (esA5 ? 52 : 70), firmaY);
+  doc.line(firmaX, firmaY, firmaX + anchoLineaFirma, firmaY);
   const firma = [
     medico?.nombre ?? plantilla?.profesional,
     medico?.especialidad ?? null,
@@ -220,7 +237,8 @@ export async function generarRecetaPDF(
   ]
     .filter(Boolean)
     .join("\n");
-  if (firma) wrap(doc, firma, margin, firmaY + 5, esA5 ? 70 : 90, esA5 ? 4 : 4.5);
+  if (firma) wrap(doc, firma, firmaX, firmaY + 5, fondo ? anchoLineaFirma : esA5 ? 70 : 90, esA5 ? 4 : 4.5);
+
 
   dibujarPie();
 
