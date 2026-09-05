@@ -95,10 +95,21 @@ export async function generarRecetaPDF(
   };
   let y = margin;
 
-  const logo = await cargarImagen(LOGO_HORIZONTAL_TRANSPARENTE_URL);
+  const fondo = await cargarImagen(PLANTILLA_RECETARIO_COMPLETA_URL);
+  const logo = fondo ? null : await cargarImagen(LOGO_HORIZONTAL_TRANSPARENTE_URL);
 
-  /** Dibuja el membrete institucional en la página actual y devuelve la Y libre. */
+  // Zona segura de contenido sobre la hoja preimpresa:
+  // arranca al 22% de la altura (debajo del "Rp/") y termina al 88% (antes del pie impreso).
+  const inicioContenido = pageH * 0.22;
+  const finContenido = pageH * 0.88;
+
+  /** Dibuja el fondo (hoja completa) o el membrete de respaldo, y devuelve la Y libre. */
   const dibujarMembrete = (yInicial: number): number => {
+    if (fondo) {
+      doc.addImage(fondo, "PNG", 0, 0, pageW, pageH, undefined, "FAST");
+      return inicioContenido;
+    }
+
     let yy = yInicial;
     if (logo) {
       const props = doc.getImageProperties(logo);
@@ -126,8 +137,9 @@ export async function generarRecetaPDF(
     return yy + (esA5 ? 6 : 8);
   };
 
-  /** Pie institucional de la página actual. */
+  /** Pie institucional: solo cuando no hay hoja preimpresa (la imagen ya lo trae). */
   const dibujarPie = () => {
+    if (fondo) return;
     doc.setFontSize(fs.pie);
     doc.setTextColor(120);
     doc.text(plantilla?.pie_pagina || MEMBRETE.pie, centro, pieY, { align: "center" });
@@ -135,6 +147,7 @@ export async function generarRecetaPDF(
   };
 
   y = dibujarMembrete(y);
+
 
   doc.setFontSize(fs.titulo);
   doc.setFont("helvetica", "bold");
