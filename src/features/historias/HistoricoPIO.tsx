@@ -11,8 +11,23 @@ export function HistoricoPIO({ pacienteId, className }: { pacienteId: string; cl
     queryFn: () => listHistoriasPaciente(pacienteId),
   });
 
+  /** Máximo entre la toma de PIO normal y los valores de la curva, por ojo. */
+  const maximoOjo = (pio: number | null, ayunas: number | null, sobrecarga: number | null) => {
+    const valores = [pio, ayunas, sobrecarga].filter((v): v is number => v != null);
+    if (valores.length === 0) return { valor: null as number | null, deCurva: false };
+    const valor = Math.max(...valores);
+    return { valor, deCurva: pio == null || valor > pio };
+  };
+
   const tomas = (historias.data ?? [])
-    .filter((h) => h.pio_od != null || h.pio_oi != null)
+    .map((h) => ({
+      id: h.id,
+      fecha: h.fecha,
+      pio_hora: h.pio_hora,
+      od: maximoOjo(h.pio_od, h.curva_pio_ayunas_od, h.curva_pio_sobrecarga_od),
+      oi: maximoOjo(h.pio_oi, h.curva_pio_ayunas_oi, h.curva_pio_sobrecarga_oi),
+    }))
+    .filter((t) => t.od.valor != null || t.oi.valor != null)
     .sort((a, b) => (a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : 0));
 
   return (
@@ -34,12 +49,18 @@ export function HistoricoPIO({ pacienteId, className }: { pacienteId: string; cl
               </tr>
             </thead>
             <tbody>
-              {tomas.map((h) => (
-                <tr key={h.id} className="border-t border-border">
-                  <td className="px-2 py-1.5">{formatearFechaLocal(h.fecha)}</td>
-                  <td className="px-2 py-1.5 text-muted-foreground">{h.pio_hora || "—"}</td>
-                  <td className="px-2 py-1.5 text-right tabular-nums">{h.pio_od ?? "—"}</td>
-                  <td className="px-2 py-1.5 text-right tabular-nums">{h.pio_oi ?? "—"}</td>
+              {tomas.map((t) => (
+                <tr key={t.id} className="border-t border-border">
+                  <td className="px-2 py-1.5">{formatearFechaLocal(t.fecha)}</td>
+                  <td className="px-2 py-1.5 text-muted-foreground">{t.pio_hora || "—"}</td>
+                  <td className="px-2 py-1.5 text-right tabular-nums">
+                    {t.od.valor ?? "—"}
+                    {t.od.deCurva && t.od.valor != null ? <span className="text-muted-foreground"> (curva)</span> : null}
+                  </td>
+                  <td className="px-2 py-1.5 text-right tabular-nums">
+                    {t.oi.valor ?? "—"}
+                    {t.oi.deCurva && t.oi.valor != null ? <span className="text-muted-foreground"> (curva)</span> : null}
+                  </td>
                 </tr>
               ))}
             </tbody>
