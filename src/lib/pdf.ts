@@ -200,7 +200,7 @@ export async function generarRecetaPDF(
   }
 
   // Pie de firma: se ubica debajo del texto clínico, sin superponerse nunca.
-  const firmaMin = fondo ? pageH * 0.66 : esA5 ? pageH * 0.62 : 235;
+  const firmaMin = fondo ? pageH * 0.8 : esA5 ? pageH * 0.62 : 235;
   const firmaY = Math.min(Math.max(y + (esA5 ? 24 : 34), firmaMin), baseInferior - (esA5 ? 12 : 14));
 
   // Firma digital del profesional logueado. Si no cargó ninguna, no se dibuja imagen:
