@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { generarRecetaPDF } from "@/lib/pdf";
 import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
 import { armarLinkYahooMail } from "@/lib/email";
@@ -111,6 +113,17 @@ export function usePedidoPracticas(paciente: Paciente | null) {
           <p className="text-sm text-muted-foreground">
             {paciente?.obra_social ? `Obra social: ${paciente.obra_social}` : "Paciente particular / sin obra social"}
           </p>
+          {seccionPedido !== "Estudios y Prácticas" ? (
+            <div className="space-y-1">
+              <Label htmlFor="diagnostico-pedido">Diagnóstico</Label>
+              <Input
+                id="diagnostico-pedido"
+                value={diagnosticoPedido}
+                onChange={(e) => setDiagnosticoPedido(e.target.value)}
+                placeholder="Ej.: Glaucoma"
+              />
+            </div>
+          ) : null}
           <div className="max-h-72 space-y-3 overflow-y-auto">
             {disponibles.length === 0 ? (
               <p className="text-sm text-muted-foreground">
