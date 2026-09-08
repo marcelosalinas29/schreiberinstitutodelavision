@@ -42,6 +42,7 @@ export function usePedidoPracticas(paciente: Paciente | null) {
   const [pedidoListo, setPedidoListo] = useState<{ contenido: string; fecha: Date; titulo: string } | null>(null);
   const [usadasAntes, setUsadasAntes] = useState<string[]>([]);
   const [seccionPedido, setSeccionPedido] = useState<string>("Estudios y Prácticas");
+  const [diagnosticoPedido, setDiagnosticoPedido] = useState("");
 
   const basePracticas = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
   const tituloPedido = TITULOS_PEDIDO[seccionPedido] ?? "Pedido de estudios";
@@ -53,6 +54,7 @@ export function usePedidoPracticas(paciente: Paciente | null) {
       return;
     }
     setSeccionPedido(seccion);
+    setDiagnosticoPedido("");
     setSeleccionadas([]);
     setOrdenPedido(null);
     setUsadasAntes([]);
@@ -74,7 +76,10 @@ export function usePedidoPracticas(paciente: Paciente | null) {
   const generarPedido = () => {
     if (!paciente || seleccionadas.length === 0) return;
     const elegidas = disponibles.filter((p) => seleccionadas.includes(p.id));
-    const contenido = elegidas.map((p) => p.contenido).join("\n\n");
+    const base = elegidas.map((p) => p.contenido).join("\n\n");
+    const diagnostico =
+      seccionPedido === "Estudios y Prácticas" ? "Ametropía" : diagnosticoPedido.trim();
+    const contenido = diagnostico ? `${base}\n\nDiagnóstico: ${diagnostico}` : base;
     setPedidoAbierto(false);
     const fecha = new Date();
     setPedidoListo({ contenido, fecha, titulo: tituloPedido });
