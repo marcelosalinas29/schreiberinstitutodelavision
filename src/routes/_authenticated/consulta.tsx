@@ -351,17 +351,18 @@ function Consulta() {
   };
 
   /** Pedido rápido en A5 reutilizando el texto guardado en formatos_historia. */
-  const pedidoDesdeFormato = (nombreFormato: string, titulo: string) => {
+  const pedidoDesdeFormato = (nombreFormato: string, titulo: string, diagnostico?: string) => {
     if (!paciente) {
       toast.error("Elegí un paciente");
       return;
     }
     const formato = formatosHistoria.data?.find((f) => f.nombre === nombreFormato);
-    const contenido = formato?.contenido ?? TEXTOS_PREQUIRURGICOS[nombreFormato] ?? "";
-    if (!contenido) {
+    const base = formato?.contenido ?? TEXTOS_PREQUIRURGICOS[nombreFormato] ?? "";
+    if (!base) {
       toast.error(`No se encontró el formato "${nombreFormato}"`);
       return;
     }
+    const contenido = diagnostico?.trim() ? `${base}\n\nDiagnóstico: ${diagnostico.trim()}` : base;
     void (async () => {
       const medico = await datosMedicoReceta();
       await generarRecetaPDF({
@@ -376,9 +377,9 @@ function Consulta() {
     })();
   };
 
-  const pedidoEcg = () => pedidoDesdeFormato("Prequirúrgico - ECG", "ECG");
+  const pedidoEcg = () => pedidoDesdeFormato("Prequirúrgico - ECG", "ECG", "Cirugía ocular");
   const pedidoLaboratorioPrequirurgico = () =>
-    pedidoDesdeFormato("Prequirúrgico - Laboratorio", "Laboratorio prequirúrgico");
+    pedidoDesdeFormato("Prequirúrgico - Laboratorio", "Laboratorio prequirúrgico", "Cirugía ocular");
   const pedidoVasculitisUveitis = () =>
     pedidoDesdeFormato("Complementarios Vasculitis/Uveítis", "Vasculitis/Uveítis");
 

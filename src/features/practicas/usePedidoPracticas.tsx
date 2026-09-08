@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { generarRecetaPDF } from "@/lib/pdf";
 import { armarLinkWhatsAppTexto } from "@/lib/whatsapp";
 import { armarLinkYahooMail } from "@/lib/email";
@@ -42,6 +44,7 @@ export function usePedidoPracticas(paciente: Paciente | null) {
   const [pedidoListo, setPedidoListo] = useState<{ contenido: string; fecha: Date; titulo: string } | null>(null);
   const [usadasAntes, setUsadasAntes] = useState<string[]>([]);
   const [seccionPedido, setSeccionPedido] = useState<string>("Estudios y Prácticas");
+  const [diagnosticoPedido, setDiagnosticoPedido] = useState("");
 
   const basePracticas = practicasParaObraSocial(practicas.data ?? [], paciente?.obra_social ?? null);
   const tituloPedido = TITULOS_PEDIDO[seccionPedido] ?? "Pedido de estudios";
@@ -53,6 +56,7 @@ export function usePedidoPracticas(paciente: Paciente | null) {
       return;
     }
     setSeccionPedido(seccion);
+    setDiagnosticoPedido("");
     setSeleccionadas([]);
     setOrdenPedido(null);
     setUsadasAntes([]);
@@ -74,7 +78,10 @@ export function usePedidoPracticas(paciente: Paciente | null) {
   const generarPedido = () => {
     if (!paciente || seleccionadas.length === 0) return;
     const elegidas = disponibles.filter((p) => seleccionadas.includes(p.id));
-    const contenido = elegidas.map((p) => p.contenido).join("\n\n");
+    const base = elegidas.map((p) => p.contenido).join("\n\n");
+    const diagnostico =
+      seccionPedido === "Estudios y Prácticas" ? "Ametropía" : diagnosticoPedido.trim();
+    const contenido = diagnostico ? `${base}\n\nDiagnóstico: ${diagnostico}` : base;
     setPedidoAbierto(false);
     const fecha = new Date();
     setPedidoListo({ contenido, fecha, titulo: tituloPedido });
@@ -106,6 +113,17 @@ export function usePedidoPracticas(paciente: Paciente | null) {
           <p className="text-sm text-muted-foreground">
             {paciente?.obra_social ? `Obra social: ${paciente.obra_social}` : "Paciente particular / sin obra social"}
           </p>
+          {seccionPedido !== "Estudios y Prácticas" ? (
+            <div className="space-y-1">
+              <Label htmlFor="diagnostico-pedido">Diagnóstico</Label>
+              <Input
+                id="diagnostico-pedido"
+                value={diagnosticoPedido}
+                onChange={(e) => setDiagnosticoPedido(e.target.value)}
+                placeholder="Ej.: Glaucoma"
+              />
+            </div>
+          ) : null}
           <div className="max-h-72 space-y-3 overflow-y-auto">
             {disponibles.length === 0 ? (
               <p className="text-sm text-muted-foreground">
